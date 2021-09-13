@@ -5,13 +5,14 @@
 #include <stdlib.h>
 
 int main(int argc, char *argv[]){
-    mapa* map = criar_mapa(97, 2, 0, 0), *map1 = criar_mapa(98, 1, 0, 0), *map2 = criar_mapa(100, 3, 0, 0);
+
+/*     mapa* map = criar_mapa(97, 2, 0, 0), *map1 = criar_mapa(98, 1, 0, 0), *map2 = criar_mapa(100, 3, 0, 0);
     listaArvores* lista = criar_listaArvores(3);
     lista = adicionar_listaArvores(lista, map, 0);
     lista = adicionar_listaArvores(lista, map1, 0);
     lista = adicionar_listaArvores(lista, map2, 0);
     mostrar_listaArvores(lista);
-    lista = liberar_listaArvores(lista); 
+    lista = liberar_listaArvores(lista);  */
 /*     listaCircular* ls = criar_listaCircular(3);
     int* n = malloc(sizeof(int)), *m=malloc(sizeof(int)), *p=malloc(sizeof(int));
     *n = 1;
@@ -26,9 +27,9 @@ int main(int argc, char *argv[]){
     ls = remover_listaCircular(ls, 0, (void*)free);
     liberar_listaCircular(ls, (void*)free); */
 
-/*     mapa* map_ = ler_arquivo("./respostas/teste.txt");
-    imprimir_mapa(map_);
-    liberar_mapa(map_); */
+    mapa* map_ = ler_arquivo("./respostas/teste.txt");
+    // imprimir_mapa(map_);
+    liberar_mapa(map_);
 
     // FILE* file = fopen("./respostas/teste.txt", "r");
 /*  
