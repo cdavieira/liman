@@ -9,6 +9,8 @@ listaCircular* criar_listaCircular(unsigned long max);
 
 listaCircular* liberar_listaCircular(listaCircular* lista, void* (*liberar_conteudo)());
 
+listaCircular* mudar_inicio_listaCircular(listaCircular* lista, long indice);
+
 void* pegar_listaCircular(listaCircular* lista, unsigned long indice);
 
 listaCircular* adicionar_listaCircular(listaCircular* lista, void* item, unsigned long indice);

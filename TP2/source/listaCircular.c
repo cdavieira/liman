@@ -43,17 +43,26 @@ listaCircular* liberar_listaCircular(listaCircular* lista, void* (*liberar_conte
     return 0;
 }
 
+listaCircular* mudar_inicio_listaCircular(listaCircular* lista, long indice){
+    if(lista){
+        indice = indice<0?indice--:indice;      //é necessário substrair 1 caso o numero seja negativo por conta da forma como o operador modulo funciona para numeros negativos. ex: max=3, i=-1: -1%3=2, 2 é o indice final mas queremos o penultimo
+        indice = (*lista).n?indice%(*lista).n:0;
+        (*lista).inicio = pegar_celula_listaCircular(lista, indice);
+    }
+    return lista;
+}
+
 void* pegar_listaCircular(listaCircular* lista, unsigned long indice){
     if(lista){
         celulaCircular* celula = (*lista).inicio;
-        indice = adequar_indice_listaCircular(lista, indice);
+        indice = (*lista).n?indice%(*lista).n:0;
         for(unsigned long i=0;i<indice;i++) if(celula) celula = (*celula).proxima;
         return (*celula).conteudo;
     }
     else return 0;
 }
 
-listaCircular* adicionar_listaCircular(listaCircular* lista, void* item, unsigned long indice){
+listaCircular* adicionar_listaCircular(listaCircular* lista, void* item, unsigned long indice){ //lista desordenada
     if(lista){
         if((*lista).n>(*lista).max) return lista;           //não podemos adicionar mais items do que o maximo estabelecido
         celulaCircular *celula = criar_celulaCircular(item, 0, 0), *aux=0;  //criando celula a ser adicionada

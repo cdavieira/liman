@@ -1,5 +1,5 @@
 #include "mapa.h"
-#include "conteudo-no.h"
+#include "conteudo-mapa.h"
 #include "tree.h"
 
 unsigned int pegar_ASCII_mapa(mapa* nodulo){

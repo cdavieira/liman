@@ -9,6 +9,8 @@ listaArvores* criar_listaArvores(unsigned long max);
 
 listaArvores* liberar_listaArvores(listaArvores* lista);
 
+listaArvores* mudar_inicio_listaArvores(listaArvores* lista, long indice);
+
 mapa* pegar_listaArvores(listaArvores* lista, unsigned long indice);
 
 listaArvores* adicionar_listaArvores(listaArvores* lista, mapa* map, unsigned long indice);

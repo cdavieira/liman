@@ -10,6 +10,10 @@ listaArvores* liberar_listaArvores(listaArvores* lista){
     return (listaArvores*) liberar_listaCircular((listaCircular*) lista, (void*) liberar_mapa);
 }
 
+listaArvores* mudar_inicio_listaArvores(listaArvores* lista, long indice){
+    return (listaArvores*) mudar_inicio_listaCircular((listaCircular*)lista, indice);
+}
+
 mapa* pegar_listaArvores(listaArvores* lista, unsigned long indice){
     return (mapa*) pegar_listaCircular((listaCircular*)lista, indice);
 }

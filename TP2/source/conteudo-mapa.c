@@ -1,0 +1,67 @@
+#include "conteudo-mapa.h"
+#include "bitmap.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+struct caracter{
+    unsigned int ASCII;
+    unsigned long peso;
+    bitmap* bmap;
+};
+
+unsigned pegar_ASCII_caracter(caracter* c){
+    return c?(*c).ASCII:0;
+}
+
+unsigned long pegar_peso_caracter(caracter* c){
+    return c?(*c).peso:0;
+}
+
+bitmap* pegar_bmap_caracter(caracter* c){
+    return c?(*c).bmap:0;
+}
+
+caracter* criar_caracter(unsigned letra, unsigned long peso){
+    caracter* c = alocar_caracter();
+    *c = (caracter) {.ASCII = letra, .peso = peso, };
+    return c;
+}
+
+caracter* alocar_caracter(){
+    return calloc(1, sizeof(caracter));
+}
+
+caracter* desalocar_caracter(caracter* c){
+    if(c){ 
+        if((*c).bmap) bitmapLibera((*c).bmap);
+        free(c);
+    }
+    return 0;
+}
+
+caracter* atualizar_ASCII_caracter(caracter* c, unsigned letra){
+    if(c) (*c).ASCII = letra;
+    return c;
+}
+
+caracter* atualizar_peso_caracter(caracter* c, unsigned long peso){
+    if(c) (*c).peso = peso;
+    return c;
+}
+
+caracter* atualizar_bmap_caracter(caracter* c, unsigned int max_size){
+    if(c) (*c).bmap = bitmapInit(max_size);
+    return c;
+}
+
+void exibir_ASCII_caracter(caracter* c){
+    if(c) printf("%c", pegar_ASCII_caracter(c));
+}
+
+void exibir_peso_caracter(caracter* c){
+    if(c) printf("%lu", pegar_peso_caracter(c));
+}
+
+void exibir_caracter(caracter* c){
+    if(c) pegar_ASCII_caracter(c)?printf("%c:%ld", pegar_ASCII_caracter(c), pegar_peso_caracter(c)):printf("%ld",pegar_peso_caracter(c));
+}

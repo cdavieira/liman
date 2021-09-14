@@ -23,8 +23,8 @@ mapa* remover_rota(mapa* map, int codigo);
 
 void imprimir_mapa(mapa* map);
 
-void imprimir_galho_mapa(mapa* map);
+// void imprimir_galho_mapa(mapa* map);
 
-void imprimir_folha_mapa(mapa* map);
+// void imprimir_folha_mapa(mapa* map);
 
 #endif

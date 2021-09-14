@@ -6,6 +6,38 @@
 
 int main(int argc, char *argv[]){
 
+    mapa* map_ = ler_arquivo("./respostas/teste.txt");
+    // imprimir_mapa(map_);
+    liberar_mapa(map_);
+
+    return 0;
+}
+
+/*  
+    FILE* file = fopen("./respostas/teste.bin", "wb");
+    char a[] = "CARLOS E AI QUAL VAI SER";
+    for(int i=0;i<(sizeof(a)-1);i++){
+        fwrite(&a[i], sizeof(char), 1, file);
+    }
+    fclose(file);
+    file = fopen("./respostas/teste.bin", "rb");
+    char b[50];
+    fread(b, sizeof(char), 10, file);
+    puts(b);
+*/
+
+    // FILE* file = fopen("./respostas/teste.txt", "r");
+/*  
+    adicionar_rota(map2, map, 0);
+    adicionar_rota(map2, map1, 1);
+
+    imprimir_mapa(map2);
+
+    liberar_mapa(map2);
+*/
+    // fclose(file);
+
+
 /*     mapa* map = criar_mapa(97, 2, 0, 0), *map1 = criar_mapa(98, 1, 0, 0), *map2 = criar_mapa(100, 3, 0, 0);
     listaArvores* lista = criar_listaArvores(3);
     lista = adicionar_listaArvores(lista, map, 0);
@@ -26,34 +58,3 @@ int main(int argc, char *argv[]){
     ls = remover_listaCircular(ls, 0, (void*)free);
     ls = remover_listaCircular(ls, 0, (void*)free);
     liberar_listaCircular(ls, (void*)free); */
-
-    mapa* map_ = ler_arquivo("./respostas/teste.txt");
-    // imprimir_mapa(map_);
-    liberar_mapa(map_);
-
-    // FILE* file = fopen("./respostas/teste.txt", "r");
-/*  
-    adicionar_rota(map2, map, 0);
-    adicionar_rota(map2, map1, 1);
-
-    imprimir_mapa(map2);
-
-    liberar_mapa(map2);
-*/
-    // fclose(file);
-
-    return 0;
-}
-
-/*  
-    FILE* file = fopen("./respostas/teste.bin", "wb");
-    char a[] = "CARLOS E AI QUAL VAI SER";
-    for(int i=0;i<(sizeof(a)-1);i++){
-        fwrite(&a[i], sizeof(char), 1, file);
-    }
-    fclose(file);
-    file = fopen("./respostas/teste.bin", "rb");
-    char b[50];
-    fread(b, sizeof(char), 10, file);
-    puts(b);
-*/
