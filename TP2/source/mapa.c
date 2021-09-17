@@ -1,13 +1,18 @@
 #include "mapa.h"
 #include "conteudo-mapa.h"
 #include "tree.h"
+#include <string.h>
 
-unsigned int pegar_ASCII_mapa(mapa* nodulo){
-    return nodulo?pegar_ASCII_caracter((caracter*)pegar_conteudo_arvore((tree*)nodulo)):0;
+unsigned int pegar_ASCII_mapa(mapa* node){
+    return node?pegar_ASCII_caracter((caracter*)pegar_conteudo_arvore((tree*)node)):0;
 }
 
-unsigned long pegar_peso_mapa(mapa* nodulo){
-    return nodulo?pegar_peso_caracter((caracter*)pegar_conteudo_arvore((tree*)nodulo)):0;
+unsigned long pegar_peso_mapa(mapa* node){
+    return node?pegar_peso_caracter((caracter*)pegar_conteudo_arvore((tree*)node)):0;
+}
+
+bitmap* pegar_bitmap_mapa(mapa* node){
+    return node?pegar_bmap_caracter((caracter*)pegar_conteudo_arvore((tree*)node)):0;
 }
 
 mapa* pegar_sae_mapa(mapa* map){
@@ -35,5 +40,42 @@ mapa* remover_rota(mapa* map, int codigo){
 }
 
 void imprimir_mapa(mapa* map){
-    if(map) testar_nodulo((nodulo*)map)? imprimir_arvore((tree*)map, (void*) exibir_caracter):imprimir_arvore((tree*)map, (void*) exibir_peso_caracter);
+    if(map) imprimir_arvore((tree*)map, (void*) exibir_caracter);
+}
+
+unsigned testar_folha_mapa(mapa* map){
+    return testar_nodulo_folha((nodulo*) map);
+}
+
+unsigned long contar_nodulos_mapa(mapa* map){
+    return calcular_nodulos((tree*) map);
+}
+
+unsigned long calcular_altura_mapa(mapa* map){
+    return calcular_altura_arvore((tree*) map);
+}
+
+unsigned long calcular_altura_node_mapa(mapa* arvore, mapa* node, unsigned long altura_inicial){
+    return calcular_altura_nodulo((tree*) arvore, (nodulo*) node, altura_inicial);
+}
+
+unsigned testar_existencia_node_mapa(mapa* arvore, mapa* node){
+    return testar_existencia_nodulo((tree*) arvore, (nodulo*) node);
+}
+
+char* encontrar_rota_node_mapa(mapa* arvore, mapa* node){
+    return encontrar_rota_nodulo((tree*) arvore, (nodulo*) node);
+}
+
+mapa* preencher_ASCII_mapa(mapa* map, unsigned int ASCII){
+    return (mapa*) preencher_arvore((tree*) map, (void*)atualizar_ASCII_caracter((caracter*)pegar_conteudo_arvore((tree*) map), ASCII), 0, 0);
+}
+
+mapa* preencher_peso_mapa(mapa* map, unsigned int peso){
+    return (mapa*) preencher_arvore((tree*) map, (void*)atualizar_peso_caracter((caracter*)pegar_conteudo_arvore((tree*) map), peso), 0, 0);
+}
+
+//lembrete !!!! caracter de terminacao da string nao esta sendo considerado na alocacao
+mapa* preencher_bitmap_mapa(mapa* map, bitmap* bm){
+    return (mapa*) preencher_arvore((tree*) map, (void*)atualizar_bmap_caracter((caracter*)pegar_conteudo_arvore((tree*) map), bm), 0, 0);
 }

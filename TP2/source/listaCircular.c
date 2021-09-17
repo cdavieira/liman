@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 struct listaCircular{
     celulaCircular* inicio;
@@ -15,13 +16,13 @@ struct celulaCircular{
     celulaCircular* anterior;
 };
 
-static unsigned long adequar_indice_listaCircular(listaCircular* lista, unsigned long indice);
+static unsigned long acertar_indice(long indice, unsigned long teto);
 
 static celulaCircular* criar_celulaCircular(void* conteudo, celulaCircular* proxima, celulaCircular* anterior);
 
 static celulaCircular* liberar_celulaCircular(celulaCircular* celula, void* (*liberar_conteudo)());
 
-static celulaCircular* pegar_celula_listaCircular(listaCircular* lista, unsigned long indice);
+static celulaCircular* pegar_celula_listaCircular(listaCircular* lista, long indice);
 
 listaCircular* criar_listaCircular(unsigned long max){
     listaCircular* lista = calloc(1, sizeof(listaCircular));
@@ -43,37 +44,40 @@ listaCircular* liberar_listaCircular(listaCircular* lista, void* (*liberar_conte
     return 0;
 }
 
-listaCircular* mudar_inicio_listaCircular(listaCircular* lista, long indice){
+listaCircular* mudar_elemento_inicial_listaCircular(listaCircular* lista, long indice){
     if(lista){
-        indice = indice<0?indice--:indice;      //é necessário substrair 1 caso o numero seja negativo por conta da forma como o operador modulo funciona para numeros negativos. ex: max=3, i=-1: -1%3=2, 2 é o indice final mas queremos o penultimo
-        indice = (*lista).n?indice%(*lista).n:0;
-        (*lista).inicio = pegar_celula_listaCircular(lista, indice);
+        unsigned long indice_atualizado = acertar_indice(indice, (*lista).n);
+        (*lista).inicio = pegar_celula_listaCircular(lista, indice_atualizado);
     }
     return lista;
 }
 
-void* pegar_listaCircular(listaCircular* lista, unsigned long indice){
+unsigned int pegar_numero_elementos_listaCircular(listaCircular* lista){
+    return lista?(*lista).n:0;
+}
+
+void* pegar_listaCircular(listaCircular* lista, long indice){
     if(lista){
         celulaCircular* celula = (*lista).inicio;
-        indice = (*lista).n?indice%(*lista).n:0;
-        for(unsigned long i=0;i<indice;i++) if(celula) celula = (*celula).proxima;
+        unsigned long indice_atualizado = acertar_indice(indice, (*lista).n);
+        for(unsigned long i=0;i<indice_atualizado;i++) if(celula) celula = (*celula).proxima;
         return (*celula).conteudo;
     }
     else return 0;
 }
 
-listaCircular* adicionar_listaCircular(listaCircular* lista, void* item, unsigned long indice){ //lista desordenada
+listaCircular* adicionar_listaCircular(listaCircular* lista, void* item, long indice){ //lista desordenada
     if(lista){
         if((*lista).n>(*lista).max) return lista;           //não podemos adicionar mais items do que o maximo estabelecido
         celulaCircular *celula = criar_celulaCircular(item, 0, 0), *aux=0;  //criando celula a ser adicionada
         if((*lista).n){                                     //importante: se nao houverem elementos, n=0, o procedimento eh simplificado
-            indice = adequar_indice_listaCircular(lista, indice);   //aqui o indice é adequado dentro do intervalo [0, (*lista).max]
-            aux = (indice>((*lista).n-1))?(*((*lista).inicio)).anterior:pegar_celula_listaCircular(lista, indice); //se o indice for maior do que o numero de elementos existentes, entao queremos adicionar o elemento antes do elemento inicial, senao é numa posição generica da lista
+            unsigned long indice_atualizado = acertar_indice(indice, indice>0?(*lista).max:(*lista).n);   //aqui o indice é adequado dentro do intervalo [0, (*lista).max] //deve ser assim porque o usuario pode tentar adicionar o elemento numa posicao/indice ainda inexistente na lista
+            aux = (indice_atualizado>((*lista).n-1))?(*lista).inicio:pegar_celula_listaCircular(lista, indice_atualizado); //se o indice for maior do que o numero de elementos existentes, entao queremos adicionar o elemento antes do elemento inicial, senao é numa posição generica da lista
             (*celula).proxima = aux;
             (*celula).anterior = (*aux).anterior;
             (*((*aux).anterior)).proxima = celula;
             (*aux).anterior = celula;
-            if(!indice) (*lista).inicio = celula;       //se o elemento adicionado foi no indice 0, entao devemos modificar o ponto de partida da lista circular
+            if(!indice_atualizado&&(indice>=0)) (*lista).inicio = celula;       //se o elemento adicionado foi no indice 0, entao devemos modificar o ponto de partida da lista circular
         }
         else{
             (*celula).proxima = celula;
@@ -85,15 +89,15 @@ listaCircular* adicionar_listaCircular(listaCircular* lista, void* item, unsigne
     return lista;
 }
 
-listaCircular* remover_listaCircular(listaCircular* lista, unsigned long indice, void* (*liberar_conteudo)()){
+listaCircular* remover_listaCircular(listaCircular* lista, long indice){
     if(lista){
         if((*lista).n){                                     //importante: se nao houverem elementos, n=0, o procedimento eh simplificado
-            indice %= (*lista).n;      //aqui o indice é adequado dentro do intervalo [0, (*lista).n]
-            celulaCircular* del = pegar_celula_listaCircular(lista, indice);
-            if(del==(*lista).inicio) (*lista).inicio = (*lista).n!=1?(*del).proxima:0;
-            (*((*del).anterior)).proxima = (*del).proxima;
-            (*((*del).proxima)).anterior = (*del).anterior;
-            del = liberar_celulaCircular(del, liberar_conteudo);
+            unsigned long indice_atualizado = acertar_indice(indice, (*lista).n); //aqui o indice é atualizado dentro do intervalo [0, (*lista).n]
+            celulaCircular* removido = pegar_celula_listaCircular(lista, indice_atualizado);
+            if(removido==(*lista).inicio) (*lista).inicio = (*lista).n!=1?(*removido).proxima:0;  //caso queira-se deletar o elemento inicial ou caso a lista apresente um unico elemento
+            (*((*removido).anterior)).proxima = (*removido).proxima;
+            (*((*removido).proxima)).anterior = (*removido).anterior;
+            free(removido);
             (*lista).n--;                               //decrementando o numero de elementos que existem na lista
         }
     }
@@ -115,9 +119,11 @@ void mostrar_listaCircular(listaCircular* lista, void (*mostrar_conteudo)()){
 
 // Funções static
 
-static unsigned long adequar_indice_listaCircular(listaCircular* lista, unsigned long indice){
-    if(lista) return (*lista).max?(indice%(*lista).max):0;
-    else return 0;
+//remainder nativo bugado
+static unsigned long acertar_indice(long indice, unsigned long teto){
+    indice = indice<0?indice+1:indice;
+    while(indice<0) indice+=teto;
+    return teto?(indice%teto):0;
 }
 
 static celulaCircular* criar_celulaCircular(void* conteudo, celulaCircular* proxima, celulaCircular* anterior){
@@ -135,13 +141,13 @@ static celulaCircular* liberar_celulaCircular(celulaCircular* celula, void* (*li
     return 0;
 }
 
-static celulaCircular* pegar_celula_listaCircular(listaCircular* lista, unsigned long indice){
+static celulaCircular* pegar_celula_listaCircular(listaCircular* lista, long indice){
     celulaCircular* celula_indexada = 0;
     if(lista){
         if((*lista).inicio){
+            unsigned long indice_atualizado = acertar_indice(indice, (*lista).n);
             celula_indexada = (*lista).inicio;
-            indice = (*lista).n?indice%(*lista).n:0;
-            for(unsigned long i=0;i<indice;i++) if(celula_indexada) celula_indexada = (*celula_indexada).proxima;
+            for(unsigned long i=0;i<indice_atualizado;i++) if(celula_indexada) celula_indexada = (*celula_indexada).proxima;
             return celula_indexada;
         }
     }

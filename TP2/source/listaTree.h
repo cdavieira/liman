@@ -11,11 +11,13 @@ listaArvores* liberar_listaArvores(listaArvores* lista);
 
 listaArvores* mudar_inicio_listaArvores(listaArvores* lista, long indice);
 
-mapa* pegar_listaArvores(listaArvores* lista, unsigned long indice);
+unsigned int pegar_numero_elementos_listaArvores(listaArvores* lista);
 
-listaArvores* adicionar_listaArvores(listaArvores* lista, mapa* map, unsigned long indice);
+mapa* pegar_mapa_listaArvores(listaArvores* lista, long indice);
 
-listaArvores* remover_listaArvores(listaArvores* lista, unsigned long indice);
+listaArvores* adicionar_listaArvores(listaArvores* lista, mapa* map, long indice);
+
+listaArvores* remover_listaArvores(listaArvores* lista, long indice);
 
 void mostrar_listaArvores(listaArvores* lista);
 

@@ -1,4 +1,4 @@
-#include "conteudo-mapa.h"
+#include "conteudo-no.h"
 #include "bitmap.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,8 +49,8 @@ caracter* atualizar_peso_caracter(caracter* c, unsigned long peso){
     return c;
 }
 
-caracter* atualizar_bmap_caracter(caracter* c, bitmap* bm){
-    if(c) (*c).bmap = bm;
+caracter* atualizar_bmap_caracter(caracter* c, unsigned int max_size){
+    if(c) (*c).bmap = bitmapInit(max_size);
     return c;
 }
 
@@ -63,5 +63,5 @@ void exibir_peso_caracter(caracter* c){
 }
 
 void exibir_caracter(caracter* c){
-    if(c) pegar_ASCII_caracter(c)?printf("%c", pegar_ASCII_caracter(c)):printf("%ld",pegar_peso_caracter(c));
+    if(c) pegar_ASCII_caracter(c)?printf("%c:%ld", pegar_ASCII_caracter(c), pegar_peso_caracter(c)):printf("%ld",pegar_peso_caracter(c));
 }

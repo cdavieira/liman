@@ -1,5 +1,5 @@
-#ifndef _conteudo_mapa
-#define _conteudo_mapa
+#ifndef _conteudo_no
+#define _conteudo_no
 
 typedef struct caracter caracter;
 
@@ -21,7 +21,7 @@ caracter* atualizar_ASCII_caracter(caracter* c, unsigned letra);
 
 caracter* atualizar_peso_caracter(caracter* c, unsigned long peso);
 
-caracter* atualizar_bmap_caracter(caracter* c, bitmap* bm);
+caracter* atualizar_bmap_caracter(caracter* c, unsigned int max_size);
 
 void exibir_ASCII_caracter(caracter* c);
 
