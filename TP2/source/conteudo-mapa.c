@@ -65,3 +65,11 @@ void exibir_peso_caracter(caracter* c){
 void exibir_caracter(caracter* c){
     if(c) pegar_ASCII_caracter(c)?printf("%c", pegar_ASCII_caracter(c)):printf("%ld",pegar_peso_caracter(c));
 }
+
+unsigned comparar_ASCII_caracter(caracter* c, unsigned* letra){
+    return c?(*c).ASCII==*letra:0;
+}
+
+unsigned* pegar_endereco_ASCII_caracter(caracter* c){
+    return c?&(*c).ASCII:0;
+}

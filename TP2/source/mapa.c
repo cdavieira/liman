@@ -1,7 +1,10 @@
 #include "mapa.h"
 #include "conteudo-mapa.h"
 #include "tree.h"
+#include <stdlib.h>
 #include <string.h>
+
+static unsigned long tamanho_bits_mapa_auxiliar(mapa* map, mapa* mapa_pai);
 
 unsigned int pegar_ASCII_mapa(mapa* node){
     return node?pegar_ASCII_caracter((caracter*)pegar_conteudo_arvore((tree*)node)):0;
@@ -47,8 +50,12 @@ unsigned testar_folha_mapa(mapa* map){
     return testar_nodulo_folha((nodulo*) map);
 }
 
-unsigned long contar_nodulos_mapa(mapa* map){
-    return calcular_nodulos((tree*) map);
+unsigned long contar_nodes_mapa(mapa* map){
+    return contar_nodulos((tree*) map);
+}
+
+unsigned long contar_folhas_mapa(mapa* map){
+    return calcular_nodulos_folha((tree*) map);
 }
 
 unsigned long calcular_altura_mapa(mapa* map){
@@ -67,6 +74,10 @@ char* encontrar_rota_node_mapa(mapa* arvore, mapa* node){
     return encontrar_rota_nodulo((tree*) arvore, (nodulo*) node);
 }
 
+mapa* percorrer_mapa(mapa* map, char* rota){
+    return (mapa*) ir_ate_nodulo((tree*) map, rota);
+}
+
 mapa* preencher_ASCII_mapa(mapa* map, unsigned int ASCII){
     return (mapa*) preencher_arvore((tree*) map, (void*)atualizar_ASCII_caracter((caracter*)pegar_conteudo_arvore((tree*) map), ASCII), 0, 0);
 }
@@ -78,4 +89,29 @@ mapa* preencher_peso_mapa(mapa* map, unsigned int peso){
 //lembrete !!!! caracter de terminacao da string nao esta sendo considerado na alocacao
 mapa* preencher_bitmap_mapa(mapa* map, bitmap* bm){
     return (mapa*) preencher_arvore((tree*) map, (void*)atualizar_bmap_caracter((caracter*)pegar_conteudo_arvore((tree*) map), bm), 0, 0);
+}
+
+mapa* buscar_ASCII_mapa(mapa* map, unsigned* ASCII){
+    return (mapa*) buscar_conteudo_arvore((tree*) map, (void*) ASCII, (void*) pegar_endereco_ASCII_mapa, (void*)comparar_ASCII_caracter);
+}
+
+unsigned* pegar_endereco_ASCII_mapa(mapa* map){
+    return pegar_endereco_ASCII_caracter((caracter*)pegar_conteudo_arvore((tree*)map));
+}
+
+unsigned long calcular_tamanho_bits_mapa(mapa* map){
+    return map?tamanho_bits_mapa_auxiliar(map, map):0;
+}
+
+static unsigned long tamanho_bits_mapa_auxiliar(mapa* map, mapa* mapa_pai){
+    if(map){
+        if(testar_folha_mapa(map)){
+            char* rota = encontrar_rota_node_mapa(mapa_pai, map);
+            unsigned long tam = strlen(rota);
+            free(rota);
+            return tam*pegar_peso_mapa(map);
+        }
+        else return tamanho_bits_mapa_auxiliar(pegar_sae_mapa(map), mapa_pai) + tamanho_bits_mapa_auxiliar(pegar_sad_mapa(map), mapa_pai);
+    }
+    else return 0;
 }

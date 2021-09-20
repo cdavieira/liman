@@ -29,4 +29,8 @@ void exibir_peso_caracter(caracter* c);
 
 void exibir_caracter(caracter* c);
 
+unsigned comparar_ASCII_caracter(caracter* c, unsigned* letra);
+
+unsigned* pegar_endereco_ASCII_caracter(caracter* c);
+
 #endif

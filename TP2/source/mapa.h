@@ -29,7 +29,9 @@ void imprimir_mapa(mapa* map);
 
 unsigned testar_folha_mapa(mapa* map);
 
-unsigned long contar_nodulos_mapa(mapa* map);
+unsigned long contar_nodes_mapa(mapa* map);
+
+unsigned long contar_folhas_mapa(mapa* map);
 
 unsigned long calcular_altura_mapa(mapa* map);
 
@@ -39,10 +41,19 @@ unsigned testar_existencia_node_mapa(mapa* arvore, mapa* node);
 
 char* encontrar_rota_node_mapa(mapa* arvore, mapa* node);
 
+mapa* percorrer_mapa(mapa* map, char* rota);
+
 mapa* preencher_ASCII_mapa(mapa* map, unsigned ASCII);
 
 mapa* preencher_peso_mapa(mapa* map, unsigned peso);
 
 mapa* preencher_bitmap_mapa(mapa* map, bitmap* bm);
+
+mapa* buscar_ASCII_mapa(mapa* map, unsigned* ASCII);
+
+unsigned* pegar_endereco_ASCII_mapa(mapa* map);
+
+//precisa ter passado pelo algoritmo de huffman
+unsigned long calcular_tamanho_bits_mapa(mapa* map);
 
 #endif

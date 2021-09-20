@@ -39,7 +39,9 @@ tree* pegar_sad_arvore(tree* arvore);
 
 tree* buscar_conteudo_arvore(tree* arvore, void* informacao_pesquisada, void* (*pegar_informacao_arvore)(), unsigned (*comparar)());
 
-unsigned long calcular_nodulos(tree* arvore);
+unsigned long contar_nodulos(tree* arvore);
+
+unsigned long calcular_nodulos_folha(tree* arvore);
 
 unsigned long calcular_altura_arvore(tree* arvore);
 

@@ -2,6 +2,7 @@
 #include "mapa.h"
 #include "listaTree.h"
 #include "bitmap.h"
+#include "bitmapPLUS.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,6 +24,10 @@ static void gerar_codigos_mapa(mapa* map); //talvez seja um desperdicio ter feit
 
 //funcao auxiliar da sua semelhante ; a unica diferença é que preserva o mapa pai na chamada das funcoes e realmente faz o trabalho acontecer
 static void gerar_codigos_mapa_auxiliar(mapa* filho, mapa* pai);
+
+static void escrever_mapa(mapa* map, FILE* fpout);
+
+static void gerar_bitmap_map(mapa* map, bitmap* bm); //funcao auxiliar da funcao escrever mapa
 
 mapa* ler_arquivo(char* nome){
     mapa* map = 0;
@@ -48,10 +53,26 @@ void escrever_arquivo_binario(char* nomeArquivoTexto, char* nomeArquivoBinario, 
         FILE* fpin = fopen(nomeArquivoTexto, "rb"), *fpout = fopen(nomeArquivoBinario, "wb");
         assert(fpin, "Erro ao abrir arquivo para leitura! Terminando programa...");
         assert(fpout, "Erro ao gerar arquivo compactado! Terminando programa...");
-        
 
+        //ESCREVER O MAPA DE CARACTERES ANTES DE ESCREVER O CONTEUDO NAO ESQUECER
+        puts("MAPA DE HUFFMAN QUE ESTA SENDO COMPACTADO");
+        escrever_mapa(mapa_caracteres, fpout);
+        //parei vendo a impressao do mapa de caracteres no arquivo ; faltou verificar se a impressao das letras dps das folhas esta correta
+        //falta tambem modificar os lugares onde aparece stdout para fpout
+
+        bitmap* bm_completo = bitmapInit(calcular_tamanho_bits_mapa(mapa_caracteres)); //max_size = tamanho em bits do mapa, quantidade de bytes alocados pelo conteudo do bitmap = numero em BYTES !!!!!
+        unsigned int ascii = 0;
+        for(char c=fgetc(fpin);c!=EOF;c=fgetc(fpin)){
+            ascii = c;
+            bitmapCatContents(bm_completo, pegar_bitmap_mapa(buscar_ASCII_mapa(mapa_caracteres, &ascii)));
+        }
+        puts("TEXTO QUE ESTA SENDO COMPACTADO");
+        bitmapUnloadContents(bm_completo, stdout);
+        // bitmapUnloadContents(bm_completo, fpout);
+        //ler um bit e verificar se esse bit consegue me levar ate algum no folha da minha arvore;se conseguir, entao chegamos a uma letra, caso contrario continua leitura;
         fclose(fpin);
         fclose(fpout);
+        bitmapLibera(bm_completo);
     }
 }
 
@@ -118,9 +139,40 @@ static void gerar_codigos_mapa_auxiliar(mapa* filho, mapa* pai){
     }
 }
 
+static void escrever_mapa(mapa* map, FILE* fpout){
+    if(map && fpout){
+        //imprimir o tamanho de bits que o mapa apresenta, depois os bits do mapa; quando chegar numa folha (1) imprimir em sequencia 1 byte inidicando qual letra esta nessa folha
+        // unsigned long tam = calcular_tamanho_bits_mapa(map);
+        unsigned long tam_bm = contar_nodes_mapa(map)+(contar_folhas_mapa(map)*8);
+        puts("Numero de bits da arvore:");
+        fwrite(&tam_bm, sizeof(unsigned long), 1, stdout);
+        // fwrite(&tam, sizeof(unsigned long), 1, fpout);  //escrevendo o numero de bits que serao necessarios para ler e remontar o mapa
+        // unsigned long tam_bm = contar_nodes_mapa(map)+(contar_folhas_mapa(map)*8);
+        bitmap* bm = bitmapInit(tam_bm);
+        gerar_bitmap_map(map, bm);
+        bitmapUnloadContents(bm, stdout);
+        bitmapLibera(bm);
+    }
+}
+
+static void gerar_bitmap_map(mapa* map, bitmap* bm){
+    if(map && bm){
+        unsigned ehFolha = testar_folha_mapa(map);
+        bitmapAppendLeastSignificantBit(bm, (unsigned char) ehFolha); //necessário fazer a subtração para converter o conteudo da variavel rota[i] do codigo ASCII para 0 ou 1 (unsigned char)
+        if(!ehFolha){
+            gerar_bitmap_map(pegar_sae_mapa(map), bm);
+            gerar_bitmap_map(pegar_sad_mapa(map), bm);
+        }
+        else{
+            unsigned char letra = pegar_ASCII_mapa(map);
+            unsigned int bit = 0;
+            for(size_t i=0;i<8;i++){
+                bit = letra&0x01;
+                letra = letra>>1;
+                bitmapAppendLeastSignificantBit(bm, (unsigned char) bit);
+            }
+        }
+    }
+}
 
 //funcao desconstruir mapa
-
-//funcao que informa o codigo de uma letra
-
-//transmissao: a transmissao vai ser feita no com um bloco de tamanho igual a altura da arvore seguido de um bit (0 ou 1) que indica se a o arquivo acabou ou nao

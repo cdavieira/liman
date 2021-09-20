@@ -92,7 +92,9 @@ tree* pegar_sad_arvore(tree* arvore){
 tree* buscar_conteudo_arvore(tree* arvore, void* informacao_pesquisada, void* (*pegar_informacao_arvore)(), unsigned (*comparar)()){
 	tree* buscado = 0;
 	if(arvore && pegar_informacao_arvore && comparar){
-		if(testar_nodulo_folha(arvore)) if(comparar(pegar_informacao_arvore(arvore), informacao_pesquisada)) return arvore;
+		if(testar_nodulo_folha(arvore)){
+			if(comparar(pegar_informacao_arvore(arvore), informacao_pesquisada)) return arvore;
+		}
 		else{
 			if(!buscado) buscado = buscar_conteudo_arvore((*arvore).sae, informacao_pesquisada, pegar_informacao_arvore, comparar);
 			if(!buscado) buscado = buscar_conteudo_arvore((*arvore).sad, informacao_pesquisada, pegar_informacao_arvore, comparar);
@@ -101,8 +103,13 @@ tree* buscar_conteudo_arvore(tree* arvore, void* informacao_pesquisada, void* (*
 	return buscado;
 }
 
-unsigned long calcular_nodulos(tree* arvore){
-	if(arvore) return testar_nodulo_folha(arvore) + calcular_nodulos((*arvore).sae) + calcular_nodulos((*arvore).sad); 
+unsigned long contar_nodulos(tree* arvore){
+	if(arvore) return 1 + contar_nodulos((*arvore).sae) + contar_nodulos((*arvore).sad); 
+	else return 0;
+}
+
+unsigned long calcular_nodulos_folha(tree* arvore){
+	if(arvore) return testar_nodulo_folha(arvore) + calcular_nodulos_folha((*arvore).sae) + calcular_nodulos_folha((*arvore).sad); 
 	else return 0;
 }
 
@@ -125,13 +132,14 @@ char* encontrar_rota_nodulo(tree* arvore, nodulo* nodulo){
 	char* rota = 0;	//variavel que conterá o caminho correto até o nodulo, caso exista.
 	if(arvore && nodulo){
 		if(testar_existencia_nodulo(arvore, nodulo)){	//se o nodulo existir na estrutura da arvore mae...
-			unsigned long nivel = calcular_altura_nodulo(arvore, nodulo, 0), existencia=testar_existencia_nodulo((*arvore).sad, nodulo)?1:0; //nivel: em que ordem hierarquica está o nodulo pesquisado (importante pois esse é o número de bits necessários para escrevelo), existencia = variavel que testa a existencia do nodulo sempre a direita do nodulo raiz
+			unsigned long nivel = calcular_altura_nodulo(arvore, nodulo, 0), existencia=0; //nivel: em que ordem hierarquica está o nodulo pesquisado (importante pois esse é o número de bits necessários para escrevelo), existencia = variavel que testa a existencia do nodulo pesquisado sempre a direita do nodulo raiz
 			rota = calloc(nivel+1, sizeof(char));		//alocando o numero de bits necessarios para localização do nodulo na arvore + 1 caracter de terminação da string
-			tree* corrente = existencia?(*arvore).sad:(*arvore).sae;	//armazena os nodulos intermediarios ate o nodulo pesquisado//como a variavel 'existencia' averigua a presença sempre no galho da direita, a variavel 'corrente' depende do valor de existencia, pois pode armazenar a celula da direita ou da esquerda dependendo de qual dessas é o caminho correto ate o nodulo em questao
+			tree* corrente = 0, *pai_corrente = arvore;	//armazena os nodulos intermediarios ate o nodulo pesquisado, pai_corrente = guarda o no pai do no corrente
 			for(unsigned long i=0;i<nivel;i++){
-				existencia?strcat(rota, right_str):strcat(rota, left_str);	//se existencia=1 isso significa que o nodulo esta a direita, caso contrario esta a esquerda
-				corrente = existencia?(*corrente).sad:(*corrente).sae;			//atualiza-se a celula corrente indo-se para a próxima célula pertencente ao pathing correto até o nodulo pesquisado
-				existencia = testar_existencia_nodulo(corrente, nodulo);		//atualiza-se a variavel existencia para os nos filhos da celula corrente previamente atualizada
+				existencia = testar_existencia_nodulo((*pai_corrente).sad, nodulo);	//testa a existencia do nodulo pesquisado na raiz direita do no pai
+				corrente = existencia?(*pai_corrente).sad:(*pai_corrente).sae;		//se o nodulo pesquisado existir a direita, ir para direita, senao ir para esquerda;
+				corrente==(*pai_corrente).sad?strcat(rota, right_str):strcat(rota, left_str);	//se tivermos ido para a direita no passo anterior, então adicionamos 1 ao char, senao adicionamos 0
+				pai_corrente = corrente;											//atualizamos o pai da variavel corrente para a proxima iteração
 			}
 		}
 	}

@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "tree.h"
+#include "bitmap.h"
+#include "conteudo-mapa.h"
+#include "bitmapPLUS.h"
 
 unsigned compara(int* a, int*b){
     if(a&&b) return *a==*b?1:0;
@@ -14,7 +17,25 @@ unsigned compara(int* a, int*b){
 //colocar o nome do arquivo a ser lido no makefile (linha de comando)
 int main(int argc, char *argv[]){
     mapa* map_ = ler_arquivo("./respostas/teste.txt");
+
+    putchar('\n');    
+    imprimir_mapa(map_);
+    putchar('\n');    
+
+
+    // printf("%lu\n", contar_nodes_mapa(map_));
+
+    escrever_arquivo_binario("./respostas/teste.txt", "./respostas/teste.bin", map_);
+/*     unsigned int a= 'o';
+    mapa* map2 = buscar_ASCII_mapa(map_, &a);
+    bitmap* bm = pegar_bitmap_mapa(map2);
+    bitmapUnloadContents(bm, stdout); */ //decidi fazer um bitmap gigante que contenha todos os codigos a serem utilizados enfilerados. Isso auxiliara na escrita final do arquivo texto no arquivo binario
+
+    // printf("%lu\n", calcular_tamanho_bits_mapa(map_));
+
     liberar_mapa(map_);
+
+
     return 0;
 }
 
@@ -93,7 +114,7 @@ int main(int argc, char *argv[]){
 */
 
 /*  
-    printf("\n%lu\n", calcular_nodulos((tree*)map_));
+    printf("\n%lu\n", calcular_nodulos_folha((tree*)map_));
     printf("%lu\n", calcular_altura_arvore((tree*)map_));
     mapa* map2 = pegar_sae_mapa(pegar_sae_mapa(pegar_sad_mapa(map_)));
     imprimir_mapa(map2);
@@ -107,7 +128,7 @@ int main(int argc, char *argv[]){
     mapa* map_ = ler_arquivo("./respostas/teste.txt");
     imprimir_mapa(map_);
 
-    printf("\n%lu\n", calcular_nodulos((tree*)map_));
+    printf("\n%lu\n", calcular_nodulos_folha((tree*)map_));
     printf("%lu\n", calcular_altura_arvore((tree*)map_));
     mapa* map2 = pegar_sae_mapa(pegar_sae_mapa(pegar_sad_mapa(map_)));
     imprimir_mapa(map2);
@@ -121,3 +142,49 @@ int main(int argc, char *argv[]){
     liberar_mapa(map_);
     free(rota);
 */
+
+/*     unsigned char a[50] = {0, };
+    unsigned char b = '2';
+
+    FILE* fpin = fopen("./respostas/binario.bin", "rb");
+
+
+    //01000011
+    //começa do bit menos significativo
+
+    for(size_t j=0;j<5;j++){
+        fread(&b, sizeof(unsigned char), 1, fpin);
+        printf("%c\n", b);
+        for(size_t i=0;i<7;i++){
+            printf("COMECO: b = %c, ASCII: %d\n", b, b);
+            a[i] = b&0x01;
+            printf("MEIO: a[%lu]=%d\n", i, a[i]);
+            b=b>>1;
+            printf("FIM: b = %c\n", b);
+        }
+    }
+
+
+    fclose(fpin);
+ */
+
+/*     unsigned int a = 'o';
+    mapa* map0 = buscar_ASCII_mapa(map_, &a);
+    imprimir_mapa(map0);
+    putchar('\n'); */
+
+    /*     
+    putchar('\n');
+    mapa* map2 = percorrer_mapa(map_, "01");
+    bitmap* bm = pegar_bitmap_mapa(map2);
+
+    unsigned char a= '2';
+
+    for(size_t i=0;i<bitmapGetLength(bm);i++){
+        a = bitmapGetBit(bm, i);
+        printf("%d ", a);
+    }
+    putchar('\n');
+
+    imprimir_mapa(map2);
+    */
