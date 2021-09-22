@@ -1,6 +1,7 @@
 #include "mapa.h"
 #include "conteudo-mapa.h"
 #include "tree.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -106,10 +107,7 @@ unsigned long calcular_tamanho_bits_mapa(mapa* map){
 static unsigned long tamanho_bits_mapa_auxiliar(mapa* map, mapa* mapa_pai){
     if(map){
         if(testar_folha_mapa(map)){
-            char* rota = encontrar_rota_node_mapa(mapa_pai, map);
-            unsigned long tam = strlen(rota);
-            free(rota);
-            return tam*pegar_peso_mapa(map);
+            return calcular_altura_node_mapa(mapa_pai, map, 0)*pegar_peso_mapa(map);
         }
         else return tamanho_bits_mapa_auxiliar(pegar_sae_mapa(map), mapa_pai) + tamanho_bits_mapa_auxiliar(pegar_sad_mapa(map), mapa_pai);
     }

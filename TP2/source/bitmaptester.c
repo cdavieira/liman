@@ -36,13 +36,14 @@ int main(void) {
 	printf("%0xh\n", bitmapGetContents(bm)[0]);			
 	printf("%0xh\n", bitmapGetContents(bm)[1]);
 	printf("length=%0d\n", bitmapGetLength(bm));
-
+*/
 	int i;
 	for (i=0; i<bitmapGetLength(bm); i++) {
 		printf("bit #%d = %0xh\n", i, bitmapGetBit(bm, i));
 	}
- */
-	FILE* bin = fopen("./respostas/binario.bin", "wb");
+	printf("%u\n", *(unsigned*)bitmapGetContents(bm));
+
+/* 	FILE* bin = fopen("./respostas/binario.bin", "wb");
 	fwrite((void*)bitmapGetContents(bm), sizeof(unsigned char), bitmapGetLength(bm), bin);
 	fclose(bin);
 	bin = fopen("./respostas/binario.bin", "rb");
@@ -53,7 +54,7 @@ int main(void) {
     
     bitmapLibera(bm);
     
-	puts("teste2");
+	puts("teste2"); */
 	return EXIT_SUCCESS;
 
 }

@@ -7,84 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*  
-    pensando bem nao sera necessario que a variavel do conteudo do mapa armazene o bitmap de cada caracter eu acho, pelo menos nao agora
-*/
-
-static void assert(void* p, char* msg);
-
-static unsigned long pegar_indice_maior_numero(unsigned long* v, size_t tam);
-
-//INCLUIR O SEPARADOR (\0) NO ALGORITMO DE HUFFMAN
-static mapa* algoritmo_Huffman(listaArvores* lc);
-
-//map deve ter passado pela etapa de huffman
-//essa funcao tem como intencao gerar bitmaps e preencher os campos de cada no folha do mapa com seu respectivo bitmap, que contem o seu codigo em bits
-static void gerar_codigos_mapa(mapa* map); //talvez seja um desperdicio ter feito duas funcoes (uma principal e uma auxiliar aqui no backend)
-
 //funcao auxiliar da sua semelhante ; a unica diferença é que preserva o mapa pai na chamada das funcoes e realmente faz o trabalho acontecer
-static void gerar_codigos_mapa_auxiliar(mapa* filho, mapa* pai);
-
-static void escrever_mapa(mapa* map, FILE* fpout);
-
-static void gerar_bitmap_map(mapa* map, bitmap* bm); //funcao auxiliar da funcao escrever mapa
-
-mapa* ler_arquivo(char* nome){
-    mapa* map = 0;
-    if(nome){
-        FILE* fpin = fopen(nome, "rb");
-        assert(fpin, "Erro ao abrir arquivo para leitura! Terminando programa...");
-        unsigned long tabela_ocorrencias[128] = {0, };      //armazena a frequencia de cada letra no arquivo texto
-        for(char c=fgetc(fpin);c!=EOF;c=fgetc(fpin)) tabela_ocorrencias[c]++;
-        listaArvores* ls = criar_listaArvores(128);
-        for(unsigned i=pegar_indice_maior_numero(tabela_ocorrencias, 128);i;i=pegar_indice_maior_numero(tabela_ocorrencias, 128)){
-            ls = adicionar_listaArvores(ls, criar_mapa(i, tabela_ocorrencias[i], 0, 0), 0); //a adicao do maior numero é sempre feita na posicao inicial da lista circular. Isso assegura que ao final o menor elemento estará na posição inicial da lista (também é possível fazer uma função que pega o indice do menor numero e o adiciona)
-            tabela_ocorrencias[i] = 0;
-        }
-        map = algoritmo_Huffman(ls); //constroi um arvore inteira baseando-se numa lista circular (esvazia e desaloca essa no processo)
-        gerar_codigos_mapa(map);
-        fclose(fpin);
-    }
-    return map;
-}
-
-void escrever_arquivo_binario(char* nomeArquivoTexto, char* nomeArquivoBinario, mapa* mapa_caracteres){
-    if(nomeArquivoTexto && nomeArquivoBinario && mapa_caracteres){
-        FILE* fpin = fopen(nomeArquivoTexto, "rb"), *fpout = fopen(nomeArquivoBinario, "wb");
-        assert(fpin, "Erro ao abrir arquivo para leitura! Terminando programa...");
-        assert(fpout, "Erro ao gerar arquivo compactado! Terminando programa...");
-
-        //ESCREVER O MAPA DE CARACTERES ANTES DE ESCREVER O CONTEUDO NAO ESQUECER
-        puts("MAPA DE HUFFMAN QUE ESTA SENDO COMPACTADO");
-        escrever_mapa(mapa_caracteres, fpout);
-        //parei vendo a impressao do mapa de caracteres no arquivo ; faltou verificar se a impressao das letras dps das folhas esta correta
-        //falta tambem modificar os lugares onde aparece stdout para fpout
-
-        bitmap* bm_completo = bitmapInit(calcular_tamanho_bits_mapa(mapa_caracteres)); //max_size = tamanho em bits do mapa, quantidade de bytes alocados pelo conteudo do bitmap = numero em BYTES !!!!!
-        unsigned int ascii = 0;
-        for(char c=fgetc(fpin);c!=EOF;c=fgetc(fpin)){
-            ascii = c;
-            bitmapCatContents(bm_completo, pegar_bitmap_mapa(buscar_ASCII_mapa(mapa_caracteres, &ascii)));
-        }
-        puts("TEXTO QUE ESTA SENDO COMPACTADO");
-        bitmapUnloadContents(bm_completo, stdout);
-        // bitmapUnloadContents(bm_completo, fpout);
-        //ler um bit e verificar se esse bit consegue me levar ate algum no folha da minha arvore;se conseguir, entao chegamos a uma letra, caso contrario continua leitura;
-        fclose(fpin);
-        fclose(fpout);
-        bitmapLibera(bm_completo);
-    }
-}
-
-
-static void assert(void* p, char* msg){
-    if(!p){
-        puts(msg);
-        exit(1);
-    }
-}
-
-static unsigned long pegar_indice_maior_numero(unsigned long* v, size_t tam){
+unsigned long pegar_indice_maior_numero(unsigned long* v, size_t tam){
     unsigned long maior = 0, index=0;
     if(v){
         for(unsigned long i=0;i<tam;i++){
@@ -97,7 +21,7 @@ static unsigned long pegar_indice_maior_numero(unsigned long* v, size_t tam){
     return index;
 }
 
-static mapa* algoritmo_Huffman(listaArvores* lc){
+mapa* algoritmo_Huffman(listaArvores* lc){
     mapa* mapa_completo = 0;
     if(lc){
         mapa *aux1 = 0, *aux2 = 0;
@@ -115,7 +39,7 @@ static mapa* algoritmo_Huffman(listaArvores* lc){
     return mapa_completo;
 }
 
-static void gerar_codigos_mapa(mapa* map){
+void gravar_codigos_mapa(mapa* map){
     if(map) gerar_codigos_mapa_auxiliar(map, map);
 }
 
@@ -139,40 +63,57 @@ static void gerar_codigos_mapa_auxiliar(mapa* filho, mapa* pai){
     }
 }
 
-static void escrever_mapa(mapa* map, FILE* fpout){
+/*
+    o mapa é escrito da seguinte maneira:
+    {numero de bits que a serem lidos para gerar o mapa (esse numero é do tipo unsigned long)}{mapa/arvore em si}
+
+    a arvore é exibida da seguinte maneira: 0 significa um nodulo raiz, 1 significa um nodulo folha
+    a precedencia é sempre: nodulo raiz -> nodulo esquerdo -> nodulo direito
+    quando for indicado um nodulo folha (1), logo em seguida imprime-se 1 byte que indica o codigo na tabela ASCII do caracter armazenado nesse nodulo
+
+    resumo: imprimir o tamanho de bits que o mapa apresenta, depois os bits do mapa; quando chegar numa folha (1) imprimir em sequencia 1 byte inidicando qual letra esta nessa folha
+*/
+void exportar_mapa_formato_bitmap(mapa* map, FILE* fpout){
     if(map && fpout){
-        //imprimir o tamanho de bits que o mapa apresenta, depois os bits do mapa; quando chegar numa folha (1) imprimir em sequencia 1 byte inidicando qual letra esta nessa folha
-        // unsigned long tam = calcular_tamanho_bits_mapa(map);
         unsigned long tam_bm = contar_nodes_mapa(map)+(contar_folhas_mapa(map)*8);
-        puts("Numero de bits da arvore:");
-        fwrite(&tam_bm, sizeof(unsigned long), 1, stdout);
-        // fwrite(&tam, sizeof(unsigned long), 1, fpout);  //escrevendo o numero de bits que serao necessarios para ler e remontar o mapa
-        // unsigned long tam_bm = contar_nodes_mapa(map)+(contar_folhas_mapa(map)*8);
+        fwrite(&tam_bm, sizeof(unsigned long), 1, fpout);  //escrevendo o numero de bits que serao necessarios para ler e remontar o mapa        
+        tam_bm = tam_bm%8?(tam_bm+(8-tam_bm%8)):tam_bm;        //colocando bits adicionais de preenchimento no bitmap (evitar problemas na leitura/descompactacao do mapa) //os bits adicionais completarão o numero até que seja um multiplo de 8 ; esses bits adicionais serao nulos na impressao
         bitmap* bm = bitmapInit(tam_bm);
-        gerar_bitmap_map(map, bm);
-        bitmapUnloadContents(bm, stdout);
+        gerar_mapa_formato_bitmap(map, bm);  //preenchendo o bitmap que contem a arvore na forma de bits corridos
+        bitmapUnloadContents(bm, fpout);    //descarregando o conteudo do bitmap no arquivo apontado por fpout
         bitmapLibera(bm);
     }
 }
 
-static void gerar_bitmap_map(mapa* map, bitmap* bm){
+void gerar_mapa_formato_bitmap(mapa* map, bitmap* bm){
     if(map && bm){
-        unsigned ehFolha = testar_folha_mapa(map);
-        bitmapAppendLeastSignificantBit(bm, (unsigned char) ehFolha); //necessário fazer a subtração para converter o conteudo da variavel rota[i] do codigo ASCII para 0 ou 1 (unsigned char)
+        unsigned ehFolha = testar_folha_mapa(map);                     //adquirindo informação se nodulo é ou não é folha
+        bitmapAppendLeastSignificantBit(bm, (unsigned char) ehFolha);  //apençar a informacao em forma de bit no mapa de bits
         if(!ehFolha){
-            gerar_bitmap_map(pegar_sae_mapa(map), bm);
-            gerar_bitmap_map(pegar_sad_mapa(map), bm);
+            gerar_mapa_formato_bitmap(pegar_sae_mapa(map), bm);                 //senao for no folha, entao chamar recursivamente a funcao para os nodulos filhos
+            gerar_mapa_formato_bitmap(pegar_sad_mapa(map), bm);
         }
-        else{
-            unsigned char letra = pegar_ASCII_mapa(map);
-            unsigned int bit = 0;
-            for(size_t i=0;i<8;i++){
-                bit = letra&0x01;
-                letra = letra>>1;
-                bitmapAppendLeastSignificantBit(bm, (unsigned char) bit);
+        else{                                                          //se for um no folha, entao é necessario ainda escrever a letra que esta armazenada nesse no folha
+            unsigned char letra = pegar_ASCII_mapa(map), bit = 0;
+            for(size_t i=0;i<8;i++){        //iterando nas 8 casas ocupantes de um byte (da variavel unsigned char letra lida acima)
+                bit = letra&0x80;           //0x80 = 128 :: armazenando o valor contido no bit de menor significância na variável letra
+                bit >>= 7;                  //como o bit de menor significância está na última casa da célula, é preciso fazer um rshift de 7 casas para converter o valor para unitário (1 ou 0)
+                letra = letra<<1;           //atualiza-se a letra com um lshift para trazer o bit a direita do lido anterior para a posição de leitura da iteração seguinte
+                bitmapAppendLeastSignificantBit(bm, (unsigned char) bit); //adiciona-se o bit
             }
         }
     }
 }
 
-//funcao desconstruir mapa
+void exportar_texto_formato_bitmap(mapa* map, FILE* fpin, FILE* fpout){
+    if(map && fpin && fpout){
+        bitmap* bm_texto = bitmapInit(calcular_tamanho_bits_mapa(map)); //max_size = tamanho em bits do mapa, quantidade de bytes alocados pelo conteudo do bitmap = numero em BYTES !!!!!
+        unsigned int ascii = 0;                         //essa variavel se faz necessaria, pois não é possível armazenar o valor de fgetc numa variavel unsigned, já que essa funcao retorna -1 para o caracter EOF e esse é o fim do loop
+        for(char c=fgetc(fpin);c!=EOF;c=fgetc(fpin)){
+            ascii = c;
+            bitmapCatContents(bm_texto, pegar_bitmap_mapa(buscar_ASCII_mapa(map, &ascii)));
+        }
+        bitmapUnloadContents(bm_texto, fpout); //descarregando o conteudo do bitmap no arquivo apontado por fpout
+        bitmapLibera(bm_texto);
+    }
+}

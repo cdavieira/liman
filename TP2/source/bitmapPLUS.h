@@ -4,7 +4,6 @@
 
 typedef struct map bitmap;
 
-//FUNCAO NAO ESTA PRONTA AINDA NECESSARIO IMPLEMENTAR FWRITE NELA
 void bitmapUnloadContents(bitmap* bm, FILE* fpout);
 
 //bm_dest deve possuir tamanho suficiente para armazenar o seu conteudo somado ao conteudo da fonte após a concatenação
