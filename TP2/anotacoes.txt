@@ -1,3 +1,0 @@
-hexdump
-
-trocar as variaveis com nome nodulo por node
