@@ -6,11 +6,11 @@ typedef struct listaCircular listaCircular;
 typedef struct celulaCircular celulaCircular;
 
 /*  criar_listaCircular
-    Descrição:
+    Descrição: cria uma nova lista circular genérica
     
-    Input:
+    Input: número máximo de elementos da lista
     
-    Output: 
+    Output: ponteiro dinamicamente alocado para lista preenchida
     
     Pré condição: -
     
@@ -19,15 +19,15 @@ typedef struct celulaCircular celulaCircular;
 listaCircular* criar_listaCircular(unsigned long max);
 
 /*  liberar_listaCircular
-    Descrição:
+    Descrição: libera um ponteiro para árvore genérica
     
-    Input:
+    Input: ponteiro para tipo genérico de árvore
     
-    Output: 
+    Output: nulo
     
-    Pré condição: -
+    Pré condição: ponteiro deve ter sido dinamicamente alocado
     
-    Pós condicao: -
+    Pós condicao: caso receba o retorno dessa função, ponteiro é setado para nulo (proteção à double-free)
 */
 listaCircular* liberar_listaCircular(listaCircular* lista, void* (*liberar_conteudo)());
 
