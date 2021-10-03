@@ -19,11 +19,11 @@ typedef struct celulaCircular celulaCircular;
 listaCircular* criar_listaCircular(unsigned long max);
 
 /*  liberar_listaCircular
-    Descrição: libera um ponteiro para árvore genérica
+    Descrição: libera lista circular
     
-    Input: ponteiro para tipo genérico de árvore
+    Input: ponteiro para tipo genérico de lista circular e funcao que libera o conteúdo dessa
     
-    Output: nulo
+    Output: ponteiro nulo
     
     Pré condição: ponteiro deve ter sido dinamicamente alocado
     
@@ -32,11 +32,11 @@ listaCircular* criar_listaCircular(unsigned long max);
 listaCircular* liberar_listaCircular(listaCircular* lista, void* (*liberar_conteudo)());
 
 /*  mudar_elemento_inicial_listaCircular
-    Descrição:
+    Descrição: muda o elemento de partida da lista circular
     
-    Input:
+    Input: ponteiro para tipo genérico de lista circular e novo indice da lista circular a ser tratado como começo
     
-    Output: 
+    Output: lista circular modificada
     
     Pré condição: -
     
@@ -45,11 +45,11 @@ listaCircular* liberar_listaCircular(listaCircular* lista, void* (*liberar_conte
 listaCircular* mudar_elemento_inicial_listaCircular(listaCircular* lista, long indice);
 
 /*  pegar_numero_elementos_listaCircular
-    Descrição:
+    Descrição: retorna o número atual de elementos na lista
     
-    Input:
+    Input: ponteiro para tipo genérico de lista circular
     
-    Output: 
+    Output: número de elementos na lista circular
     
     Pré condição: -
     
@@ -58,7 +58,7 @@ listaCircular* mudar_elemento_inicial_listaCircular(listaCircular* lista, long i
 unsigned int pegar_numero_elementos_listaCircular(listaCircular* lista);
 
 /*  pegar_listaCircular
-    Descrição:
+    Descrição: retorna um elemento 
     
     Input:
     
