@@ -22,8 +22,7 @@ void compactar(char* nomeArquivoTexto){
         assert(fpin, "Erro ao abrir arquivo para leitura! Terminando programa...");
         assert(fpout, "Erro ao gerar arquivo compactado! Terminando programa...");
         mapa* mapa_caracteres = montar_mapa(fpin);
-        
-        /* Meu algoritmo de huffman gerou codigos maiores
+        /* Os códigos de huffman gerados para os caracteres contidos no arquivo texto
         char* a = 0;
         for(unsigned letra = 0;letra<256;letra++){
         	a = encontrar_rota_node_mapa(mapa_caracteres, buscar_ASCII_mapa(mapa_caracteres, &letra));
@@ -31,7 +30,6 @@ void compactar(char* nomeArquivoTexto){
         	free(a);        
         }
         */
-        
         exportar_mapa_formato_bitmap(mapa_caracteres, fpout); //escrevendo mapa de caracteres no começo do arquivo
         exportar_texto_formato_bitmap(mapa_caracteres, fpin, fpout); //iniciando gravacao do conteudo do arquivoTexto no arquivo binario
         liberar_mapa(mapa_caracteres);
