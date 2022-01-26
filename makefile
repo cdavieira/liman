@@ -2,17 +2,17 @@
 
 PROGRAMA1 = Compactador
 
-PARAMETROSPROGRAMA1 = ./respostas/PERFEITA.png
+PARAMETROSPROGRAMA1 = ./entrada/PERFEITA.png
 
 PROGRAMA2 = Descompactador
 
-PARAMETROSPROGRAMA2 = $(addsuffix .comp,$(PARAMETROSPROGRAMA1))
+PARAMETROSPROGRAMA2 = $(subst entrada,compactados,$(addsuffix .comp,$(PARAMETROSPROGRAMA1)))
 
-DIRETORIOS = source objetos
+DIRETORIOS = source objetos entrada saida compactados
 
 FILTRO_FONTE = 
 
-FILTRO_TEXTO = respostas/teste.txt
+FILTRO_TEXTO = entrada/teste.txt
 
 ARQUIVOS_FONTE = $(filter-out $(FILTRO_FONTE),$(wildcard source/*.c))
 
@@ -39,11 +39,13 @@ objetos/%.o: source/%.c $(BIBLIOTECAS)
 	$(CC) -c $< -o $@ $(FLAGS)
 
 clean:
-	rm objetos/*.o $(PROGRAMA1) $(PROGRAMA2) && rmdir objetos && rm $(filter-out $(FILTRO_TEXTO),$(wildcard respostas/*.txt respostas/*.comp))
+	rm objetos/*.o $(PROGRAMA1) $(PROGRAMA2) && rmdir objetos && rm compactados/*.comp && rmdir compactados && rm saida/*.* && rmdir saida
 
 run:
 	./$(PROGRAMA1) $(PARAMETROSPROGRAMA1)
+	mv entrada/*.comp compactados
 	./$(PROGRAMA2) $(PARAMETROSPROGRAMA2)
+	mv $(subst entrada,compactados,$(PARAMETROSPROGRAMA1)) saida
 
 compactar:
 	./$(PROGRAMA1) $(PARAMETROSPROGRAMA1)
@@ -59,7 +61,7 @@ valgrind2:
 
 echo:
 	@echo '$(BIBLIOTECAS)' '$(OBJETOS)' '$(ARQUIVOS_FONTE)' '$(filter-out $(FILTRO_TEXTO),$(wildcard respostas/*.txt respostas/*.bin))'
-
+	@echo '$(PARAMETROSPROGRAMA1)' '$(PARAMETROSPROGRAMA2)'
 # Modifique a variavel PARAMETROSPROGRAMA1 com o path para o arquivo que você gostaria de compactar/descompactar depois
 
 # Para recriar os arquivos objetos e os executaveis criados: make all
