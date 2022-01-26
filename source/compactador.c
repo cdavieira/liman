@@ -16,9 +16,6 @@ mapa* montar_mapa(FILE* fpin){
         for(int c=fgetc(fpin);!feof(fpin);c=fgetc(fpin)){
             tabela_ocorrencias[c]++;
         }
-        
-        for(int i=0;i<257;i++) printf("tabela_ocorrencias[%d]: %lu\n", i, tabela_ocorrencias[i]);
-        
         listaArvores* ls = criar_listaArvores(ascii_char_set);
         for(long i=pegar_indice_maior_numero(tabela_ocorrencias, ascii_char_set);i!=-1;i=pegar_indice_maior_numero(tabela_ocorrencias, ascii_char_set)){
             ls = adicionar_listaArvores(ls, criar_mapa(i, tabela_ocorrencias[i], 0, 0), 0); //a adicao do maior numero é sempre feita na posicao inicial da lista circular. Isso assegura que ao final o menor elemento estará na posição inicial da lista (também é possível fazer uma função que pega o indice do menor numero e o adiciona)
@@ -54,8 +51,7 @@ mapa* algoritmo_Huffman(listaArvores* lc){
             lc = remover_listaArvores(lc, 0);               //remove-lo da lista (será somado e depois adicionado novamente)
             aux2 = pegar_mapa_listaArvores(lc, 0);          //pegar o segundo elemento
             lc = remover_listaArvores(lc, 0);               //remove-lo da lista (será somado e depois adicionado novamente)
-            lc = adicionar_ordenadamente_listaArvores(lc, criar_mapa(0, pegar_peso_mapa(aux1)+pegar_peso_mapa(aux2), aux1, aux2));
-            //lc = adicionar_listaArvores(lc, criar_mapa(0, pegar_peso_mapa(aux1)+pegar_peso_mapa(aux2), aux1, aux2), -1); //soma e readicao do resultado no final da lista (index -1))
+            lc = adicionar_ordenadamente_listaArvores(lc, criar_mapa(0, pegar_peso_mapa(aux1)+pegar_peso_mapa(aux2), aux1, aux2)); //soma e readicao do resultado numa posicao da lista que preserve seu ordenamento crescente)
         }
         mapa_completo = pegar_mapa_listaArvores(lc, 0);     //nesse ponto, o loop de cima terminou sua execução, o que indica que há apenas um elemento na lista circular. Esse elemento é a arvore completamente construida
         lc = remover_listaArvores(lc, 0);                   //remover a arvore da lista de arvores

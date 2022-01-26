@@ -2,7 +2,7 @@
 
 PROGRAMA1 = Compactador
 
-PARAMETROSPROGRAMA1 = ./respostas/teste.txt
+PARAMETROSPROGRAMA1 = ./respostas/azul.png
 
 PROGRAMA2 = Descompactador
 

@@ -5,6 +5,8 @@
 #include "analisar-compactado.h"
 #include <stdlib.h>
 
+static long ftell_ultimo_char(FILE *fp);
+
 static mapa* reconstruir_mapa_forma_original_aux(bitmap* bm, unsigned *index, unsigned modo);
 
 static mapa* reconstruir_mapa_forma_original_aux_ler_no_folha(bitmap* bm, unsigned *index);
@@ -76,8 +78,9 @@ void traduzir_mensagem(FILE* fpin, FILE* fpout, mapa* mapa_caracteres){
         unsigned long altura = calcular_altura_mapa(mapa_caracteres); //tamanho maximo que o codigo pode ter
         unsigned char *codigo = calloc(altura+1, sizeof(unsigned char)), u=0, bit=0;
         unsigned bits_disponiveis_codigo = altura, stopcode = 0;
-        mapa* corrente = 0; 
-        for(int c = fgetc(fpin); !feof(fpin) ;c = fgetc(fpin)){ //foi necessário mudar a condição do for para a funcao feof em vez de c!=EOF, pois é possível que o arquivo binario apresente EOF como caracter utilizado para carregar a mensagem
+        mapa* corrente = 0;
+        long ultimo_char = ftell_ultimo_char(fpin), char_atual = 1;
+        for(int c = fgetc(fpin); !feof(fpin) ;c = fgetc(fpin), char_atual++){ //foi necessário mudar a condição do for para a funcao feof em vez de c!=EOF, pois é possível que o arquivo binario apresente EOF como caracter utilizado para carregar a mensagem
             u = c;                          //convertendo char para unsigned char
             for(unsigned i=0;i<8;i++){      //analise bit a bit do char lido
                 if(stopcode) break;
@@ -93,7 +96,9 @@ void traduzir_mensagem(FILE* fpin, FILE* fpout, mapa* mapa_caracteres){
                 *(codigo+altura-bits_disponiveis_codigo) = bit?'1':'0'; //atribuindo de fato o valor do bit no indice especifico em que deve ser adicionado
                 corrente = percorrer_mapa(mapa_caracteres, codigo);     //percorrendo árvore de mapas
                 if(testar_folha_mapa(corrente)){                        //caso o mapa obtido no deslocamento anterior seja um nó folha, então significa que o código que construímos nos levou a um caracter codificado válido da árvore de codificação
-                    if(!pegar_ASCII_mapa(corrente)) stopcode=1;         //caso o mapa obtido seja um \0 isso significa que chegamos ao fim da mensagem e que devemos parar de executar a rotina do loop
+                    if(!pegar_ASCII_mapa(corrente) && char_atual==ultimo_char){
+                    	stopcode=1;         //caso o mapa obtido seja um \0 e o char_atual corresponder ao ultimo char presente no arquivo, isso significa que chegamos ao fim da mensagem e que devemos parar de executar a rotina do loop para nao imprimir bits lixo (0's) no arquivo descompactado 
+                    }
                     if(stopcode) break;
                     fprintf(fpout, "%c", pegar_ASCII_mapa(corrente));   //caso o caracter seja diferente de \0 grava-se ele no arquivo de saida
                     bits_disponiveis_codigo=1; //isso forçara a refazer o codigo na proxima iteracao
@@ -104,4 +109,16 @@ void traduzir_mensagem(FILE* fpin, FILE* fpout, mapa* mapa_caracteres){
         free(codigo); //para garantir que nçao reste lixo ao termino da função  
         codigo = 0;
     }
+}
+
+static long ftell_ultimo_char(FILE *fp){
+	long pos = -1;
+	if(fp){
+		long init_pos = ftell(fp), final_pos = 0;	//grava a posicao inicial da stream
+		fseek(fp, 0, SEEK_END);				//vai para a posicao final da stream
+		final_pos = ftell(fp);				//grava a posicao final da stream
+		pos = final_pos - init_pos;			//computa a diferença entre a posicao inicial e final
+		fseek(fp, init_pos, SEEK_SET);			//retorna para a posicao inicial da stream
+	}
+	return pos;						//retorna a diferença entre o indice atual até que se chegue ao indice final do arquivo
 }
