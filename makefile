@@ -68,11 +68,11 @@ echo:
 
 # Para excluir todos os arquivos criados por esse makefile: make clean
 
-# Para compactar e descompactar os arquivos existentes na pasta respostas: make run
+# Para compactar e descompactar os arquivos existentes na pasta entrada e compactados (respectivamente) : make run
 
-# Para compactar o arquivo .txt contido na pasta respostas: make compactar
+# Para compactar o arquivo contido na pasta entrada: make compactar
 
-# Para descompactar o arquivo .comp contido na pasta respostas: make descompactar
+# Para descompactar o arquivo .comp contido na pasta compactados: make descompactar
 
 # Para rodar o valgrind do arquivo Compactador: make valgrind1
 
