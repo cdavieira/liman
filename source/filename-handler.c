@@ -24,6 +24,7 @@ char* remover_extensao(char* nomeArquivo){
 			memcpy(prefixo, nomeArquivo, tamanho_nomeArquivo);
 			prefixo[tamanho_nomeArquivo] = '\0';
 		}
+		free(extensao);
 	}
 	return prefixo?prefixo:strdup(nomeArquivo);
 }

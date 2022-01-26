@@ -124,11 +124,12 @@ void gerar_mapa_formato_bitmap(mapa* map, bitmap* bm){
 
 void exportar_texto_formato_bitmap(mapa* map, FILE* fpin, FILE* fpout){
     if(map && fpin && fpout){
-        bitmap* bm_texto = bitmapInit(calcular_tamanho_bits_mapa(map)+8); //max_size = tamanho em bits do mapa, quantidade de bytes alocados pelo conteudo do bitmap = numero em BYTES !!!!! //o +8 serve para que o campo unsigned char* apresente um '/0' ao final
+        bitmap* bm_texto = bitmapInit(calcular_tamanho_bits_mapa(map)+8), *bm_codigo_caracter = 0; //max_size = tamanho em bits do mapa, quantidade de bytes alocados pelo conteudo do bitmap = numero em BYTES !!!!! //o +8 serve para que o campo unsigned char* apresente um '/0' ao final
         unsigned int ascii = 0;                         //essa variavel se faz necessaria, pois não é possível armazenar o valor de fgetc numa variavel unsigned, já que essa funcao retorna -1 para o caracter EOF e esse é o fim do loop
         for(int c=fgetc(fpin);!feof(fpin);c=fgetc(fpin)){ //!!! aqui estava a dor de cabeça !!! na inicialização desse for !!!
             ascii = c;
-            bitmapCatContents(bm_texto, pegar_bitmap_mapa(buscar_ASCII_mapa(map, &ascii)));
+            bm_codigo_caracter = pegar_bitmap_mapa(buscar_ASCII_mapa(map, &ascii));
+            bitmapCatContents(bm_texto, bm_codigo_caracter);
         }
         ascii = 0;
         bitmapCatContents(bm_texto, pegar_bitmap_mapa(buscar_ASCII_mapa(map, &ascii))); //adicionando o codigo do caracter nulo ao final
