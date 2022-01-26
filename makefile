@@ -49,9 +49,11 @@ run:
 
 compactar:
 	./$(PROGRAMA1) $(PARAMETROSPROGRAMA1)
+	mv entrada/*.comp compactados
 
 descompactar:
 	./$(PROGRAMA2) $(PARAMETROSPROGRAMA2)
+	mv $(subst entrada,compactados,$(PARAMETROSPROGRAMA1)) saida
 
 valgrind1:
 	valgrind --leak-check=full -s --track-origins=yes ./$(PROGRAMA1) $(PARAMETROSPROGRAMA1)
