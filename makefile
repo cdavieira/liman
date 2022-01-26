@@ -2,7 +2,7 @@
 
 PROGRAMA1 = Compactador
 
-PARAMETROSPROGRAMA1 = ./entrada/PERFEITA.png
+PARAMETROSPROGRAMA1 = ./entrada/gatinhu.png
 
 PROGRAMA2 = Descompactador
 
