@@ -2,7 +2,7 @@
 
 PROGRAMA1 = Compactador
 
-PARAMETROSPROGRAMA1 = ./respostas/azul.png
+PARAMETROSPROGRAMA1 = ./respostas/PERFEITA.png
 
 PROGRAMA2 = Descompactador
 
@@ -60,6 +60,7 @@ valgrind2:
 echo:
 	@echo '$(BIBLIOTECAS)' '$(OBJETOS)' '$(ARQUIVOS_FONTE)' '$(filter-out $(FILTRO_TEXTO),$(wildcard respostas/*.txt respostas/*.bin))'
 
+# Modifique a variavel PARAMETROSPROGRAMA1 com o path para o arquivo que você gostaria de compactar/descompactar depois
 
 # Para recriar os arquivos objetos e os executaveis criados: make all
 
