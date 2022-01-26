@@ -2,11 +2,11 @@
 
 PROGRAMA1 = Compactador
 
-PARAMETROSPROGRAMA1 = "./respostas/teste.txt"
+PARAMETROSPROGRAMA1 = ./respostas/teste.txt
 
 PROGRAMA2 = Descompactador
 
-PARAMETROSPROGRAMA2 = "./respostas/compactado.comp"
+PARAMETROSPROGRAMA2 = $(addsuffix .comp,$(PARAMETROSPROGRAMA1))
 
 DIRETORIOS = source objetos
 
