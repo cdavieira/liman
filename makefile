@@ -2,7 +2,7 @@
 
 PROGRAMA1 = Compactador
 
-PARAMETROSPROGRAMA1 = ./entrada/Danieus-Camellia-flowerofwildernessaverymagicalflowerindeed-2022-03-14-Osu.osr
+PARAMETROSPROGRAMA1 = ./entrada/gatinhu.png
 
 PROGRAMA2 = Descompactador
 
