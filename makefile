@@ -2,7 +2,7 @@
 
 PROGRAMA1 = Compactador
 
-PARAMETROSPROGRAMA1 = ./entrada/gatinhu.png
+PARAMETROSPROGRAMA1 = ./entrada/Danieus-Camellia-flowerofwildernessaverymagicalflowerindeed-2022-03-14-Osu.osr
 
 PROGRAMA2 = Descompactador
 
@@ -12,7 +12,7 @@ DIRETORIOS = source objetos entrada saida compactados
 
 FILTRO_FONTE = 
 
-FILTRO_TEXTO = entrada/teste.txt
+FILTRO_TEXTO = 
 
 ARQUIVOS_FONTE = $(filter-out $(FILTRO_FONTE),$(wildcard source/*.c))
 
