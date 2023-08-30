@@ -1,11 +1,11 @@
-#include "compactador.h"
-#include "mapa.h"
-#include "listaTree.h"
-#include "bitmap.h"
+#include "compactador.h" //algoritmo_Huffmann, gravar_codigos_mapa
+#include "mapa.h" //encontrar_rota_node_mapa
+#include "listaTree.h" //criar_listaArvores, adicionar_listaArvores, remover_listaArvores, pegar_mapa_listaArvores
+#include "bitmap.h" //bitmapCatContents
 #include "bitmapPLUS.h"
 #include "analisar-compactado.h"
-#include "bits.h" // pegar_bit_char
-#include <stdio.h>
+#include "bits.h" //pegar_bit_char
+#include <stdio.h> //rewind, feof
 #include <stdlib.h>
 #include <string.h>
 
@@ -25,7 +25,7 @@ mapa* montar_mapa(FILE* fpin){
 	 * é necessário inicializar o vetor de ocorrencias com 1 na posição 0
 	 * (que corresponde ao caracter ASCII '\0' */
 	unsigned long tabela_ocorrencias[ascii_charset] = {1, };
-    mapa* map = NULL;
+	mapa* map = NULL;
 	listaArvores* ls = NULL;
 	ssize_t index;
 
@@ -56,16 +56,16 @@ mapa* montar_mapa(FILE* fpin){
 	// para a chamada da funcao 'exportar_texto' depois
 	rewind(fpin);
 
-    return map;
+	return map;
 }
 
-long pegar_indice_maior_numero(unsigned long* v, size_t tam){
+long pegar_indice_maior_numero(unsigned long* v, const size_t tam){
 	if(!v){
 		return -1;
 	}
 
-    long index = -1;
-    unsigned long maior = 0;
+	long index = -1;
+	unsigned long maior = 0;
 	for(unsigned long i=0; i<tam; i++){
 		if(v[i] > maior){
 			maior = v[i];
@@ -73,14 +73,14 @@ long pegar_indice_maior_numero(unsigned long* v, size_t tam){
 		}
 	}
 
-    return index;
+	return index;
 }
 
 mapa* algoritmo_Huffman(listaArvores* lc){
 	if(!lc){
 		return NULL;
 	}
-    mapa* mapa_completo = NULL;
+	mapa* mapa_completo = NULL;
 	mapa *mapa_esq = NULL, *mapa_dir = NULL;
 	unsigned long peso1, peso2;
 	unsigned int size = pegar_numero_elementos_listaArvores(lc);
@@ -117,14 +117,14 @@ mapa* algoritmo_Huffman(listaArvores* lc){
 	//opcional: liberar a lista passada
 	lc = liberar_listaArvores(lc);
 
-    return mapa_completo;
+	return mapa_completo;
 }
 
 void gravar_codigos_mapa(mapa* map){
 	if(!map){
 		return ;
 	}
-    gerar_codigos_mapa_auxiliar(map, map);
+	gerar_codigos_mapa_auxiliar(map, map);
 }
 
 /* a unica diferença dessa para a sua semelhante é que preserva o mapa
@@ -169,7 +169,7 @@ static void gerar_codigos_mapa_auxiliar(mapa* filho, mapa* pai){
  * ordem de exibição: nodulo raiz -> nodulo esquerdo -> nodulo direito
  *
  * Após imprimir um nodulo folha (1), imprime-se 1 byte que indica o codigo na tabela ASCII do caracter armazenado naquele nodulo
- * 
+ *
  * RESUMO:
  * 1. imprimir os bits do mapa
  * 2. quando chegar numa folha (1) imprimir 1 byte indicando qual letra esta nessa folha
@@ -191,7 +191,7 @@ void exportar_mapa_formato_bitmap(mapa* map, FILE* fpout){
 	bitmap* bm = bitmapInit(tam_bm);
 
 	// preenchendo um bitmap com a arvore (na forma de bits corridos
-	gerar_mapa_formato_bitmap(map, bm);  
+	gerar_mapa_formato_bitmap(map, bm);
 
 	// descarregando o conteudo do bitmap no arquivo apontado por fpout
 	bitmapUnloadContents(bm, fpout);
@@ -206,7 +206,7 @@ void gerar_mapa_formato_bitmap(mapa* map, bitmap* bm){
 	unsigned const ehFolha = testar_folha_mapa(map);
 	bitmapAppendLeastSignificantBit(bm, ehFolha);
 	if(!ehFolha){
-		gerar_mapa_formato_bitmap(pegar_sae_mapa(map), bm);                 
+		gerar_mapa_formato_bitmap(pegar_sae_mapa(map), bm);
 		gerar_mapa_formato_bitmap(pegar_sad_mapa(map), bm);
 		return ;
 	}
@@ -224,13 +224,13 @@ void exportar_texto_formato_bitmap(mapa* map, FILE* fpin, FILE* fpout){
 		return ;
 	}
 
-	// o parametro da funcao 'bitmapInit' deve ser dado em **bits**
-	// o campo 'max_size' da struct bitmap corresponde ao tamanho em **bytes** do mapa
-	// +8 corresponde ao byte adicional que será adicionado ao final dessa função
-	// Esse byte adicional corresponde ao '\0'
+	/* o parametro da funcao 'bitmapInit' deve ser dado em **bits**
+	 * o campo 'max_size' da struct bitmap corresponde ao tamanho em **bytes** do mapa
+	 * +8 corresponde ao byte adicional que será adicionado ao final dessa função
+	 * Esse byte adicional corresponde ao '\0' */
 	unsigned long const size = calcular_tamanho_bits_mapa(map) + 8;
 	bitmap *bm_texto = bitmapInit(size);
-	bitmap *bm_codigo_caracter = NULL; 
+	bitmap *bm_codigo_caracter = NULL;
 	unsigned int ascii = 0;
 
 	for(int c=fgetc(fpin); !feof(fpin); c=fgetc(fpin)){
@@ -241,10 +241,10 @@ void exportar_texto_formato_bitmap(mapa* map, FILE* fpin, FILE* fpout){
 
 	//adicionando o codigo do caracter nulo ao final do bitmap
 	ascii = 0;
-	bitmapCatContents(bm_texto, pegar_bitmap_mapa(buscar_ASCII_mapa(map, &ascii))); 
+	bitmapCatContents(bm_texto, pegar_bitmap_mapa(buscar_ASCII_mapa(map, &ascii)));
 
 	//descarregando o conteudo do bitmap no arquivo apontado por fpout
-	bitmapUnloadContents(bm_texto, fpout); 
+	bitmapUnloadContents(bm_texto, fpout);
 
 	//imprimir_conteudo_emBits("bits.txt", bm_texto);
 	bitmapLibera(bm_texto);

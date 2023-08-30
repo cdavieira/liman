@@ -1,6 +1,6 @@
 #include "cliente.h"
 #include "compactador.h"
-#include "descompactador.h"
+ #include "descompactador.h"
 #include "analisar-compactado.h"
 #include "filename-handler.h"
 #include "mapa.h"
@@ -30,10 +30,10 @@ void compactar(char* nomeArquivoEntrada){
 	mapa_caracteres = montar_mapa(fpin);
 
 	//escrevendo mapa de caracteres no começo do arquivo
-	exportar_mapa_formato_bitmap(mapa_caracteres, fpout); 
+	exportar_mapa_formato_bitmap(mapa_caracteres, fpout);
 
 	//iniciando gravacao do conteudo do arquivoTexto no arquivo binario
-	exportar_texto_formato_bitmap(mapa_caracteres, fpin, fpout); 
+	exportar_texto_formato_bitmap(mapa_caracteres, fpin, fpout);
 
 	liberar_mapa(mapa_caracteres);
 	free(nomeArquivoSaida);

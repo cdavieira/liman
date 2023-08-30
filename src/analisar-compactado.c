@@ -17,34 +17,37 @@ unsigned long contar_bits_mapa(FILE* fpin){
 	//leaf nodes are followed by 1 byte, which is a char
 	unsigned char bit = pegar_bit_char(c, 7);
 
-	if(!bit){
-		rewind(fpin);
-		unsigned long soma = 1, bits_to_read = 0;
-		for(c=fgetc(fpin); c!=EOF; c=fgetc(fpin)){
-			for(short i=7; i>=0; i--){
-				bit = pegar_bit_char(c, i);
+	rewind(fpin);
+	if(bit){
+		return 0;
+	}
 
-				if(bits_to_read){
-					bits_to_read--;
-				}
-				else{
-					bits_to_read = bit? 8:0;
-					soma += bit?-1:1;
-				}
+	unsigned long soma = 1, bits_to_read = 0;
+	for(c=fgetc(fpin); c!=EOF; c=fgetc(fpin)){
+		for(short i=7; i>=0; i--){
+			bit = pegar_bit_char(c, i);
 
-				size++;
-
-				if(!soma){
-					break;
-				}
+			if(bits_to_read){
+				bits_to_read--;
 			}
+			else{
+				bits_to_read = bit? 8:0;
+				soma += bit?-1:1;
+			}
+
+			size++;
+
 			if(!soma){
 				break;
 			}
 		}
-		size += 8; //a letra que segue o ultimo no folha do mapa acaba nao sendo lida pelo algoritmo, por isso é necessário adicionar 8 bits manualmente
+		if(!soma){
+			break;
+		}
 	}
-
+	/* a letra que segue o ultimo no folha do mapa acaba nao sendo lida pelo
+	 * algoritmo, por isso é necessário adicionar 8 bits manualmente */
+	size += 8; 
 	rewind(fpin);
 
     return size;
