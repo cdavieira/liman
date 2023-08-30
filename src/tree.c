@@ -16,7 +16,8 @@ static unsigned long maior(unsigned long n1, unsigned long n2){
 
 tree* criar_arvore(void* conteudo, nodulo* sae, nodulo* sad){
 	tree* arv = alocar_arvore();
-	return modificar_arvore(arv, conteudo, sae, sad);;
+	preencher_arvore(arv, conteudo, sae, sad);;
+	return arv;
 }
 
 tree* alocar_arvore(){
@@ -25,26 +26,24 @@ tree* alocar_arvore(){
 
 tree* desalocar_arvore(tree* arvore, void* (*desalocar_conteudo)()){
 	if(arvore){
-		if((*arvore).sae) desalocar_arvore((*arvore).sae, desalocar_conteudo);
-		if((*arvore).sad) desalocar_arvore((*arvore).sad, desalocar_conteudo);
-		if(desalocar_conteudo) desalocar_conteudo((*arvore).conteudo);
+		(*arvore).sae = desalocar_arvore((*arvore).sae, desalocar_conteudo);
+		(*arvore).sad = desalocar_arvore((*arvore).sad, desalocar_conteudo);
+		if(desalocar_conteudo){
+			(*arvore).conteudo = desalocar_conteudo((*arvore).conteudo);
+		}
 		free(arvore);
 	}
-	return 0;
+	return NULL;
 }
 
-tree* preencher_arvore(tree* arvore, void* conteudo, nodulo* sae, nodulo* sad){
-	if(arvore){
-		if(conteudo) (*arvore).conteudo = conteudo;
-		if(sae) (*arvore).sae = sae;
-		if(sad) (*arvore).sad = sad;
+void preencher_arvore(tree* arvore, void* conteudo, nodulo* sae, nodulo* sad){
+	if(!arvore){
+		return ;
 	}
-	return arvore;
-}
 
-tree* modificar_arvore(tree* arvore, void* conteudo, nodulo* sae, nodulo* sad){
-	if(arvore) *arvore = (tree){.conteudo = conteudo, .sae = sae, .sad = sad};
-	return arvore;
+	(*arvore).conteudo = conteudo;
+	(*arvore).sae = sae;
+	(*arvore).sad = sad;
 }
 
 tree* adicionar_nodulo(tree* mae, nodulo* filho, int codigo){
@@ -62,13 +61,20 @@ tree* remover_nodulo(tree* mae, int codigo){
 }
 
 void imprimir_arvore(tree* mae, void (*exibir_conteudo_folha)(), void (*exibir_conteudo_nao_folha)()){
-	if(mae && exibir_conteudo_folha && exibir_conteudo_nao_folha){
-		printf("<");
-		testar_nodulo_folha(mae)?exibir_conteudo_folha((*mae).conteudo):exibir_conteudo_nao_folha((*mae).conteudo);
-		if((*mae).sae) imprimir_arvore((*mae).sae, exibir_conteudo_folha, exibir_conteudo_nao_folha);
-		if((*mae).sad) imprimir_arvore((*mae).sad, exibir_conteudo_folha, exibir_conteudo_nao_folha);
-		printf(">");
+	if(!mae || !exibir_conteudo_folha || !exibir_conteudo_nao_folha){
+		return ;
 	}
+
+	printf("<");
+	if(testar_nodulo_folha(mae)){
+		exibir_conteudo_folha((*mae).conteudo);
+	}
+	else{
+		exibir_conteudo_nao_folha((*mae).conteudo);
+	}
+	imprimir_arvore((*mae).sae, exibir_conteudo_folha, exibir_conteudo_nao_folha);
+	imprimir_arvore((*mae).sad, exibir_conteudo_folha, exibir_conteudo_nao_folha);
+	printf(">");
 }
 
 unsigned testar_nodulo_folha(nodulo* candidato){
@@ -102,12 +108,12 @@ tree* buscar_conteudo_arvore(tree* arvore, void* informacao_pesquisada, void* (*
 }
 
 unsigned long contar_nodulos(tree* arvore){
-	if(arvore) return 1 + contar_nodulos((*arvore).sae) + contar_nodulos((*arvore).sad); 
+	if(arvore) return 1 + contar_nodulos((*arvore).sae) + contar_nodulos((*arvore).sad);
 	else return 0;
 }
 
 unsigned long calcular_nodulos_folha(tree* arvore){
-	if(arvore) return testar_nodulo_folha(arvore) + calcular_nodulos_folha((*arvore).sae) + calcular_nodulos_folha((*arvore).sad); 
+	if(arvore) return testar_nodulo_folha(arvore) + calcular_nodulos_folha((*arvore).sae) + calcular_nodulos_folha((*arvore).sad);
 	else return 0;
 }
 
@@ -127,20 +133,51 @@ unsigned testar_existencia_nodulo(tree* arvore, nodulo* no){
 }
 
 char* encontrar_rota_nodulo(tree* arvore, nodulo* nodulo){
-	char* rota = 0;	//variavel que conterá o caminho correto até o nodulo, caso exista.
-	if(arvore && nodulo){
-		if(testar_existencia_nodulo(arvore, nodulo)){	//se o nodulo existir na estrutura da arvore mae...
-			unsigned long nivel = calcular_altura_nodulo(arvore, nodulo, 0), existencia=0; //nivel: em que ordem hierarquica está o nodulo pesquisado (importante pois esse é o número de bits necessários para escrevelo), existencia = variavel que testa a existencia do nodulo pesquisado sempre a direita do nodulo raiz
-			rota = calloc(nivel+1, sizeof(char));		//alocando o numero de bits necessarios para localização do nodulo na arvore + 1 caracter de terminação da string
-			tree* corrente = 0, *pai_corrente = arvore;	//armazena os nodulos intermediarios ate o nodulo pesquisado, pai_corrente = guarda o no pai do no corrente
-			for(unsigned long i=0;i<nivel;i++){
-				existencia = testar_existencia_nodulo((*pai_corrente).sad, nodulo);	//testa a existencia do nodulo pesquisado na raiz direita do no pai
-				corrente = existencia?(*pai_corrente).sad:(*pai_corrente).sae;		//se o nodulo pesquisado existir a direita, ir para direita, senao ir para esquerda;
-				corrente==(*pai_corrente).sad?strcat(rota, right_str):strcat(rota, left_str);	//se tivermos ido para a direita no passo anterior, então adicionamos 1 ao char, senao adicionamos 0
-				pai_corrente = corrente;											//atualizamos o pai da variavel corrente para a proxima iteração
-			}
-		}
+	if(!arvore || !nodulo){
+		return NULL;
 	}
+
+	if(!testar_existencia_nodulo(arvore, nodulo)){
+		return NULL;
+	}
+
+	char* rota = NULL;
+
+	/* indica se o nodulo pesquisado existe à direito do nodulo raiz */
+	int existencia;
+
+	/* altura relativa de um nódulo em relação a raiz */
+	/* corresponde ao número de bits necessários para escrever a rota */
+	size_t nivel = calcular_altura_nodulo(arvore, nodulo, 0);
+
+	/* alocando o numero de bits necessarios para localização do nodulo na
+	 * arvore + 1 caracter de terminação da string */
+	rota = calloc(nivel+1, sizeof(char));
+
+	/* armazena os nodulos intermediarios ate o nodulo pesquisado */
+	tree *corrente = NULL;
+
+	/* guarda o no pai do no corrente */
+	tree *pai_corrente = arvore;
+	for(unsigned long i=0; i<nivel; i++){
+		// testa a existencia do nodulo pesquisado na raiz direita do no pai
+		existencia = testar_existencia_nodulo((*pai_corrente).sad, nodulo);
+
+		// se o nodulo pesquisado existir a direita, ir para direita, senao ir para esquerda
+		corrente = existencia?(*pai_corrente).sad : (*pai_corrente).sae;
+
+		// se tivermos ido para a direita no passo anterior, então adicionamos 1 ao char, senao adicionamos 0
+		if(existencia){
+			strcat(rota, right_str);
+		}
+		else{
+			strcat(rota, left_str);
+		}
+
+		// atualizamos o pai da variavel corrente para a proxima iteração
+		pai_corrente = corrente;
+	}
+
 	return rota;
 }
 

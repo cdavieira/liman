@@ -77,16 +77,19 @@ mapa* percorrer_mapa(mapa* map, char* rota){
 }
 
 mapa* preencher_ASCII_mapa(mapa* map, unsigned int ASCII){
-    return (mapa*) preencher_arvore((tree*) map, (void*)atualizar_ASCII_caracter((caracter*)pegar_conteudo_arvore((tree*) map), ASCII), 0, 0);
+    preencher_arvore((tree*) map, (void*)atualizar_ASCII_caracter((caracter*)pegar_conteudo_arvore((tree*) map), ASCII), 0, 0);
+	return map;
 }
 
 mapa* preencher_peso_mapa(mapa* map, unsigned int peso){
-    return (mapa*) preencher_arvore((tree*) map, (void*)atualizar_peso_caracter((caracter*)pegar_conteudo_arvore((tree*) map), peso), 0, 0);
+    preencher_arvore((tree*) map, (void*)atualizar_peso_caracter((caracter*)pegar_conteudo_arvore((tree*) map), peso), 0, 0);
+	return map;
 }
 
 //lembrete !!!! caracter de terminacao da string nao esta sendo considerado na alocacao
 mapa* preencher_bitmap_mapa(mapa* map, bitmap* bm){
-    return (mapa*) preencher_arvore((tree*) map, (void*)atualizar_bmap_caracter((caracter*)pegar_conteudo_arvore((tree*) map), bm), 0, 0);
+    preencher_arvore((tree*) map, (void*)atualizar_bmap_caracter((caracter*)pegar_conteudo_arvore((tree*) map), bm), 0, 0);
+	return map;
 }
 
 mapa* buscar_ASCII_mapa(mapa* map, unsigned* ASCII){

@@ -45,30 +45,17 @@ tree* alocar_arvore();
 tree* desalocar_arvore(tree* arvore, void* (*desalocar_conteudo)());
 
 /*  preencher_arvore
-    Descrição: preenche ponteiro de árvore genérica com argumentos não-nulos
+    Descrição: preenche ponteiro de árvore genérica
     
     Input: ponteiro para árvore genérica, ponteiro void que contém informações da árvore, nó filho esquerdo e nó filho direito
     
-    Output: ponteiro para árvore genérica preenchida
+    Output: 
     
-    Pré condição: argumentos devem ser não-nulos
+    Pré condição: árvore não nula
     
-    Pós condicao: -
+    Pós condicao: árvore preenchida
 */
-tree* preencher_arvore(tree* arvore, void* conteudo, nodulo* sae, nodulo* sad);
-
-/*  modificar_arvore
-    Descrição: preenche ponteiro de árvore genérica com argumentos fornecidos (nulos ou não nulos)
-    
-    Input: ponteiro para árvore genérica, ponteiro void que contém informações da árvore, nó filho esquerdo e nó filho direito
-    
-    Output: ponteiro para árvore genérica preenchida
-    
-    Pré condição: -
-    
-    Pós condicao: -
-*/
-tree* modificar_arvore(tree* arvore, void* conteudo, nodulo* sae, nodulo* sad);
+void preencher_arvore(tree* arvore, void* conteudo, nodulo* sae, nodulo* sad);
 
 /*  adicionar_nodulo
     Descrição: adiciona um nó filho a uma árvore raiz/mãe

@@ -55,7 +55,10 @@ caracter* atualizar_bmap_caracter(caracter* c, bitmap* bm){
 }
 
 void exibir_ASCII_caracter(caracter* c){
-    if(c) pegar_ASCII_caracter(c)?printf("%c", pegar_ASCII_caracter(c)):printf("\\0");
+	if(!c){
+		return ;
+	}
+    pegar_ASCII_caracter(c)?printf("%c", pegar_ASCII_caracter(c)):printf("\\0");
 }
 
 void exibir_peso_caracter(caracter* c){

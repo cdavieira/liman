@@ -1,81 +1,58 @@
-# INSTRUÇÕES BÁSICAS DE USO AO FINAL DO MAKEFILE
+export
+src_folder := src
+lib_folder := lib
+obj_folder := obj
+src_files := $(wildcard $(src_folder)/*.c)
+lib_files := $(wildcard $(lib_folder)/*.h)
+obj_files := $(subst $(src_folder),$(obj_folder),$(src_files:.c=.o))
 
-PROGRAMA1 = Compactador
+compress_binary_name := huffmann
+compress_input_folder := input
+compress_output_folder := compacted
+compress_filextension := .comp
 
-PARAMETROSPROGRAMA1 = ./entrada/gatinhu.png
+decompress_binary_name := unhuffmann
+decompress_input_folder := $(compress_output_folder)
+decompress_output_folder := output
 
-PROGRAMA2 = Descompactador
+default_input_file := jpg.jpg
 
-PARAMETROSPROGRAMA2 = $(subst entrada,compactados,$(addsuffix .comp,$(PARAMETROSPROGRAMA1)))
+CFLAGS := -lm -g
+CC := gcc
 
-DIRETORIOS = source objetos entrada saida compactados
+all: ;
 
-FILTRO_FONTE = 
+include compress.mk decompress.mk
 
-FILTRO_TEXTO = 
+all: | $(obj_folder)
 
-ARQUIVOS_FONTE = $(filter-out $(FILTRO_FONTE),$(wildcard source/*.c))
+all: $(compress_binary_name) $(decompress_binary_name) 
 
-BIBLIOTECAS = $(wildcard source/*.h)
+$(obj_folder):
+	mkdir $@
 
-OBJETOS = $(subst source,objetos,$(ARQUIVOS_FONTE:.c=.o))
-
-FLAGS = -lm -g
-
-CC = gcc
-
-all: criarDiretorios $(PROGRAMA1) $(PROGRAMA2)
-
-criarDiretorios:
-	mkdir -p $(DIRETORIOS)
-
-$(PROGRAMA1): $(OBJETOS)
-	$(CC) $^ -o $@ $(FLAGS)
-
-$(PROGRAMA2): $(OBJETOS)
-	$(CC) $^ -o $@ $(FLAGS)
-
-objetos/%.o: source/%.c $(BIBLIOTECAS)
-	$(CC) -c $< -o $@ $(FLAGS)
+$(obj_folder)/%.o: $(src_folder)/%.c $(lib_files)
+	$(CC) -c $< -o $@ $(CFLAGS) -I $(lib_folder)
 
 clean:
-	rm objetos/*.o $(PROGRAMA1) $(PROGRAMA2) && rmdir objetos && rm compactados/*.comp && rmdir compactados && rm saida/*.* && rmdir saida
-
-run:
-	./$(PROGRAMA1) $(PARAMETROSPROGRAMA1)
-	mv entrada/*.comp compactados
-	./$(PROGRAMA2) $(PARAMETROSPROGRAMA2)
-	mv $(subst entrada,compactados,$(PARAMETROSPROGRAMA1)) saida
-
-compactar:
-	./$(PROGRAMA1) $(PARAMETROSPROGRAMA1)
-	mv entrada/*.comp compactados
-
-descompactar:
-	./$(PROGRAMA2) $(PARAMETROSPROGRAMA2)
-	mv $(subst entrada,compactados,$(PARAMETROSPROGRAMA1)) saida
-
-valgrind1:
-	valgrind --leak-check=full -s --track-origins=yes ./$(PROGRAMA1) $(PARAMETROSPROGRAMA1)
-
-valgrind2:
-	valgrind --leak-check=full -s --track-origins=yes ./$(PROGRAMA2) $(PARAMETROSPROGRAMA2)
+	rm -rf $(obj_files) $(decompress_binary_name) $(compress_binary_name) $(compress_output_folder)/*.* $(decompress_output_folder)/*.*
+	rmdir $(compress_output_folder) $(decompress_output_folder) $(obj_folder)
 
 echo:
-	@echo '$(BIBLIOTECAS)' '$(OBJETOS)' '$(ARQUIVOS_FONTE)' '$(filter-out $(FILTRO_TEXTO),$(wildcard respostas/*.txt respostas/*.bin))'
-	@echo '$(PARAMETROSPROGRAMA1)' '$(PARAMETROSPROGRAMA2)'
-# Modifique a variavel PARAMETROSPROGRAMA1 com o path para o arquivo que você gostaria de compactar/descompactar depois
+	@echo '$(lib_files)' '$(obj_files)' '$(src_files)'
+	@echo "$(compress_binary_name) $(compress_input_folder) $(compress_output_folder)"
+	@echo "$(decompress_binary_name) $(decompress_input_folder) $(decompress_output_folder) $(default_inputfile)"
 
-# Para recriar os arquivos objetos e os executaveis criados: make all
-
-# Para excluir todos os arquivos criados por esse makefile: make clean
-
-# Para compactar e descompactar os arquivos existentes na pasta entrada e compactados (respectivamente) : make run
-
-# Para compactar o arquivo contido na pasta entrada: make compactar
-
-# Para descompactar o arquivo .comp contido na pasta compactados: make descompactar
-
-# Para rodar o valgrind do arquivo Compactador: make valgrind1
-
-# Para rodar o valgrind do arquivo Descompactador: make valgrind2
+# INSTRUÇÕES DE USO
+#
+# gerar os executaveis:
+# 	> make
+#
+# compactar um arquivo contido na pasta 'input':
+# 	> make compress default_input_file="nome_do_arquivo.txt"
+#
+# descompactar um arquivo contido na pasta 'compactados':
+# 	> make decompress default_input_file="nome_do_arquivo.txt.comp"
+#
+# limpar todos os objetos/compactados/executaveis:
+# 	> make clean
