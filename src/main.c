@@ -1,4 +1,4 @@
-#include "cliente.h" //compactar, descompactar
+#include "client.h" //compactar, descompactar
 #include <stdlib.h>
 #include <string.h> //strcmp
 

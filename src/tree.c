@@ -1,5 +1,5 @@
 #include "tree.h"
-#include "convencoes.h"
+#include "macros.h"
 #include <stdio.h>
 #include <stdlib.h> //calloc, free
 #include <string.h>
