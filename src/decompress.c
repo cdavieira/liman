@@ -1,9 +1,9 @@
 #include "decompress.h"
-#include "bitmap.h" //bitmapInit, bitmapAppendLeastSignificantBit
-#include "macros.h" //left, right
-#include "map.h" //criar_mapa
-#include "huffmann-debug.h" //contar_bits_mapa
-#include "bits.h" //pegar_bit_char
+#include "data-structures/bitmap.h" //bitmapInit, bitmapAppendLeastSignificantBit
+#include "data-structures/map.h" //criar_mapa
+#include "utils/macros.h" //left, right
+#include "utils/huffmann-debug.h" //contar_bits_mapa
+#include "utils/bits.h" //pegar_bit_char
 #include <stdlib.h> //fgetc, rewind
 
 static long ftell_ultimo_char(FILE *fp);

@@ -1,10 +1,10 @@
 #include "compress.h" //algoritmo_Huffmann, gravar_codigos_mapa
-#include "map.h" //encontrar_rota_node_mapa
-#include "tree-list.h" //criar_listaArvores, adicionar_listaArvores, remover_listaArvores, pegar_mapa_listaArvores
-#include "bitmap.h" //bitmapCatContents
-#include "bitmap-plus.h"
-#include "huffmann-debug.h"
-#include "bits.h" //pegar_bit_char
+#include "data-structures/map.h" //encontrar_rota_node_mapa
+#include "data-structures/tree-list.h" //criar_listaArvores, adicionar_listaArvores, remover_listaArvores, pegar_mapa_listaArvores
+#include "data-structures/bitmap.h" //bitmapCatContents
+#include "data-structures/bitmap-plus.h"
+#include "utils/huffmann-debug.h"
+#include "utils/bits.h" //pegar_bit_char
 #include <stdio.h> //rewind, feof
 #include <stdlib.h>
 #include <string.h>

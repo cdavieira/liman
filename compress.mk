@@ -10,8 +10,8 @@ $(compress_binary_name): $(obj_files)
 	$(CC) $^ -o $@ $(CFLAGS)
 
 compress:
-	./$(compress_binary_name) ./$(compress_input_folder)/$(default_input_file)
-	mv $(compress_input_folder)/*$(compress_filextension) $(compress_output_folder)/$(default_input_file)$(compress_filextension)
+	./$(compress_binary_name) ./$(compress_input_folder)/$(input)
+	mv $(compress_input_folder)/*$(compress_filextension) $(compress_output_folder)/$(input)$(compress_filextension)
 
 valc:
-	valgrind --leak-check=full -s --track-origins=yes ./$(compress_binary_name) $(compress_input_folder)/$(default_input_file)
+	valgrind --leak-check=full -s --track-origins=yes ./$(compress_binary_name) $(compress_input_folder)/$(input)

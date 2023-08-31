@@ -1,10 +1,10 @@
 #include "client.h"
 #include "compress.h"
 #include "decompress.h"
-#include "huffmann-debug.h"
-#include "filename-handler.h"
-#include "map.h"
-#include "bitmap.h"
+#include "utils/huffmann-debug.h"
+#include "utils/filename-handler.h"
+#include "data-structures/map.h"
+#include "data-structures/bitmap.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
