@@ -15,7 +15,7 @@ typedef struct map bitmap;
 	
 	Pós condicao: -
 */
-unsigned pegar_ASCII_caracter(caracter* c);
+unsigned pegar_ASCII_caracter(caracter const* const c);
 
 /*  pegar_peso_caracter
 	Descrição: retorna o peso/a frequência do caracter
@@ -28,7 +28,7 @@ unsigned pegar_ASCII_caracter(caracter* c);
 	
 	Pós condicao: -
 */
-unsigned long pegar_peso_caracter(caracter* c);
+unsigned long pegar_peso_caracter(caracter const* const c);
 
 /*  pegar_bmap_caracter
 	Descrição: retorna o bitmap do caracter
@@ -41,7 +41,7 @@ unsigned long pegar_peso_caracter(caracter* c);
 	
 	Pós condicao: -
 */
-bitmap* pegar_bmap_caracter(caracter* c);
+bitmap* pegar_bmap_caracter(caracter const* const c);
 
 /*  criar_caracter
 	Descrição: cria um novo caracter  e preenche seus campos com os argumentos fornecidos
@@ -54,7 +54,7 @@ bitmap* pegar_bmap_caracter(caracter* c);
 	
 	Pós condicao: -
 */
-caracter* criar_caracter(unsigned letra, unsigned long peso);
+caracter* criar_caracter(unsigned const letra, unsigned long const peso);
 
 /*  alocar_caracter
 	Descrição: aloca dinamicamente uma variavel do tipo caracter
@@ -93,7 +93,7 @@ caracter* desalocar_caracter(caracter* c);
 	
 	Pós condicao: -
 */
-caracter* atualizar_ASCII_caracter(caracter* c, unsigned letra);
+caracter* atualizar_ASCII_caracter(caracter * const c, unsigned const letra);
 
 /*  atualizar_peso_caracter
 	Descrição: atualiza o peso do caracter
@@ -106,7 +106,7 @@ caracter* atualizar_ASCII_caracter(caracter* c, unsigned letra);
 	
 	Pós condicao: -
 */
-caracter* atualizar_peso_caracter(caracter* c, unsigned long peso);
+caracter* atualizar_peso_caracter(caracter* const c, unsigned long const peso);
 
 /*  atualizar_bmap_caracter
 	Descrição: atualiza o bitmap do caracter
@@ -119,7 +119,7 @@ caracter* atualizar_peso_caracter(caracter* c, unsigned long peso);
 	
 	Pós condicao: -
 */
-caracter* atualizar_bmap_caracter(caracter* c, bitmap* bm);
+caracter* atualizar_bmap_caracter(caracter* const c, bitmap *const bm);
 
 /*  exibir_ASCII_caracter
 	Descrição: exibe o codigo ASCII armazenado no carater
@@ -132,7 +132,7 @@ caracter* atualizar_bmap_caracter(caracter* c, bitmap* bm);
 	
 	Pós condicao: -
 */
-void exibir_ASCII_caracter(caracter* c);
+void exibir_ASCII_caracter(caracter const* const c);
 
 /*  exibir_peso_caracter
 	Descrição: exibe o peso armazenado no carater
@@ -145,7 +145,7 @@ void exibir_ASCII_caracter(caracter* c);
 	
 	Pós condicao: -
 */
-void exibir_peso_caracter(caracter* c);
+void exibir_peso_caracter(caracter const* const c);
 
 /*  exibir_caracter
 	Descrição: exibe todas informações armazenadas no carater
@@ -158,7 +158,7 @@ void exibir_peso_caracter(caracter* c);
 	
 	Pós condicao: -
 */
-void exibir_caracter(caracter* c);
+void exibir_caracter(caracter const* const c);
 
 /*  comparar_ASCII_caracter
 	Descrição: checa se o caracter apresenta o mesmo codigo ASCII da letra fornecida
@@ -171,7 +171,7 @@ void exibir_caracter(caracter* c);
 	
 	Pós condicao: -
 */
-unsigned comparar_ASCII_caracter(caracter* c, unsigned* letra);
+unsigned comparar_ASCII_caracter(caracter const* const c, unsigned const* const letra);
 
 /*  pegar_endereco_ASCII_caracter
 	Descrição: retorna o endereço da váriavel que armazena o codigo ASCII de um caracter
@@ -184,7 +184,7 @@ unsigned comparar_ASCII_caracter(caracter* c, unsigned* letra);
 	
 	Pós condicao: -
 */
-unsigned* pegar_endereco_ASCII_caracter(caracter* c);
+unsigned* pegar_endereco_ASCII_caracter(caracter *c);
 
 /*  comparar_peso_caracter
 	Descrição: checa se o primeiro caracter entrado apresenta peso superior ou igual ao segundo caracter fornecido
@@ -197,4 +197,4 @@ unsigned* pegar_endereco_ASCII_caracter(caracter* c);
 	
 	Pós condicao: -
 */
-unsigned comparar_peso_caracter(caracter* c1, caracter* c2);
+unsigned comparar_peso_caracter(caracter const* const c1, caracter const* const c2);

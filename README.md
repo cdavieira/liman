@@ -123,6 +123,3 @@ apresentam taxas de compressão consideráveis e, algumas vezes, na verdade
 sofrem um efeito contrário àquele esperado de uma compressão de arquivos.
 
 Isso ocorre porque esses textos utilizam praticamente todos os caracteres da tabela ASCII estendido na codificação da informação que ali vai inserida. Para esses arquivos, outros tipos de compactadores, que utilizam estratégias diferentes, são necessários para armazenar a informação de forma eficiente e sem perdas.
-
-# todo
-* colocar qualifiers const onde der (getters principalmente)

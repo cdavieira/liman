@@ -1,7 +1,7 @@
 #include "data-structures/bitmap-plus.h"
 #include "data-structures/bitmap.h" //bitmapGetContents, bitmapGetLength, bitmapAppendLeastSignificantBit, bitmapGetBit
 
-void bitmapUnloadContents(bitmap* bm, FILE* fpout){
+void bitmapUnloadContents(bitmap *bm, FILE* fpout){
 	if(!bm || !fpout){
 		return ;
 	}
@@ -15,7 +15,7 @@ void bitmapUnloadContents(bitmap* bm, FILE* fpout){
 	fwrite(content, sizeof(unsigned char), tam?(1+tam/8):0, fpout);
 }
 
-void bitmapUnloadContentsBinary(bitmap* bm, FILE* fpout){
+void bitmapUnloadContentsBinary(bitmap *bm, FILE* fpout){
 	if(!bm || !fpout){
 		return ;
 	}
@@ -26,12 +26,12 @@ void bitmapUnloadContentsBinary(bitmap* bm, FILE* fpout){
 	 * relação ao tamanho atual do bitmap */
 	unsigned const tam = bitmapGetLength(bm);
 	for(unsigned i=0;i<tam;i++){
-		fprintf(fpout, "%d", bitmapGetBit(bm, i));	
+		fprintf(fpout, "%d", bitmapGetBit(bm, i));
 	}
 	putchar('\n');
 }
 
-void bitmapCatContents(bitmap* bm_dest, bitmap* bm_source){
+void bitmapCatContents(bitmap *bm_dest, bitmap *bm_source){
 	if(!bm_dest && !bm_source){
 		return ;
 	}
