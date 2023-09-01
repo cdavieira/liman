@@ -41,7 +41,11 @@ mapa* remover_rota(mapa* map, int codigo){
 }
 
 void imprimir_mapa(mapa* map){
-	if(map) imprimir_arvore((tree*)map, exibir_ASCII_caracter, exibir_peso_caracter);
+	if(!map){
+		return;
+	}
+
+	imprimir_arvore((tree*)map, exibir_ASCII_caracter, exibir_peso_caracter);
 }
 
 unsigned testar_folha_mapa(mapa* map){
@@ -86,7 +90,7 @@ mapa* preencher_peso_mapa(mapa* map, unsigned int peso){
 	return map;
 }
 
-//lembrete !!!! caracter de terminacao da string nao esta sendo considerado na alocacao
+/* lembrete: caracter de terminacao da string nao esta sendo considerado na alocacao */
 mapa* preencher_bitmap_mapa(mapa* map, bitmap* bm){
 	preencher_arvore((tree*) map, (void*)atualizar_bmap_caracter((caracter*)pegar_conteudo_arvore((tree*) map), bm), 0, 0);
 	return map;
@@ -105,13 +109,13 @@ unsigned long calcular_tamanho_bits_mapa(mapa* map){
 }
 
 static unsigned long tamanho_bits_mapa_auxiliar(mapa* map, mapa* mapa_pai){
-	if(map){
-		if(testar_folha_mapa(map)){
-			return calcular_altura_node_mapa(mapa_pai, map, 0)*pegar_peso_mapa(map);
-		}
-		else return tamanho_bits_mapa_auxiliar(pegar_sae_mapa(map), mapa_pai) + tamanho_bits_mapa_auxiliar(pegar_sad_mapa(map), mapa_pai);
+	if(!map){
+		return 0;
 	}
-	else return 0;
+	if(testar_folha_mapa(map)){
+		return calcular_altura_node_mapa(mapa_pai, map, 0)*pegar_peso_mapa(map);
+	}
+	return tamanho_bits_mapa_auxiliar(pegar_sae_mapa(map), mapa_pai) + tamanho_bits_mapa_auxiliar(pegar_sad_mapa(map), mapa_pai);
 }
 
 int comparar_pesos_mapa(mapa* map1, mapa* map2){

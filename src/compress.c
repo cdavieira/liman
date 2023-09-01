@@ -1,19 +1,21 @@
-#include "compress.h" //algoritmo_Huffmann, gravar_codigos_mapa
-#include "data-structures/map.h" //encontrar_rota_node_mapa
-#include "data-structures/tree-list.h" //criar_listaArvores, adicionar_listaArvores, remover_listaArvores, pegar_mapa_listaArvores
-#include "data-structures/bitmap.h" //bitmapCatContents
-#include "data-structures/bitmap-plus.h"
-#include "utils/huffmann-debug.h"
+#include "compress.h"
+#include "data-structures/map.h" //map, criar_mapa, encontrar_rota_node_mapa, preencher_bitmap_mapa, contar_nodes_mapa, calcular_tamanho_bits_mapa, pegar_bitmap_mapa, buscar_ASCII_mapa
+#include "data-structures/tree-list.h" //criar_listaArvores, adicionar_listaArvores, remover_listaArvores, pegar_mapa_listaArvores, pegar_numero_elementos_listaArvores, pegar_peso_mapa, adicionar_ordenadamente_listaArvores, liberar_listaArvores
+#include "data-structures/bitmap.h" //bitmapInit, bitmapLibera, bitmapAppendLeastSignificantBit
+#include "data-structures/bitmap-plus.h" //bitmapUnloadContents, bitmapCatContents, 
 #include "utils/bits.h" //pegar_bit_char
-#include <stdio.h> //rewind, feof
-#include <stdlib.h>
-#include <string.h>
+#include <stdio.h> //rewind, feof, fgetc
+#include <stdlib.h> //free
+#include <string.h> //strlen
 
 /* define o tamanho do vetor que armazena as ocorrencias dos caracteres ASCII.
  * os indices do vetor se referem aos codigos ASCII (0 a 255)
  * o valor contido nesses indices é o número de vezes que aquele caracter
  * apareceu no arquivo a ser compactado */
 #define ascii_charset 256
+
+static long pegar_indice_maior_numero(unsigned long* v, size_t const tam);
+static void gerar_codigos_mapa_auxiliar(mapa* filho, mapa* pai);
 
 mapa* montar_mapa(FILE* fpin){
 	if(!fpin){
@@ -57,23 +59,6 @@ mapa* montar_mapa(FILE* fpin){
 	rewind(fpin);
 
 	return map;
-}
-
-long pegar_indice_maior_numero(unsigned long* v, const size_t tam){
-	if(!v){
-		return -1;
-	}
-
-	long index = -1;
-	unsigned long maior = 0;
-	for(unsigned long i=0; i<tam; i++){
-		if(v[i] > maior){
-			maior = v[i];
-			index = i;
-		}
-	}
-
-	return index;
 }
 
 mapa* algoritmo_Huffman(listaArvores* lc){
@@ -125,40 +110,6 @@ void gravar_codigos_mapa(mapa* map){
 		return ;
 	}
 	gerar_codigos_mapa_auxiliar(map, map);
-}
-
-/* a unica diferença dessa para a sua semelhante é que preserva o mapa
- * pai na chamada das funcoes (e realmente faz o trabalho acontecer) */
-static void gerar_codigos_mapa_auxiliar(mapa* filho, mapa* pai){
-	if(!filho || !pai){
-		return ;
-	}
-
-	//se a arvore filho for um no-folha, proceder com verificacao
-	if(testar_folha_mapa(filho)){
-		/* se a arvore filho for no-folha e pertencer a arvore pai, entao a
-		 * variavel rota é nao nula e recebe o codigo contendo o pathing correto
-		 * que leva da arvore pai a arvore filho */
-		char* rota = encontrar_rota_node_mapa(pai, filho);
-		size_t const tam = strlen(rota);
-
-		/* o tamanho (tam) da string rota corresponde exatamente ao numero de
-		 * bits que serao utilizados para construcao do bitmap de um caracter */
-		bitmap* bm = bitmapInit(tam);
-		for(size_t i=0; i<tam; i++){
-			/* necessário fazer a subtração para converter o conteudo da
-			 * variavel rota[i] do codigo ASCII para 0 ou 1 (unsigned char) */
-			bitmapAppendLeastSignificantBit(bm, rota[i] - '0');
-		}
-
-		filho = preencher_bitmap_mapa(filho, bm);
-		/* é necessario liberar a memoria da string previamente alocada pois a
-		 * funcao bitmapInit armazena uma string nova internamente que tem
-		 * tamanho e conteudo semelhante ao fornecido */
-		free(rota);
-	}
-	gerar_codigos_mapa_auxiliar(pegar_sae_mapa(filho), pai);
-	gerar_codigos_mapa_auxiliar(pegar_sad_mapa(filho), pai);
 }
 
 /*
@@ -249,3 +200,55 @@ void exportar_texto_formato_bitmap(mapa* map, FILE* fpin, FILE* fpout){
 	//imprimir_conteudo_emBits("bits.txt", bm_texto);
 	bitmapLibera(bm_texto);
 }
+
+static long pegar_indice_maior_numero(unsigned long* v, const size_t tam){
+	if(!v){
+		return -1;
+	}
+
+	long index = -1;
+	unsigned long maior = 0;
+	for(unsigned long i=0; i<tam; i++){
+		if(v[i] > maior){
+			maior = v[i];
+			index = i;
+		}
+	}
+
+	return index;
+}
+
+/* a unica diferença dessa para a sua semelhante é que preserva o mapa
+ * pai na chamada das funcoes (e realmente faz o trabalho acontecer) */
+static void gerar_codigos_mapa_auxiliar(mapa* filho, mapa* pai){
+	if(!filho || !pai){
+		return ;
+	}
+
+	//se a arvore filho for um no-folha, proceder com verificacao
+	if(testar_folha_mapa(filho)){
+		/* se a arvore filho for no-folha e pertencer a arvore pai, entao a
+		 * variavel rota é nao nula e recebe o codigo contendo o pathing correto
+		 * que leva da arvore pai a arvore filho */
+		char* rota = encontrar_rota_node_mapa(pai, filho);
+		size_t const tam = strlen(rota);
+
+		/* o tamanho (tam) da string rota corresponde exatamente ao numero de
+		 * bits que serao utilizados para construcao do bitmap de um caracter */
+		bitmap* bm = bitmapInit(tam);
+		for(size_t i=0; i<tam; i++){
+			/* necessário fazer a subtração para converter o conteudo da
+			 * variavel rota[i] do codigo ASCII para 0 ou 1 (unsigned char) */
+			bitmapAppendLeastSignificantBit(bm, rota[i] - '0');
+		}
+
+		filho = preencher_bitmap_mapa(filho, bm);
+		/* é necessario liberar a memoria da string previamente alocada pois a
+		 * funcao bitmapInit armazena uma string nova internamente que tem
+		 * tamanho e conteudo semelhante ao fornecido */
+		free(rota);
+	}
+	gerar_codigos_mapa_auxiliar(pegar_sae_mapa(filho), pai);
+	gerar_codigos_mapa_auxiliar(pegar_sad_mapa(filho), pai);
+}
+

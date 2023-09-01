@@ -1,5 +1,4 @@
 #include "client.h" //compactar, descompactar
-#include <stdlib.h>
 #include <string.h> //strcmp
 
 int main(int argc, char *argv[]){

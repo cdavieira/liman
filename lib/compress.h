@@ -10,7 +10,6 @@ typedef struct map bitmap;
 
 mapa* montar_mapa(FILE* fpin);
 
-long pegar_indice_maior_numero(unsigned long* v, size_t const tam);
 
 /*  algoritmo_Huffman
 	Descrição: performa o algoritmo de Huffmann para construir a árvore de codificação dos caracteres presesentes no arquivo texto e disponíveis na lista circular fornecida

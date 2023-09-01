@@ -1,6 +1,6 @@
 #include "data-structures/circular-linked-list.h"
-#include <stdio.h>
-#include <stdlib.h> //calloc, free
+#include <stdio.h> //printf
+#include <stdlib.h> //NULL, calloc, free
 
 struct listaCircular{
 	celulaCircular* inicio;

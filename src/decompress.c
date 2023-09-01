@@ -1,15 +1,13 @@
 #include "decompress.h"
-#include "data-structures/bitmap.h" //bitmapInit, bitmapAppendLeastSignificantBit
-#include "data-structures/map.h" //criar_mapa
+#include "data-structures/bitmap.h" //bitmapInit, bitmapAppendLeastSignificantBit, bitmapGetLength, bitmapGetBit
+#include "data-structures/map.h" //criar_mapa, percorrer_mapa, testar_folha_mapa, pegar_ASCII_mapa
 #include "utils/macros.h" //left, right
 #include "utils/huffmann-debug.h" //contar_bits_mapa
 #include "utils/bits.h" //pegar_bit_char
-#include <stdlib.h> //fgetc, rewind
+#include <stdlib.h> //fgetc, rewind, calloc, fprintf, ftell, fseek, SEEK_END, SEEK_SET
 
 static long ftell_ultimo_char(FILE *fp);
-
 static mapa* reconstruir_mapa_forma_original_aux(bitmap* bm, unsigned *index, unsigned modo);
-
 static mapa* reconstruir_mapa_forma_original_aux_ler_no_folha(bitmap* bm, unsigned *index);
 
 /*

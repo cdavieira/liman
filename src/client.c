@@ -1,13 +1,13 @@
 #include "client.h"
-#include "compress.h"
-#include "decompress.h"
-#include "utils/huffmann-debug.h"
-#include "utils/filename-handler.h"
-#include "data-structures/map.h"
-#include "data-structures/bitmap.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
+#include "compress.h" //montar_mapa, exportar_mapa_formato_bitmap, exportar_texto_formato_bitmap
+#include "decompress.h" //remontar_mapa_forma_bitmap, reconstruir_mapa_forma_original, traduzir_mensagem
+#include "utils/huffmann-debug.h" //imprimir_conteudo_binario, analisar_armazenamento_arquivo, imprimir_codigos_huffmann
+#include "utils/filename-handler.h" //adicionar_extensao
+#include "data-structures/map.h" //map, liberar_mapa
+#include "data-structures/bitmap.h" //bitmap, bitmap_libera
+#include <stdio.h> //FILE, fopen, fclose,  
+#include <stdlib.h> //free
+#include <assert.h> //assert
 
 void compactar(char* nomeArquivoEntrada){
 	if(!nomeArquivoEntrada){

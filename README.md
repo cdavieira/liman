@@ -50,22 +50,16 @@ Programa capaz de reduzir o tamanho total em bytes de arquivos (ex: .txt, .png ,
     └── utils
 ```
 
-## Testes
+## Desempenho de compactação
 
 > COLOCAR TESTES, INFORMANDO TAMANHO INICIAL DO ARQUIVO E TAMANHO POS COMPACTACAO
 
 >> TALVEZ ATE INFORMAR QUANTOS POR CENTO A COMPACTACAO TEM DO MAPA E DA MENSAGEM CODIFICADA
 
 # todo
-* escrever todas as funções que são utilizadas por cada library
 * colocar qualifiers const onde der (getters principalmente)
-* criar arquivo utils que reuna tudo que foi usado de aleatorio ao longo do programa (funcoes)
-* remover funcoes nao utilizados 
-* remover ambiguidades no codigo quando possivel
 * melhorar instruções do makefile
-* utilizar ferramentas de analise do codigo (gcov, cflow, complexity, profilling)
 * melhorar README
 > fazendo
 * refazer relatorio/deleta-lo daqui
 > mais informações sobre o funcionamento do programa no pdf (que será atualizado ainda, decorrente de algumas recém-mudanças feitas no funcionamento do código).
-

@@ -1,9 +1,9 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include "utils/bits.h"
 #include "utils/huffmann-debug.h"
-#include "data-structures/map.h"
-#include "data-structures/bitmap-plus.h"
+#include "utils/bits.h" //pegar_bit_char
+#include "data-structures/map.h" //encontrar_rota_node_mapa
+#include "data-structures/bitmap-plus.h" //bitmapUnloadContentsBinary
+#include <stdlib.h> //free
+#include <stdio.h> //rewind, fgetc, FILE, feof, putchar, fopen
 
 unsigned long contar_bits_mapa(FILE* fpin){
 	if(!fpin){

@@ -1,5 +1,5 @@
-#include "data-structures/bitmap.h" //bitmapGetContents, bitmapGetLength, bitmapAppendLeastSignificantBit, bitmapGetBit
 #include "data-structures/bitmap-plus.h"
+#include "data-structures/bitmap.h" //bitmapGetContents, bitmapGetLength, bitmapAppendLeastSignificantBit, bitmapGetBit
 
 void bitmapUnloadContents(bitmap* bm, FILE* fpout){
 	if(!bm || !fpout){

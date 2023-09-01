@@ -1,8 +1,8 @@
 #include "data-structures/tree.h"
-#include "utils/macros.h"
-#include <stdio.h>
+#include "utils/macros.h" //left, right, left_char, right_char, left_str, right_str
+#include <stdio.h> //printf
 #include <stdlib.h> //calloc, free
-#include <string.h>
+#include <string.h> //strcat, strlen
 
 struct tree{
 	void* conteudo;
