@@ -1,6 +1,8 @@
 # winrar
 
-Programa capaz de reduzir o tamanho total em bytes de arquivos (ex: `.txt`, `.png` , `.jpg`, `.gif` e outros), aplicando compressão sem perda de dados baseada no algoritmo de Huffmann.
+Programa capaz de reduzir o tamanho total em bytes de arquivos (ex: `.txt`,
+`.png` , `.jpg`, `.gif` e outros), aplicando compressão sem perda de dados
+baseada no *algoritmo de Huffman*.
 
 ## 
 
@@ -50,17 +52,18 @@ Programa capaz de reduzir o tamanho total em bytes de arquivos (ex: `.txt`, `.pn
     └── utils
 ```
 
-## Do algoritmo de Huffmann
+## Do *algoritmo de Huffman*
 
-O *algoritmo de Huffmann* funciona recodificando códigos comumente usados para
+O **algoritmo de Huffman** funciona recodificando códigos comumente usados para
 codificar caracteres.
 
-A exemplo da representação ASCII estendida, essa codifica 256 caracteres
-usando **8 bits** por caracter. Portanto, se um arquivo de
-texto chamado `senha.txt` contém 4 caracteres, ao todo seu tamanho é 32 bits.
+A exemplo da representação ASCII estendida, essa codifica 256 caracteres usando
+**8 bits** por caracter. Portanto, se um arquivo de texto chamado `senha.txt`
+contém 4 caracteres, ao todo seu tamanho é 32 bits.
 
-O *algoritmo de Huffmann* atua na **redução do número de bits por caracter**,
-de forma a criar códigos que utilizam menos bits do que o usual para codificar caracteres.
+O **algoritmo de Huffman** atua na **redução do número de bits por caracter**,
+de forma a criar códigos que utilizam menos bits do que o usual para codificar
+caracteres.
 
 Assim, em vez dos usuais **8 bits** por caracter, por vezes o **algoritmo de
 Huffmann** permite que sejam utilizados apenas **4 bits**, **5 bits** ou **6
@@ -69,19 +72,21 @@ de alguns tipos de arquivo.
 
 ## Dos arquivos `.comp` gerados
 
-Quanto aos arquivos `.comp` gerados pelo programa, esses são arquivos *binários*,
-sendo que o formato com que são escritos é o seguinte:
+Quanto aos arquivos `.comp` gerados pelo programa, esses são arquivos
+*binários*, sendo que o formato com que são escritos é o seguinte:
 
-` <tabela de huffmann na forma de árvore escrita em bits corridos> <mensagem codificada segundo
-tabela de huffmann>`
+` <tabela de huffman na forma de árvore escrita em bits corridos> <mensagem
+codificada segundo tabela de huffman>`
 
 A descompressão dos arquivos `.comp` basicamente segue os 2 passos:
-1. remontar a *tabela de huffmann*
-2. ler a mensagem em binário e trocar o *código de huffmann* pelo seu correspondente ASCII estendido
+1. remontar a *tabela de huffman*
+2. ler a mensagem em binário e trocar o *código de huffman* pelo seu
+   correspondente ASCII estendido
 
-> *tabela de huffmann*: um estrutura em arvore que dispõe uma correspondência 1:1 entre os códigos de huffmann e os codigos da tabela ASCII
+> *tabela de huffman*: um estrutura em arvore que dispõe uma correspondência
+> 1:1 entre os códigos de huffman e os codigos da tabela ASCII
 
-> *A compactação via algoritmo de Huffmann, ainda que sem perda, não é tão
+> *A compactação via *algoritmo de Huffman*, ainda que sem perda, não é tão
 eficiente quanto outras existentes.*
 
 > tl;dr: em geral, quanto mais vezes alguns dos caracteres de uma codificação
@@ -90,7 +95,8 @@ eficiente quanto outras existentes.*
 
 ## Desempenho de compactação
 
-O projeto contem alguns arquivos na pasta `input`, que foram usados para testar o desempenho da compactação para diferentes tipos de arquivo.
+O projeto contem alguns arquivos na pasta `input`, que foram usados para testar
+o desempenho da compactação para diferentes tipos de arquivo.
 
   input     | extensao | tamanho original  |  tamanho compactado  | taxa de compressão  |
 :------:    | :------: |:----------------: | :------------------: | :----------------:  | 
@@ -102,21 +108,23 @@ jpg.jpg     |   jpg    |  35_989 bytes     |    36_032 bytes      |       -00.12
 
 ## Discussões
 
-A estratégia de compactação proposta pelo algoritmo de Hufmann nem sempre é eficiente.
-Pela forma como funciona, essa se torna mais proveitosa para textos/arquivos
-que utilizam caracteres que se repetem com muita frequência e que utilizam um
-número restrito de letras de um alfabeto.
+A estratégia de compactação proposta pelo algoritmo de Hufmann nem sempre é
+eficiente.  Pela forma como funciona, essa se torna mais proveitosa para
+textos/arquivos que utilizam caracteres que se repetem com muita frequência e
+que utilizam um número restrito de letras de um alfabeto.
 
-A exemplo dos textos escritos em ingles/portugues, esses em geral utilizam apenas 26
-(letras) + 10 (números) caracteres, totalizando 36 caracteres. Nesse sentido,
-apenas 36 dos 256 caracteres previstos pela representação ASCII extendida são
-em geral usados, sendo esse o cenário predileto para a aplicação do algoritmo de Huffmann
-(salvo algumas exceções). Essa percepção se confirma  pelas boas taxas de compactação dos arquivos `.txt` testados.
+A exemplo dos textos escritos em ingles/portugues, esses em geral utilizam
+apenas 26 (letras) + 10 (números) caracteres, totalizando 36 caracteres. Nesse
+sentido, apenas 36 dos 256 caracteres previstos pela representação ASCII
+extendida são em geral usados, sendo esse o cenário predileto para a aplicação
+do *algoritmo de Huffman* (salvo algumas exceções). Essa percepção se confirma
+pelas boas taxas de compactação dos arquivos `.txt` testados.
 
-É notório, ainda, que alguns arquivos de extensões como `.png`, `.jpg`, `.gif` não
-apresentam taxas de compressão consideráveis e, algumas vezes, na verdade
+É notório, ainda, que alguns arquivos de extensões como `.png`, `.jpg`, `.gif`
+não apresentam taxas de compressão consideráveis e, algumas vezes, na verdade
 sofrem um efeito contrário àquele esperado de uma compressão de arquivos.
 
-Isso ocorre porque esses textos utilizam praticamente todos os caracteres da tabela ASCII estendido
-na codificação da informação que ali vai inserida. Para esses arquivos, outros tipos de compactadores
-são necessários para armazenar a informação de forma eficiente e sem perdas.
+Isso ocorre porque esses textos utilizam praticamente todos os caracteres da
+tabela ASCII estendido na codificação da informação que ali vai inserida. Para
+esses arquivos, outros tipos de compactadores são necessários para armazenar a
+informação de forma eficiente e sem perdas.

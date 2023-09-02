@@ -6,12 +6,12 @@ src_files := $(wildcard $(src_folder)/*.c $(src_folder)/*/*.c)
 lib_files := $(wildcard $(lib_folder)/*.h $(lib_folder)/*/*.h)
 obj_files := $(subst $(src_folder),$(obj_folder),$(src_files:.c=.o))
 
-compress_binary_name := huffmann
+compress_binary_name := huffman
 compress_input_folder := input
-compress_output_folder := compacted
+compress_output_folder := compressed
 compress_filextension := .comp
 
-decompress_binary_name := unhuffmann
+decompress_binary_name := unhuffman
 decompress_input_folder := $(compress_output_folder)
 decompress_output_folder := output
 

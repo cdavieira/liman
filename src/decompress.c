@@ -2,7 +2,7 @@
 #include "data-structures/bitmap.h" //bitmapInit, bitmapAppendLeastSignificantBit, bitmapGetLength, bitmapGetBit
 #include "data-structures/map.h" //criar_mapa, percorrer_mapa, testar_folha_mapa, pegar_ASCII_mapa
 #include "utils/macros.h" //left, right
-#include "utils/huffmann-debug.h" //contar_bits_mapa
+#include "utils/huffman-debug.h" //contar_bits_mapa
 #include "utils/bits.h" //pegar_bit_char
 #include <stdlib.h> //fgetc, rewind, calloc, fprintf, ftell, fseek, SEEK_END, SEEK_SET
 
@@ -127,7 +127,7 @@ void traduzir_mensagem(FILE* fpin, FILE* fpout, mapa* mapa_caracteres){
 		return ;
 	}
 
-	/* altura: tamanho maximo que um codigo de huffmann pode ter */
+	/* altura: tamanho maximo que um codigo de huffman pode ter */
 	unsigned long altura = calcular_altura_mapa(mapa_caracteres); 
 	unsigned char *codigo = calloc(altura+1, sizeof(unsigned char));
 	unsigned char u=0, bit=0;

@@ -1,4 +1,4 @@
-#include "utils/huffmann-debug.h"
+#include "utils/huffman-debug.h"
 #include "utils/bits.h" //pegar_bit_char
 #include "data-structures/map.h" //encontrar_rota_node_mapa
 #include "data-structures/bitmap-plus.h" //bitmapUnloadContentsBinary
@@ -100,15 +100,15 @@ void imprimir_conteudo_binario(FILE* fpin){
 	rewind(fpin);
 }
 
-void imprimir_codigos_huffmann(mapa* mapa_caracteres){
+void imprimir_codigos_huffman(mapa* mapa_caracteres){
 	if(!mapa_caracteres){
 		return ;
 	}
-	char* codigo_huffmann = NULL;
+	char* codigo_huffman = NULL;
 	for(unsigned letra = 0; letra<256; letra++){
-		codigo_huffmann = encontrar_rota_node_mapa(mapa_caracteres, buscar_ASCII_mapa(mapa_caracteres, &letra));
-		printf("%u(%c): %s\n", letra, letra, codigo_huffmann? codigo_huffmann : "nao codificado");
-		free(codigo_huffmann);
+		codigo_huffman = encontrar_rota_node_mapa(mapa_caracteres, buscar_ASCII_mapa(mapa_caracteres, &letra));
+		printf("%u(%c): %s\n", letra, letra, codigo_huffman? codigo_huffman : "nao codificado");
+		free(codigo_huffman);
 	}
 }
 

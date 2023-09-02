@@ -1,7 +1,7 @@
 #include "client.h"
 #include "compress.h" //montar_mapa, exportar_mapa_formato_bitmap, exportar_texto_formato_bitmap
 #include "decompress.h" //remontar_mapa_forma_bitmap, reconstruir_mapa_forma_original, traduzir_mensagem
-#include "utils/huffmann-debug.h" //imprimir_conteudo_binario, analisar_armazenamento_arquivo, imprimir_codigos_huffmann
+#include "utils/huffman-debug.h" //imprimir_conteudo_binario, analisar_armazenamento_arquivo, imprimir_codigos_huffman
 #include "utils/filename-handler.h" //adicionar_extensao
 #include "data-structures/map.h" //map, liberar_mapa
 #include "data-structures/bitmap.h" //bitmap, bitmap_libera
@@ -26,7 +26,7 @@ void compactar(char* nomeArquivoEntrada){
 	fpout = fopen(nomeArquivoSaida, "wb");
 	assert(("Erro ao gerar arquivo compactado!", fpout));
 
-	//aplicando huffmann e criando mapa de caracteres
+	//aplicando huffman e criando mapa de caracteres
 	mapa_caracteres = montar_mapa(fpin);
 
 	//escrevendo mapa de caracteres no começo do arquivo
@@ -73,7 +73,7 @@ void descompactar(char* nomeArquivoBinario){
 	 * A lógica a seguir parte desse pressuposto de funcionamento*/
 	map = reconstruir_mapa_forma_original(bm);
 
-	//imprimir_codigos_huffmann(map);
+	//imprimir_codigos_huffman(map);
 	traduzir_mensagem(fpin, fpout, map);
 
 	// 'bitmapLibera' não é null segura, portante é necessário a condicional

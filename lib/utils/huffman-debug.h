@@ -45,18 +45,18 @@ void analisar_armazenamento_arquivo(FILE* fpin);
 */
 void imprimir_conteudo_binario(FILE* fpin);
 
-/*  imprimir_codigos_huffmann
-	Descrição: imprime na saida padrao todos os codigos gerados pelo algoritmo de huffmann
+/*  imprimir_codigos_huffman
+	Descrição: imprime na saida padrao todos os codigos gerados pelo algoritmo de huffman
 	
 	Input: mapa/árvore de Huffmann
 	
 	Output: 
 	
-	Pré condição: o mapa fornecido deve ter sido processado pela função do algoritmo de huffmann ou pela função de reconstrução do mapa
+	Pré condição: o mapa fornecido deve ter sido processado pela função do algoritmo de huffman ou pela função de reconstrução do mapa
 	
 	Pós condicao: -
 */
-void imprimir_codigos_huffmann(mapa* mapa_caracteres);
+void imprimir_codigos_huffman(mapa* mapa_caracteres);
 
 /*  imprimir_conteudo_emBits
 	Descrição: escreve bit a bit do conteudo do bitmap num arquivo de saída
