@@ -1,6 +1,6 @@
 # liman
 
-O **liman** (***li**nux + huff**man***) é um programa capaz de reduzir o
+O **liman** (*linux + huffman*) é um programa capaz de reduzir o
 tamanho total em bytes de arquivos (ex: `.txt`, `.png` , `.jpg`, `.gif`
 e outros), aplicando compressão sem perda de dados baseada no *algoritmo de Huffman*.
 
