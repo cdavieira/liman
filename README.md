@@ -1,10 +1,8 @@
-# winrar
+# liman
 
-Programa capaz de reduzir o tamanho total em bytes de arquivos (ex: `.txt`,
-`.png` , `.jpg`, `.gif` e outros), aplicando compressão sem perda de dados
-baseada no *algoritmo de Huffman*.
-
-## 
+O **liman** (**li**nux + huff**man** é um programa capaz de reduzir o
+tamanho total em bytes de arquivos (ex: `.txt`, `.png` , `.jpg`, `.gif`
+e outros), aplicando compressão sem perda de dados baseada no *algoritmo de Huffman*.
 
 ## Como rodar
 
@@ -78,7 +76,7 @@ Quanto aos arquivos `.comp` gerados pelo programa, esses são arquivos
 `<tabela de huffman em formato de árvore> <mensagem
 codificada segundo tabela de huffman>`
 
-A descompressão dos arquivos `.comp` basicamente segue os 2 passos:
+A descompressão dos arquivos `.comp` basicamente segue 2 passos:
 1. remontar a *tabela de huffman*
 2. ler a mensagem em binário e trocar o *código de huffman* pelo seu
    correspondente ASCII estendido
@@ -116,7 +114,7 @@ que utilizam um número restrito de letras de um alfabeto.
 A exemplo dos textos escritos em ingles/portugues, esses em geral utilizam
 apenas 26 (letras) + 10 (números) caracteres, totalizando 36 caracteres. Nesse
 sentido, apenas 36 dos 256 caracteres previstos pela representação ASCII
-extendida são em geral usados, sendo esse o cenário predileto para a aplicação
+estendida são em geral usados, sendo esse o cenário predileto para a aplicação
 do *algoritmo de Huffman* (salvo algumas exceções). Essa percepção se confirma
 pelas boas taxas de compactação dos arquivos `.txt` testados.
 
@@ -124,7 +122,7 @@ pelas boas taxas de compactação dos arquivos `.txt` testados.
 não apresentam taxas de compressão consideráveis e, algumas vezes, na verdade
 sofrem um efeito contrário àquele esperado de uma compressão de arquivos.
 
-Isso ocorre porque esses textos utilizam praticamente todos os caracteres da
-tabela ASCII estendido na codificação da informação que ali vai inserida. Para
+Isso ocorre porque esses arquivos utilizam praticamente todos os caracteres da
+tabela ASCII estendida na codificação da informação ali presente. Para
 esses arquivos, outros tipos de compactadores são necessários para armazenar a
 informação de forma eficiente e sem perdas.
