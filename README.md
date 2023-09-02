@@ -21,11 +21,6 @@ e outros), aplicando compressão sem perda de dados baseada no *algoritmo de Huf
     make
 ```
 
-* limpar todos os objetos/compactados/executaveis
-```bash
-    make clean
-```
-
 * compactar um arquivo contido na pasta `input`
 ```bash
     make compress input="nome_do_arquivo.txt"
@@ -34,6 +29,11 @@ e outros), aplicando compressão sem perda de dados baseada no *algoritmo de Huf
 * descompactar um arquivo contido na pasta `output`
 ```bash
     make decompress input="nome_do_arquivo.txt"
+```
+
+* limpar todos os objetos/compactados/executaveis
+```bash
+    make clean
 ```
 
 ## Pastas
