@@ -75,7 +75,7 @@ de alguns tipos de arquivo.
 Quanto aos arquivos `.comp` gerados pelo programa, esses são arquivos
 *binários*, sendo que o formato com que são escritos é o seguinte:
 
-` <tabela de huffman na forma de árvore escrita em bits corridos> <mensagem
+`<tabela de huffman em formato de árvore> <mensagem
 codificada segundo tabela de huffman>`
 
 A descompressão dos arquivos `.comp` basicamente segue os 2 passos:
