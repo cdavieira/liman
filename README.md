@@ -44,7 +44,6 @@ e outros), aplicando compressão sem perda de dados baseada no *algoritmo de Huf
 ├── lib
 │   ├── data-structures
 │   └── utils
-├── misc
 └── src
     ├── data-structures
     └── utils
