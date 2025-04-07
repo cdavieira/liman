@@ -1,52 +1,53 @@
 # liman
 
-O **liman** (*linux + huffman*) é um programa capaz de reduzir o
-tamanho total em bytes de arquivos (ex: `.txt`, `.png` , `.jpg`, `.gif`
-e outros), aplicando compressão sem perda de dados baseada no *algoritmo de Huffman*.
+O **liman** (*linux + huffman*) é um programa capaz de reduzir o tamanho total
+em bytes de arquivos (ex: `.txt`, `.png` , `.jpg`, `.gif` e outros), aplicando
+compressão sem perda de dados baseada no 
+[algoritmo de Huffman](https://en.wikipedia.org/wiki/Huffman_coding)
 
 ## Como rodar
 
 * clonar esse repositorio
 ```bash
-    git clone https://github.com/paisdegales/winrar.git
+git clone https://github.com/cdavieira/liman.git
 ```
-
 * ir até a pasta onde o projeto foi salvo
 ```bash
-    cd path/to/project
+cd path/to/this/project
 ```
 
 * gerar os executaveis
 ```bash
-    make
+make
 ```
 
-* compactar um arquivo contido na pasta `input`
+* compactar um arquivo
 ```bash
-    make compress input="nome_do_arquivo.txt"
+#./huffman /path/to/file
+./huffman ./tests/pikachu.gif
 ```
 
-* descompactar um arquivo contido na pasta `output`
+* descompactar um arquivo .comp
 ```bash
-    make decompress input="nome_do_arquivo.txt"
+#./huffman /path/to/compfile
+./unhuffman ./pikachu.gif.comp
 ```
 
 * limpar todos os objetos/compactados/executaveis
 ```bash
-    make clean
+make clean
 ```
 
-## Pastas
+* obter informacoes sobre o arquivo .comp
+```bash
+# são gerados: um arquivo .dot, um arquivo .txt e informações impressas no terminal
+./huhman ./pikachu.gif.comp
 
-```
-.
-├── input
-├── lib
-│   ├── data-structures
-│   └── utils
-└── src
-    ├── data-structures
-    └── utils
+# caso você tenha o programa 'dot' instalado, poderá então gerar um pdf da arvore de huffman:
+# dot -Tpdf ./pikachu.gif.comp.dot -o ./huffman.pdf
+
+# também pode olhar os códigos que foram usados para codificar cada caracter do arquivo:
+# cat ./pikachu.gif.comp.txt
 ```
 
 ## Do *algoritmo de Huffman*
@@ -72,7 +73,7 @@ de alguns tipos de arquivo.
 Quanto aos arquivos `.comp` gerados pelo programa, esses são arquivos
 *binários*, sendo que o formato com que são escritos é o seguinte:
 
-`<tabela de huffman em formato de árvore> <mensagem
+`<tabela de huffman em formato de árvore><mensagem
 codificada segundo tabela de huffman>`
 
 A descompressão dos arquivos `.comp` basicamente segue 2 passos:
@@ -97,11 +98,11 @@ o desempenho da compactação para diferentes tipos de arquivo.
 
   input     | extensao | tamanho original  |  tamanho compactado  | taxa de compressão  |
 :------:    | :------: |:----------------: | :------------------: | :----------------:  | 
-bible.txt   |   txt    |  4_451_368 bytes  |    2_577_870 bytes   |       +42.78%       |
-teste.txt   |   txt    |  97_042 bytes     |    79_227 bytes      |       +18.36%       |
+bible.txt   |   txt    |  4_451_368 bytes  |    2_577_872 bytes   |       +42.78%       |
+teste.txt   |   txt    |  97_042 bytes     |    79_228 bytes      |       +18.36%       |
 pikachu.gif |   gif    |  4_459_259 bytes  |    4_449_596 bytes   |       +00.22%       |
-gatinhu.png |   png    |  160_039 bytes    |    160_361 bytes     |       -00.02%       |
-jpg.jpg     |   jpg    |  35_989 bytes     |    36_032 bytes      |       -00.12%       |
+gatinhu.png |   png    |  160_039 bytes    |    160_362 bytes     |       -00.20%       |
+jpg.jpg     |   jpg    |  35_989 bytes     |    36_031 bytes      |       -00.12%       |
 
 ## Discussões
 
@@ -110,12 +111,13 @@ eficiente.  Pela forma como funciona, essa se torna mais proveitosa para
 textos/arquivos que utilizam caracteres que se repetem com muita frequência e
 que utilizam um número restrito de letras de um alfabeto.
 
-A exemplo dos textos escritos em ingles/portugues, esses em geral utilizam
-apenas 26 (letras) + 10 (números) caracteres, totalizando 36 caracteres. Nesse
-sentido, apenas 36 dos 256 caracteres previstos pela representação ASCII
-estendida são em geral usados, sendo esse o cenário predileto para a aplicação
-do *algoritmo de Huffman* (salvo algumas exceções). Essa percepção se confirma
-pelas boas taxas de compactação dos arquivos `.txt` testados.
+A exemplo dos textos escritos em ingles, esses geralmente utilizam 26 (letras
+minusculas) + 26 (letras maiusculas) + 10 (digitos) + 2 (\n e \b) caracteres,
+totalizando 64 caracteres. Nesse sentido, 64 dos 256 caracteres previstos pela
+representação ASCII estendida são em geral usados, sendo esse o cenário
+predileto para a aplicação do *algoritmo de Huffman* (salvo algumas exceções).
+Essa percepção se confirma pelas boas taxas de compactação dos arquivos `.txt`
+testados.
 
 É notório, ainda, que alguns arquivos de extensões como `.png`, `.jpg`, `.gif`
 não apresentam taxas de compressão consideráveis e, algumas vezes, na verdade

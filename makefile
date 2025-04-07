@@ -1,46 +1,83 @@
-export
-src_folder := src
-lib_folder := lib
-obj_folder := obj
-src_files := $(wildcard $(src_folder)/*.c $(src_folder)/*/*.c)
-lib_files := $(wildcard $(lib_folder)/*.h $(lib_folder)/*/*.h)
-obj_files := $(subst $(src_folder),$(obj_folder),$(src_files:.c=.o))
+srcdir := src
+libdir := lib
+objdir := obj
+debug := 0
+src := $(wildcard $(srcdir)/*.c $(srcdir)/*/*.c)
+lib := $(wildcard $(libdir)/*.h $(libdir)/*/*.h)
+obj := $(subst $(srcdir),$(objdir),$(src:.c=.o))
 
-compress_binary_name := huffman
-compress_input_folder := input
-compress_output_folder := compressed
-compress_filextension := .comp
+compress_bin := huffman
+decompress_bin := unhuffman
+analyze_bin := huhman
+input := ./tests/jpg.jpg
 
-decompress_binary_name := unhuffman
-decompress_input_folder := $(compress_output_folder)
-decompress_output_folder := output
-
-input := jpg.jpg
-
-CFLAGS := -lm -g
 CC := gcc
+CFLAGS := -lm -g
+ifeq ($(debug),1)
+CFLAGS += -DDEBUG
+endif
 
 all: ;
 
-include compress.mk decompress.mk
+all: | $(objdir)
 
-all: | $(obj_folder)
+all: $(compress_bin) $(decompress_bin) $(analyze_bin)
 
-all: $(compress_binary_name) $(decompress_binary_name) 
+$(objdir):
+	mkdir $(sort $(dir $(obj)))
 
-$(obj_folder):
-	mkdir $@
-	mkdir $@{/data-structures,/utils}
-
-$(obj_folder)/%.o: $(src_folder)/%.c $(lib_files)
-	$(CC) -c $< -o $@ $(CFLAGS) -I $(lib_folder)
+$(objdir)/%.o: $(srcdir)/%.c $(lib)
+	$(CC) -c $< -o $@ $(CFLAGS) -I $(libdir)
 
 clean:
-	rm -rf $(obj_files) $(decompress_binary_name) $(compress_binary_name) $(compress_output_folder)/*.* $(decompress_output_folder)/*.*
-	rmdir $(obj_folder){/data-structures,/utils}
-	rmdir $(compress_output_folder) $(decompress_output_folder) $(obj_folder)
+	rm -rf obj $(decompress_bin) $(compress_bin) $(analyze_bin) *.comp 
 
 echo:
-	@echo '$(lib_files)' '$(obj_files)' '$(src_files)'
-	@echo "$(compress_binary_name) $(compress_input_folder) $(compress_output_folder)"
-	@echo "$(decompress_binary_name) $(decompress_input_folder) $(decompress_output_folder) $(input)"
+	@echo '.h: ' $(lib)
+	@echo '.o: ' $(obj)
+	@echo '.c: ' $(src)
+	@echo "executables: $(compress_bin) $(decompress_bin) $(analyze_bin)"
+
+
+
+
+
+
+
+## compress
+$(compress_bin): $(obj)
+	$(CC) $^ -o $@ $(CFLAGS)
+
+compress: $(compress_bin)
+	./$< ./$(input)
+
+valc:
+	valgrind --leak-check=full -s --track-origins=yes ./$(compress_bin) $(input)
+
+
+
+
+
+
+
+
+
+## decompress
+$(decompress_bin): $(obj)
+	$(CC) $^ -o $@ $(CFLAGS)
+
+decompress: $(decompress_bin)
+	./$< /$(input).comp
+
+vald:
+	valgrind --leak-check=full -s --track-origins=yes ./$(decompress_bin) $(input).comp
+
+
+
+
+
+
+
+## analyze
+$(analyze_bin): $(obj)
+	$(CC) $^ -o $@ $(CFLAGS)
