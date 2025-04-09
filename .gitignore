@@ -5,6 +5,4 @@ obj/
 output/
 tags
 Session.vim
-TODO
-compile_commands.json
 .cache/

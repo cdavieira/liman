@@ -1,0 +1,17 @@
+Todo
+* [ ] finish translating from portuguese to english
+* [ ] cleanup liman.c (analyze is big, compress and decompress could be better)
+* [ ] change %lu for %zu in all printfs
+* [ ] use 'getopt' instead of using argv directly
+* [ ] add more commandline options for all 3 programs
+* [ ] struct names in CamelCase
+* [ ] var and funcnames using a mesh of pascalCase and snake_case (except for Bitmap.c)
+* [ ] use doxygen for documentation
+* [ ] create a 'help' makefile target
+* [ ] improve 'CircularLinkedList' by explicitly creating append, pop, shift
+and using those, instead of relying on generic 'add' and 'remove' functions
+(for performance gains)
+
+Done
+* [X] fix bug where more than one '\0' was written in the end of some .comp files
+* [X] improve the implementation of Tree.c

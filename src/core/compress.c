@@ -21,7 +21,7 @@ struct ByteFrequency {
 
 
 static void huffmanTree_gencodes(HuffmanTree* root, unsigned codeLen, unsigned long nodeCode);
-static void huffmanTree_fillBitmap(HuffmanTree* map, bitmap* bm);
+static void huffmanTree_fillBitmap(HuffmanTree* map, Bitmap* bm);
 
 
 
@@ -81,50 +81,52 @@ size_t dumpHuffmanTree(HuffmanTree* map, FILE* fpout){
 	printf("debug:dumpHuffmanTree:tree padbits = %lu bits\n", nPadBits);
 #endif
 
-	bitmap* bm = bitmapInit(nTotalBits);
+	Bitmap* bm = bitmapInit(nTotalBits);
 	huffmanTree_fillBitmap(map, bm);
-	bitmapUnloadContents(bm, fpout);
+	bitmapDump(bm, fpout);
 	bitmapLibera(bm);
 
 	return nTotalBits;
 }
 
 size_t dumpHuffmanEncodedText(HuffmanTree* root, InputBytes* in, FILE* fpout){
-	bitmap* bmapLookup[256];
+	Bitmap* bmapLookup[256];
 	HuffmanTree* t;
 	for(unsigned i=0; i<256; i++){
-		t = huffmanTree_search_ASCII(root, &i);
+		t = huffmanTree_search_ASCII(root, i);
 		bmapLookup[i] = t ? huffmanTree_get_bitmap(t) : NULL;
 	}
 
-	unsigned long size = huffmanTree_getMsgSize(root) + bitmapGetLength(bmapLookup[0]); //in bits, no padbits yet
-	bitmap *bmapMsg = bitmapInit(size);
-	bitmap *bmapCode = NULL;
-	for(int i=0; i<in->nbytes; i++){
+	// unsigned long size = huffmanTree_get_msg_size(root) + bitmapGetLength(bmapLookup[0]); //in bits, no padbits yet
+	unsigned long size = huffmanTree_get_msg_size(root);
+	Bitmap *bmapMsg = bitmapInit(size);
+	Bitmap *bmapCode = NULL;
+	for(ssize_t i=0; i<=in->nbytes; i++){
 		bmapCode = bmapLookup[in->bytes[i]];
 #ifdef DEBUG
-		printf("debug:dumpHuffmanTree:%d -> ", in->bytes[i]);
+		printf("debug:dumpHuffmanTree:(byte %zd/%zd) %d -> ", i, in->nbytes, in->bytes[i]);
 		for(int i=0; i<bitmapGetLength(bmapCode); i++){
 			printf("%d", bitmapGetBit(bmapCode, i));
 		}
 		putchar('\n');
 #endif
 		if(bmapCode){
-			bitmapCatContents(bmapMsg, bmapCode);
+			bitmapConcat(bmapMsg, bmapCode);
 		}
 #ifdef DEBUG
 		else{
-			printf("debug:dumpHuffmanTree:failed to encode char %d\n", i);
+			printf("debug:dumpHuffmanTree:failed to encode char %zd\n", i);
+			assert(0);
 		}
 #endif
 	}
 
-	bitmapCatContents(bmapMsg, bmapLookup[0]); //adding '\0' to the end of the file
-	bitmapUnloadContents(bmapMsg, fpout);
+	// bitmapConcat(bmapMsg, bmapLookup[0]); //adding '\0' to the end of the file
+	bitmapDump(bmapMsg, fpout);
 	bitmapLibera(bmapMsg);
 
 	//adding padbits
-	size = size % 8 == 0 ? size : size + size % 8;
+	size = size % 8 == 0 ? size : size + (8 - size % 8);
 	return size;
 }
 
@@ -148,7 +150,7 @@ static void huffmanTree_gencodes(HuffmanTree* root, unsigned codeLen, unsigned l
 	//function, which allowed the generation of arbitrary code lengths.
 	assert(codeLen < 64);
 	if(huffmanTree_is_leaf(root)){
-		bitmap* bm = bitmapInit(codeLen);
+		Bitmap* bm = bitmapInit(codeLen);
 		for(int i=codeLen; i>0; i--){
 			bitmapAppendLeastSignificantBit(bm, (nodeCode >> (i-1)) & 1);
 		}
@@ -158,7 +160,7 @@ static void huffmanTree_gencodes(HuffmanTree* root, unsigned codeLen, unsigned l
 	huffmanTree_gencodes(huffmanTree_get_right(root), codeLen+1, (nodeCode << 1) | 1);
 }
 
-static void huffmanTree_fillBitmap(HuffmanTree* map, bitmap* bm){
+static void huffmanTree_fillBitmap(HuffmanTree* map, Bitmap* bm){
 	unsigned const ehFolha = huffmanTree_is_leaf(map);
 	bitmapAppendLeastSignificantBit(bm, ehFolha);
 	if(!ehFolha){
@@ -215,13 +217,8 @@ ByteFrequency* byteFreq_new(InputBytes* in){
 		freq[i].count = 0;
 		freq[i].byte = i;
 	}
-	for(int i=0; i<in->nbytes; i++){
+	for(int i=0; i<=in->nbytes; i++){
 		freq[in->bytes[i]].count++;
-	}
-	//we need a null byte, otherwise we won't be able to add it at the end
-	//of the compressed file later on
-	if(freq[0].count == 0){
-		freq[0].count = 1;
 	}
 	qsort(freq, 256, sizeof(ByteFrequency), byteFreq_compare_callback);
 	return freq;

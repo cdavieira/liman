@@ -3,7 +3,7 @@
 #include "core/HuffmanTree.h"
 
 TreeList* treelist_new(unsigned long max){
-	return (TreeList*) cl_new(max);
+	return (TreeList*) cl_new();
 }
 
 TreeList* treelist_destroy(TreeList* l){
@@ -14,16 +14,16 @@ size_t treelist_get_size(TreeList* l){
 	return cl_get_size((CircularList*) l);
 }
 
-HuffmanTree* treelist_get_tree(TreeList* l, long indice){
-	return (HuffmanTree*) cl_get_item((CircularList*)l, indice);
+HuffmanTree* treelist_get_tree(TreeList* l, long idx){
+	return (HuffmanTree*) cl_get_item((CircularList*)l, idx);
 }
 
-TreeList* treelist_shift(TreeList* l, HuffmanTree* map){
-	return (TreeList*)cl_add((CircularList*)l, (void*) map, 0);
+TreeList* treelist_shift(TreeList* l, HuffmanTree* huff){
+	return (TreeList*)cl_add((CircularList*)l, (void*) huff, 0);
 }
 
-TreeList* treelist_add_inorder(TreeList* l, HuffmanTree* mapa){
-	return (TreeList*)cl_add_inorder((CircularList*)l, (void*)mapa, (int (*)(void*, void*))huffmanTree_compare_freq);
+TreeList* treelist_add_inorder(TreeList* l, HuffmanTree* huff){
+	return (TreeList*)cl_add_inorder((CircularList*)l, (void*)huff, (int (*)(void*, void*))huffmanTree_compare_freq);
 }
 
 HuffmanTree* treelist_unshift(TreeList* l){

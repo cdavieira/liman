@@ -4,43 +4,28 @@
 
 typedef struct CircularList CircularList;
 
-/**
- * cria uma nova lista circular, com até no máximo 'max' elementos
- */
-CircularList* cl_new(unsigned long max);
-
-/**
- * libera toda memória associada a lista
- */
+CircularList* cl_new(void);
 CircularList* cl_destroy(CircularList* l, void* (*free_element)(void*));
 
-/**
- * retorna o número atual de elementos na lista
- */
-size_t cl_get_size(CircularList* lista);
+size_t cl_get_size(CircularList* l);
+void* cl_get_item(CircularList* l, size_t idx);
 
-/**
- * retorna o elemento de um indice da lista 
- */
-void* cl_get_item(CircularList* lista, size_t indice);
-
-/**
- * adiciona um elemento no indice fornecido
+/** add 'item' to the list, putting it at index 'idx'
  *
- * caso seja fornecido um indice positivo maior do que o numero atual de elementos e menor do que o número máximo de elementos, o elemento é adicionado ao final da lista circular
- */
-CircularList* cl_add(CircularList* lista, void* item, size_t indice);
-
-/**
-* adiciona um elemento em um indice da lista circular, de forma que fique ordenada
-*
-* caso seja fornecido um indice positivo maior do que o numero atual de elementos e menor do que o número máximo de elementos, o elemento é adicionado ao final da lista circular
-*/
-CircularList* cl_add_inorder(CircularList* lista, void* item, int (*comparar)(void*, void*));
-
-/**
- * retira o item contido no indice i da lista
+ * if 'idx' is greater than the current size of the circular list, then the
+ * item is effectively appended, thus becoming on the right of all remaining
+ * items of the list.
  *
- * o item removido continua alocado
+ * if 'idx' is lesser or equal to the current size of the list, then the item
+ * gets positioned at 'idx' and the element previously occupying that idx goes to
+ * its right.
+ * */
+CircularList* cl_add(CircularList* l, void* item, size_t idx);
+
+/**
+ * add an item somewhere in the list, so that it remains sorted
  */
-void* cl_remove(CircularList* lista, size_t indice);
+CircularList* cl_add_inorder(CircularList* l, void* item, int (*fcmp)(void*, void*));
+
+/** remove the item stored at index 'idx' */
+void* cl_remove(CircularList* l, size_t idx);

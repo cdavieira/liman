@@ -4,43 +4,26 @@
 
 #include "core/HuffmanTree.h"
 
+//A circular list of Tree's
 typedef struct TreeList TreeList;
 
-/**
- * cria uma nova lista circular de arvores
- */
 TreeList* treelist_new(unsigned long max);
+TreeList* treelist_destroy(TreeList* l);
+
+size_t treelist_get_size(TreeList* l);
+HuffmanTree* treelist_get_tree(TreeList* l, long idx);
 
 /**
- * libera lista circular de arvores
+ * add a tree to the beginning of the list
  */
-TreeList* treelist_destroy(TreeList* lista);
+TreeList* treelist_shift(TreeList* l, HuffmanTree* huff);
 
 /**
- * retorna o número atual de elementos na lista
+ * add a tree somewhere in the list, so that it remains sorted
  */
-size_t treelist_get_size(TreeList* lista);
+TreeList* treelist_add_inorder(TreeList* l, HuffmanTree* huff);
 
 /**
- * retorna o mapa (arvore) de um indice da lista 
+ * removes the tree of the beginning of the list
  */
-HuffmanTree* treelist_get_tree(TreeList* lista, long indice);
-
-/**
- * adiciona uma arvore no inicio da lista
- *
- * Caso seja fornecido um indice positivo maior do que o numero atual de elementos e menor do que o número máximo de elementos, o elemento é adicionado ao final da lista circular
- */
-TreeList* treelist_shift(TreeList* lista, HuffmanTree* map);
-
-/**
- * adiciona um mapa em um indice da lista de arvores, de forma que fique ordenada
- *
- * Caso seja fornecido um indice positivo maior do que o numero atual de elementos e menor do que o número máximo de elementos, o mapa é adicionado ao final da lista de arvores
- */
-TreeList* treelist_add_inorder(TreeList* lista, HuffmanTree* mapa);
-
-/**
- * retira a arvore contida no indice 0
- */
-HuffmanTree* treelist_unshift(TreeList* lista);
+HuffmanTree* treelist_unshift(TreeList* l);

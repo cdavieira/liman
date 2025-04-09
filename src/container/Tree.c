@@ -21,17 +21,35 @@ Tree* tree_new(void* item, Tree* left, Tree* right){
 	return t;
 }
 
-Tree* tree_destroy(Tree* t, void* (*desalocar_item)(void*)){
+Tree* tree_destroy(Tree* t, void* (*free_item)(void*)){
 	if(!t){
 		return NULL;
 	}
-	t->left = tree_destroy(t->left, desalocar_item);
-	t->right = tree_destroy(t->right, desalocar_item);
-	if(desalocar_item){
-		t->item = desalocar_item(t->item);
+	t->left = tree_destroy(t->left, free_item);
+	t->right = tree_destroy(t->right, free_item);
+	if(free_item){
+		t->item = free_item(t->item);
 	}
 	free(t);
 	return NULL;
+}
+
+
+
+void* tree_get_item(Tree* t){
+	return t->item;
+}
+
+size_t tree_get_id(Tree* t){
+	return t->id;
+}
+
+Tree* tree_get_left(Tree* t){
+	return t ? t->left : NULL;
+}
+
+Tree* tree_get_right(Tree* t){
+	return t ? t->right : NULL;
 }
 
 
@@ -41,26 +59,14 @@ Tree* tree_set_item(Tree* t, void* item){
 	return t;
 }
 
-Tree* tree_add_left(Tree* root, Tree* filho){
-	root->left = filho;
+Tree* tree_set_left(Tree* root, Tree* t){
+	root->left = t;
 	return root;
 }
 
-Tree* tree_add_right(Tree* root, Tree* filho){
-	root->right = filho;
+Tree* tree_set_right(Tree* root, Tree* t){
+	root->right = t;
 	return root;
-}
-
-Tree* tree_pop_left(Tree* root){
-	Tree* t = root->left;
-	root->left = NULL;
-	return t;
-}
-
-Tree* tree_pop_right(Tree* root){
-	Tree* t = root->right;
-	root->right = NULL;
-	return t;
 }
 
 
@@ -80,10 +86,11 @@ static void tree_print_rec(Tree* node, FILE* fp){
 	}
 }
 
-//dot format
 void tree_print(Tree* root, FILE* fp){
-	fprintf(fp, "digraph Tree {\n");
-	fprintf(fp, "    node [fontname=\"Arial\"];\n");
+	fprintf(fp,
+	    "digraph Tree {\n"
+	    "    node [fontname=\"Arial\"];\n"
+	);
 	if(!root){
 		fprintf(fp, "\n");
 	}
@@ -96,40 +103,16 @@ void tree_print(Tree* root, FILE* fp){
 	fprintf(fp, "}\n");
 }
 
-unsigned tree_is_leaf(Tree* candidato){
-	return candidato? (!candidato->right && !candidato->left ? 1 : 0) : 0;
-}
-
-void* tree_get_item(Tree* arvore){
-	return arvore->item;
-}
-
-size_t tree_get_id(Tree* root){
-	return root->id;
-}
-
-Tree* tree_get_left(Tree* t){
-	return t ? t->left : NULL;
-}
-
-Tree* tree_get_right(Tree* t){
-	return t ? t->right : NULL;
+unsigned tree_is_leaf(Tree* t){
+	return t? !t->right && !t->left: 0;
 }
 
 Tree* tree_search(Tree* t, void* search, unsigned (*fcmp)(void*, void*)){
-	Tree* tsearch = NULL;
-	if(tree_is_leaf(t)){
-		if(fcmp(t, search)){
-			return t;
-		}
+	if(!tree_is_leaf(t)){
+		Tree* ltree = tree_search(t->left, search, fcmp);
+		return ltree ? ltree : tree_search(t->right, search, fcmp);
 	}
-	else{
-		tsearch = tree_search(t->left, search, fcmp);
-		if(!tsearch){
-			tsearch = tree_search(t->right, search, fcmp);
-		}
-	}
-	return tsearch;
+	return fcmp(t, search) ? t : NULL;
 }
 
 unsigned long tree_get_count(Tree* t){
@@ -153,84 +136,65 @@ unsigned long tree_get_height(Tree* t){
 	return !tree_is_leaf(t) + ulgreater(tree_get_height(t->left), tree_get_height(t->right));
 }
 
-unsigned long tree_get_height2node(Tree* t, Tree* node, unsigned long height){
-	if(!t){
-		return 0;
-	}
-	return t == node? height : 
-	  (tree_get_height2node(t->right, node, height+1) + tree_get_height2node(t->left, node, height+1));
-}
-
 unsigned tree_exists(Tree* t, Tree* node){
 	if(!t){
 		return 0;
 	}
-	return t==node? 1 : (tree_exists(t->right, node) + tree_exists(t->left, node));
+	return t == node? 1 : tree_exists(t->right, node) || tree_exists(t->left, node);
 }
 
-char* tree_find_path(Tree* t, Tree* node){
-	if(!t || !node){
-		return NULL;
+/**
+ * best case: O(logN)
+ * worst case: O(N)
+ * */
+static int tree_get_path(
+    Tree* root,
+    Tree* node,
+    unsigned long rlen,
+    unsigned long rcode,
+    unsigned long *len,
+    unsigned long *code)
+{
+	if(root == NULL){
+		return 0;
 	}
-
-	if(!tree_exists(t, node)){
-		return NULL;
+	if(root == node){
+		*len = rlen;
+		*code = rcode;
+		return 1;
 	}
-
-	char* rota = NULL;
-
-	/* indica se o node pesquisado existe à direito do node raiz */
-	int existencia;
-
-	/* altura relativa de um nódulo em relação a raiz */
-	/* corresponde ao número de bits necessários para escrever a rota */
-	size_t nivel = tree_get_height2node(t, node, 0);
-
-	/* alocando o numero de bits necessarios para localização do node na
-	 * t + 1 caracter de terminação da string */
-	rota = calloc(nivel+1, sizeof(char));
-
-	/* armazena os nos intermediarios ate o node pesquisado */
-	Tree *corrente = NULL;
-
-	/* guarda o node pai do node corrente */
-	Tree *pai_corrente = t;
-	for(unsigned long i=0; i<nivel; i++){
-		// testa a existencia do node pesquisado na raiz direita do node pai
-		existencia = tree_exists(pai_corrente->right, node);
-
-		// se o node pesquisado existir a direita, ir para direita, senao ir para esquerda
-		corrente = existencia?pai_corrente->right : pai_corrente->left;
-
-		// se tivermos ido para a direita node passo anterior, então adicionamos 1 ao char, senao adicionamos 0
-		if(existencia){
-			strcat(rota, "1");
-		}
-		else{
-			strcat(rota, "0");
-		}
-
-		// atualizamos o pai da variavel corrente para a proxima iteração
-		pai_corrente = corrente;
-	}
-
-	return rota;
+	return \
+	  tree_get_path(root->left,  node, rlen+1, (rcode << 1) | 0, len, code) ||
+	  tree_get_path(root->right, node, rlen+1, (rcode << 1) | 1, len, code);
 }
 
-Tree* tree_descend(Tree* root, unsigned long codeLen, unsigned long code){
-	Tree* node = NULL;
+char* tree_find_path_str(Tree* t, Tree* node){
+	unsigned long codeLen;
+	unsigned long nodeCode;
+	if(!tree_get_path(t, node, 0, 0, &codeLen, &nodeCode)){
+		return NULL;
+	}
+	char* route = malloc((codeLen+1)*sizeof(char));
+	for(int i=codeLen-1, j=0; i>=0; i--, j++){
+		route[j] = '0' + ((nodeCode >> i) & 1);
+	}
+	route[codeLen] = '\0';
+	return route;
+}
+
+int tree_find_path(Tree* root, Tree* node, unsigned long *codeLen, unsigned long *nodeCode){
+	return tree_get_path(root, node, 0, 0, codeLen, nodeCode);
+}
+
+Tree* tree_descend(Tree* node, unsigned long codeLen, unsigned long code){
 	unsigned char bit;
-	for(unsigned long i=0; i<codeLen; i++){
-		bit = (code >> (codeLen - i - 1)) & 1;
+	for(int i=codeLen-1; node && i>=0; i--){
+		bit = (code >> i) & 1;
 		if(bit == 0){
-			node = root->left;
+			node = node->left;
 		}
 		else{
-			node = root->right;
-		}
-		root = node;
-		if(!root){
-			break;
+			node = node->right;
 		}
 	}
 	return node;

@@ -109,17 +109,17 @@ void analyze(char* compfile){
 	//Msg Info
 	bitmapLibera(read_bitmap(fp)); //advance the file until the beginning of the msg
 	ssize_t startMsgIdx = ftell(fp);
-	f.msgSizeRead = count_msg_bits(fp, f.tree);
+	f.msgSizeRead = read_msg(fp, NULL, f.tree);
 	if(fseek(fp, startMsgIdx, SEEK_SET) != 0){
 		perror("analyze: fseek error");
 		return;
 	}
 	size_t totalMsg = 0;
-	while(!feof(fp)){
-		fgetc(fp);
+	for(fgetc(fp); !feof(fp); fgetc(fp)){
 		totalMsg += 8;
 	}
-	f.msgPadRead = totalMsg - f.msgSizeRead;
+	printf("%zu %zu\n", totalMsg, f.msgSizeRead);
+	f.msgPadRead = totalMsg ? totalMsg - f.msgSizeRead : 0;
 
 	fclose(fp);
 

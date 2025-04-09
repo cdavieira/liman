@@ -4,7 +4,7 @@
 #include <malloc.h>
 #include <ctype.h>
 
-static unsigned long huffmanTree_msg_bitcount_aux(HuffmanTree* map, unsigned long height);
+static unsigned long huffmanTree_get_msg_size_rec(HuffmanTree* map, unsigned long height);
 
 
 
@@ -32,7 +32,7 @@ unsigned long huffmanTree_get_weight(HuffmanTree* node){
 	return caracter_get_weight((Caracter*)tree_get_item((Tree*)node));
 }
 
-bitmap* huffmanTree_get_bitmap(HuffmanTree* node){
+Bitmap* huffmanTree_get_bitmap(HuffmanTree* node){
 	return caracter_get_bmap((Caracter*)tree_get_item((Tree*)node));
 }
 
@@ -44,24 +44,19 @@ HuffmanTree* huffmanTree_get_right(HuffmanTree* map){
 	return (HuffmanTree*) tree_get_right((Tree*) map);
 }
 
-unsigned* huffmanTree_get_ASCII_addr(HuffmanTree* map){
-	return caracter_get_ASCII_addr((Caracter*)tree_get_item((Tree*)map));
-}
-
 
 
 
 
 HuffmanTree* huffmanTree_set_left(HuffmanTree* map, HuffmanTree* filho){
-	return (HuffmanTree*)tree_add_left((Tree*) map, (Tree*) filho);
+	return (HuffmanTree*)tree_set_left((Tree*) map, (Tree*) filho);
 }
 
 HuffmanTree* huffmanTree_set_right(HuffmanTree* map, HuffmanTree* filho){
-	return (HuffmanTree*)tree_add_right((Tree*) map, (Tree*) filho);
+	return (HuffmanTree*)tree_set_right((Tree*) map, (Tree*) filho);
 }
 
-/* lembrete: caracter de terminacao da string nao esta sendo considerado na alocacao */
-HuffmanTree* huffmanTree_set_bitmap(HuffmanTree* map, bitmap* bm){
+HuffmanTree* huffmanTree_set_bitmap(HuffmanTree* map, Bitmap* bm){
 	return (HuffmanTree*) tree_set_item((Tree*) map, (void*)caracter_set_bmap((Caracter*)tree_get_item((Tree*) map), bm));
 }
 
@@ -85,7 +80,7 @@ unsigned long huffmanTree_get_leaf_count(HuffmanTree* map){
 }
 
 char* huffmanTree_find_path(HuffmanTree* arvore, HuffmanTree* node){
-	return tree_find_path((Tree*) arvore, (Tree*) node);
+	return tree_find_path_str((Tree*) arvore, (Tree*) node);
 }
 
 HuffmanTree* huffmanTree_descend(HuffmanTree* map, unsigned long codeLen, unsigned long code){
@@ -93,25 +88,25 @@ HuffmanTree* huffmanTree_descend(HuffmanTree* map, unsigned long codeLen, unsign
 }
 
 static unsigned huffman_compare_ASCII(void* hufftree1, void* ascii){
-	return (*(huffmanTree_get_ASCII_addr((HuffmanTree*)hufftree1)) == *((unsigned*)ascii));
+	return (huffmanTree_get_ASCII((HuffmanTree*)hufftree1)) == *((unsigned*)ascii);
 }
 
-HuffmanTree* huffmanTree_search_ASCII(HuffmanTree* map, unsigned* ASCII){
-	return (HuffmanTree*) tree_search((Tree*) map, (void*) ASCII, huffman_compare_ASCII);
+HuffmanTree* huffmanTree_search_ASCII(HuffmanTree* map, unsigned ASCII){
+	return (HuffmanTree*) tree_search((Tree*) map, (void*) &ASCII, huffman_compare_ASCII);
 }
 
-unsigned long huffmanTree_getMsgSize(HuffmanTree* map){
-	return huffmanTree_msg_bitcount_aux(map, 0);
+unsigned long huffmanTree_get_msg_size(HuffmanTree* map){
+	return huffmanTree_get_msg_size_rec(map, 0);
 }
 
-static unsigned long huffmanTree_msg_bitcount_aux(HuffmanTree* map, unsigned long height){
+static unsigned long huffmanTree_get_msg_size_rec(HuffmanTree* map, unsigned long height){
 	if(!map){
 		return 0;
 	}
 	if(huffmanTree_is_leaf(map)){
 		return height * huffmanTree_get_weight(map);
 	}
-	return huffmanTree_msg_bitcount_aux(huffmanTree_get_left(map), height+1) + huffmanTree_msg_bitcount_aux(huffmanTree_get_right(map), height+1);
+	return huffmanTree_get_msg_size_rec(huffmanTree_get_left(map), height+1) + huffmanTree_get_msg_size_rec(huffmanTree_get_right(map), height+1);
 }
 
 int huffmanTree_compare_freq(HuffmanTree* map1, HuffmanTree* map2){
@@ -132,7 +127,7 @@ void huffmanTree_print_codes(HuffmanTree* hufftree, FILE* fp){
 	const char* notfound = "not encoded";
 	ssize_t nodeid;
 	for(unsigned letra = 0; letra<256; letra++){
-		t = huffmanTree_search_ASCII(hufftree, &letra);
+		t = huffmanTree_search_ASCII(hufftree, letra);
 		nodeCode = huffmanTree_find_path(hufftree, t);
 		code = nodeCode? nodeCode : notfound;
 		nodeid = t ? huffmanTree_get_id(t) : -1;

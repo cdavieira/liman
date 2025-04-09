@@ -9,11 +9,6 @@
 size_t count_tree_bits(FILE* fpin);
 
 /**
- * Count how many bits were used to encode the message in the compressed file
- */
-size_t count_msg_bits(FILE* fpin, HuffmanTree* hufftree);
-
-/**
  * Read and parse the huffman tree stored in the compressed file
  *
  * NOTE: this is a helper/wrapper function for 'read_bitmap' followed by
@@ -23,7 +18,7 @@ HuffmanTree* read_huffmanTree(FILE* fpin);
 
 /**
  * Read and parse the huffman tree stored in the compressed file and convert
- * it to a bitmap
+ * it to a Bitmap
  *
  * The file cursor is advanced (on purpose) until the beginning of the encoded
  * message.
@@ -35,13 +30,13 @@ HuffmanTree* read_huffmanTree(FILE* fpin);
  * For that reason, this function uses 'fgetc' to read each byte of the tree
  * sequentially.
  */
-bitmap* read_bitmap(FILE* fpin);
+Bitmap* read_bitmap(FILE* fpin);
 
 /**
  * Read and parse the huffman tree stored in the compressed file and convert
- * it to a bitmap
+ * it to a Bitmap
  */
-HuffmanTree* bitmap2huffmanTree(bitmap* bm, unsigned *index);
+HuffmanTree* bitmap2huffmanTree(Bitmap* bm, unsigned *index);
 
 /**
  * Traduz o conteudo de um arquivo compactado segundo a árvore de codificação
@@ -55,13 +50,14 @@ HuffmanTree* bitmap2huffmanTree(bitmap* bm, unsigned *index);
  * possível reproduzir nos testes, por ser algo raro de ocorrer. Caso o último
  * byte do arquivo compactado tenha mais que um '\0' codificado, então a
  * descompactação teoricamente falhará e o arquivo final estará incompleto.
- * É um bug corrigível. Uma forma não tão boa de corrigir isso seria gravar o
- * índice do bit do último byte onde o '\0' final ocorre (no começo do arquivo
- * compactado).
+ * É um bug corrigível. Leia os comentarios em 'decompress.c' para mais
+ * informações.
  *
  * Funcionamento:
  * 1. ler um bit
  * 2. verificar se esse bit leva até algum no folha da arvore/HuffmanTree
  * 3. se sim, então chegou-se a uma letra. Caso contrário, continua leitura
+ *
+ * @return the number of bits read (that is, the size of the msg in bits)
  */
-void read_msg(FILE* fpin, FILE* fpout, HuffmanTree* mapa_caracteres);
+size_t read_msg(FILE* fpin, FILE* fpout, HuffmanTree* mapa_caracteres);

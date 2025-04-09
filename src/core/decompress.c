@@ -7,7 +7,7 @@
 #include <assert.h>
 
 HuffmanTree* read_huffmanTree(FILE* fpin){
-	bitmap *bm = read_bitmap(fpin);
+	Bitmap *bm = read_bitmap(fpin);
 	assert(bm);
 	unsigned index = 0;
 	HuffmanTree *map = bitmap2huffmanTree(bm, &index);
@@ -15,22 +15,21 @@ HuffmanTree* read_huffmanTree(FILE* fpin){
 	return map;
 }
 
-bitmap* read_bitmap(FILE* fpin){
-	unsigned long const bm_size = count_tree_bits(fpin);
+Bitmap* read_bitmap(FILE* fpin){
+	const size_t bm_size = count_tree_bits(fpin);
 	if(!bm_size){
 		return NULL;
 	}
 
-	bitmap* bm = bitmapInit(bm_size);
-
+	Bitmap* bm = bitmapInit(bm_size);
 	char c = 0;
-	unsigned long bits_lidos = 0;
-	while(bits_lidos < bm_size){
+	unsigned long bits = 0;
+	while(bits < bm_size){
 		c = fgetc(fpin);
 		for(int j=7; j>=0; j--){
 			bitmapAppendLeastSignificantBit(bm, bits_bitAt(c, j));
-			bits_lidos++;
-			if(bits_lidos == bm_size){
+			bits++;
+			if(bits == bm_size){
 				break;
 			}
 		}
@@ -38,22 +37,22 @@ bitmap* read_bitmap(FILE* fpin){
 	return bm;
 }
 
-HuffmanTree* bitmap2huffmanTree(bitmap* bm, unsigned *index){
+HuffmanTree* bitmap2huffmanTree(Bitmap* bm, unsigned *index){
 	if(*index >= bitmapGetLength(bm)){
 		return NULL;
 	}
 
 	// index gets incremented only after the function call returns
-	unsigned char bit = bitmapGetBit(bm, (*index)++); 
+	unsigned char bit = bitmapGetBit(bm, (*index)++);
 	HuffmanTree* map = NULL;
 	if(bit){ //Leaf node
 		unsigned char ascii = 0;
-		for(unsigned i=0;i<8; i++){		  
-			bit = bitmapGetBit(bm, (*index)++); 
-			bit <<= (7-i);					
+		for(unsigned i=0;i<8; i++){
+			bit = bitmapGetBit(bm, (*index)++);
+			bit <<= (7-i);
 			ascii |= bit;
 		}
-		map = huffmanTree_new(ascii, 0, 0, 0);	  
+		map = huffmanTree_new(ascii, 0, 0, 0);
 	}
 	else{ //Non leaf node
 		map = huffmanTree_new(0, 0, 0, 0);
@@ -64,19 +63,19 @@ HuffmanTree* bitmap2huffmanTree(bitmap* bm, unsigned *index){
 	return map;
 }
 
-void read_msg(FILE* fpin, FILE* fpout, HuffmanTree* hufftree){
+size_t read_msg(FILE* fpin, FILE* fpout, HuffmanTree* hufftree){
+	HuffmanTree* t;
 	unsigned char bit;
 	unsigned char ch;
-	HuffmanTree* t;
-
 	unsigned code = 0;
 	unsigned codeLen = 0;
+	size_t nBits = 0;
 	ssize_t nBytes = 0;
 	ssize_t lastByte = file_get_remaining_nbytes(fpin);
-	char c = fgetc(fpin);
-	while(!feof(fpin)){
+	for(char c = fgetc(fpin); !feof(fpin); c = fgetc(fpin)){
 		nBytes++;
 		for(int i=7; i>=0; i--){
+			nBits++;
 			bit = bits_bitAt(c, i);
 			code = (code << 1) | bit;
 			codeLen++;
@@ -96,14 +95,27 @@ void read_msg(FILE* fpin, FILE* fpout, HuffmanTree* hufftree){
 			//If two or more NULLS exist in the last byte (which
 			//is fairly uncommon), then the decompression of the
 			//message will fail :(
+			//The reason for this bug is that '\0' can be used
+			//(just like any other byte) throughout the compressed
+			//message to encode data (this is expected). Therefore
+			//we need to find a way of knowing when to stop
+			//reading the file, since '\0' isn't by itself a
+			//signal to do so anymore. My workaround for this
+			//problem is to check if we're on the last byte of the
+			//file or not. If we are in the last byte and we read
+			//a '\0', then we stop reading.  But, what if '\0' was
+			//used in the last byte of the file just to encode
+			//information and there's one additional '\0' which is
+			//the EOF? Well, thats the issue!
 			if(ch == '\0' && nBytes == lastByte){
 				break;
 			}
-			fprintf(fpout, "%c", ch);   
+			if(fpout){
+				fprintf(fpout, "%c", ch);
+			}
 		}
-		c = fgetc(fpin);
 	}
-	return ;
+	return nBits;
 }
 
 size_t count_tree_bits(FILE* fpin){
@@ -165,40 +177,4 @@ size_t count_tree_bits(FILE* fpin){
 quit:
 	rewind(fpin);
 	return totalBits;
-}
-
-
-size_t count_msg_bits(FILE* fpin, HuffmanTree* hufftree){
-	HuffmanTree* t;
-	unsigned char bit;
-	unsigned code = 0;
-	unsigned codeLen = 0;
-	ssize_t nBits = 0;
-	ssize_t nBytes = 0;
-	ssize_t lastByte = file_get_remaining_nbytes(fpin);
-	while(!feof(fpin)){
-		char c = fgetc(fpin);
-		nBytes++;
-		for(int i=7; i>=0; i--){
-			nBits++;
-			bit = bits_bitAt(c, i);
-			code = (code << 1) | bit;
-			codeLen++;
-			t = huffmanTree_descend(hufftree, codeLen, code);
-			if(!t || !huffmanTree_is_leaf(t)){
-				continue;
-			}
-
-			code = 0;
-			codeLen = 0;
-
-			//If two or more NULLS exist in the last byte (which
-			//is fairly uncommon), then the decompression of the
-			//message will fail :(
-			if(huffmanTree_get_ASCII(t) == '\0' && nBytes == lastByte){
-				break;
-			}
-		}
-	}
-	return nBits;
 }
