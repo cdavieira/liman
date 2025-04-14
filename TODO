@@ -11,6 +11,8 @@ Todo
 * [ ] improve 'CircularLinkedList' by explicitly creating append, pop, shift
 and using those, instead of relying on generic 'add' and 'remove' functions
 (for performance gains)
+* [ ] change unsigned long to uint64_t or size_t where suitable
+* [ ] centralize all bit manipulation in utils/bits.h?
 
 Done
 * [X] fix bug where more than one '\0' was written in the end of some .comp files

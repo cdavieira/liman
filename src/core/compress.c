@@ -97,7 +97,6 @@ size_t dumpHuffmanEncodedText(HuffmanTree* root, InputBytes* in, FILE* fpout){
 		bmapLookup[i] = t ? huffmanTree_get_bitmap(t) : NULL;
 	}
 
-	// unsigned long size = huffmanTree_get_msg_size(root) + bitmapGetLength(bmapLookup[0]); //in bits, no padbits yet
 	unsigned long size = huffmanTree_get_msg_size(root);
 	Bitmap *bmapMsg = bitmapInit(size);
 	Bitmap *bmapCode = NULL;
@@ -121,7 +120,6 @@ size_t dumpHuffmanEncodedText(HuffmanTree* root, InputBytes* in, FILE* fpout){
 #endif
 	}
 
-	// bitmapConcat(bmapMsg, bmapLookup[0]); //adding '\0' to the end of the file
 	bitmapDump(bmapMsg, fpout);
 	bitmapLibera(bmapMsg);
 
@@ -134,7 +132,7 @@ size_t dumpHuffmanEncodedText(HuffmanTree* root, InputBytes* in, FILE* fpout){
 
 
 
-//static
+//static and recursive
 static void huffmanTree_gencodes(HuffmanTree* root, unsigned codeLen, unsigned long nodeCode){
 	if(!root){
 		return ;
@@ -161,18 +159,16 @@ static void huffmanTree_gencodes(HuffmanTree* root, unsigned codeLen, unsigned l
 }
 
 static void huffmanTree_fillBitmap(HuffmanTree* map, Bitmap* bm){
-	unsigned const ehFolha = huffmanTree_is_leaf(map);
-	bitmapAppendLeastSignificantBit(bm, ehFolha);
-	if(!ehFolha){
+	if(!huffmanTree_is_leaf(map)){
+		bitmapAppendLeastSignificantBit(bm, 0);
 		huffmanTree_fillBitmap(huffmanTree_get_left(map), bm);
 		huffmanTree_fillBitmap(huffmanTree_get_right(map), bm);
 		return ;
 	}
-	unsigned char letra = huffmanTree_get_ASCII(map);
-	unsigned char bit = 0;
+	bitmapAppendLeastSignificantBit(bm, 1);
+	unsigned char ch = huffmanTree_get_ASCII(map);
 	for(int i=7; i>=0; i--){
-		bit = bits_bitAt(letra, i);
-		bitmapAppendLeastSignificantBit(bm, bit);
+		bitmapAppendLeastSignificantBit(bm, bits_bitAt(ch, i));
 	}
 }
 
@@ -204,6 +200,10 @@ InputBytes* inputBytes_destroy(InputBytes* in){
 	free(in->bytes);
 	free(in);
 	return NULL;
+}
+
+ssize_t inputBytes_getSize(InputBytes* in){
+	return in->nbytes;
 }
 
 

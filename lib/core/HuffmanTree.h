@@ -15,6 +15,7 @@ unsigned long huffmanTree_get_weight(HuffmanTree* node);
 Bitmap* huffmanTree_get_bitmap(HuffmanTree* node);
 HuffmanTree* huffmanTree_get_left(HuffmanTree* hufftree);
 HuffmanTree* huffmanTree_get_right(HuffmanTree* hufftree);
+HuffmanTree* huffmanTree_get_child(HuffmanTree* map, unsigned lr);
 
 //Setters
 HuffmanTree* huffmanTree_set_left(HuffmanTree* hufftree, HuffmanTree* filho);
@@ -30,7 +31,8 @@ int huffmanTree_compare_freq(HuffmanTree* t1, HuffmanTree* t2);
 unsigned long huffmanTree_get_height(HuffmanTree* hufftree);
 unsigned long huffmanTree_get_count(HuffmanTree* hufftree);
 unsigned long huffmanTree_get_leaf_count(HuffmanTree* hufftree);
-char* huffmanTree_find_path(HuffmanTree* arvore, HuffmanTree* node);
+char* huffmanTree_find_path_str(HuffmanTree* hufftree, HuffmanTree* node);
+int huffmanTree_find_path(HuffmanTree* root, HuffmanTree* node, unsigned long *codeLen, unsigned long *nodeCode);
 HuffmanTree* huffmanTree_descend(HuffmanTree* hufftree, unsigned long codeLen, unsigned long code);
 HuffmanTree* huffmanTree_search_ASCII(HuffmanTree* hufftree, unsigned ASCII);
 /**

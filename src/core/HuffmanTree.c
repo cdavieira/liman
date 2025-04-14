@@ -3,6 +3,7 @@
 #include "container/Tree.h"
 #include <malloc.h>
 #include <ctype.h>
+#include <stdint.h>
 
 static unsigned long huffmanTree_get_msg_size_rec(HuffmanTree* map, unsigned long height);
 
@@ -44,6 +45,10 @@ HuffmanTree* huffmanTree_get_right(HuffmanTree* map){
 	return (HuffmanTree*) tree_get_right((Tree*) map);
 }
 
+HuffmanTree* huffmanTree_get_child(HuffmanTree* map, unsigned lr){
+	return (HuffmanTree*) tree_get_child((Tree*) map, lr);
+}
+
 
 
 
@@ -79,8 +84,12 @@ unsigned long huffmanTree_get_leaf_count(HuffmanTree* map){
 	return tree_get_leaf_count((Tree*) map);
 }
 
-char* huffmanTree_find_path(HuffmanTree* arvore, HuffmanTree* node){
+char* huffmanTree_find_path_str(HuffmanTree* arvore, HuffmanTree* node){
 	return tree_find_path_str((Tree*) arvore, (Tree*) node);
+}
+
+int huffmanTree_find_path(HuffmanTree* root, HuffmanTree* node, unsigned long *codeLen, unsigned long *nodeCode){
+	return tree_find_path((Tree*) root, (Tree*) node, codeLen, nodeCode);
 }
 
 HuffmanTree* huffmanTree_descend(HuffmanTree* map, unsigned long codeLen, unsigned long code){
@@ -128,7 +137,7 @@ void huffmanTree_print_codes(HuffmanTree* hufftree, FILE* fp){
 	ssize_t nodeid;
 	for(unsigned letra = 0; letra<256; letra++){
 		t = huffmanTree_search_ASCII(hufftree, letra);
-		nodeCode = huffmanTree_find_path(hufftree, t);
+		nodeCode = huffmanTree_find_path_str(hufftree, t);
 		code = nodeCode? nodeCode : notfound;
 		nodeid = t ? huffmanTree_get_id(t) : -1;
 		if(isprint(letra)){

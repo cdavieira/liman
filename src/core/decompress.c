@@ -5,6 +5,7 @@
 #include "utils/file.h"
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
 HuffmanTree* read_huffmanTree(FILE* fpin){
 	Bitmap *bm = read_bitmap(fpin);
@@ -64,7 +65,7 @@ HuffmanTree* bitmap2huffmanTree(Bitmap* bm, unsigned *index){
 }
 
 size_t read_msg(FILE* fpin, FILE* fpout, HuffmanTree* hufftree){
-	HuffmanTree* t;
+	HuffmanTree* t = hufftree;
 	unsigned char bit;
 	unsigned char ch;
 	unsigned code = 0;
@@ -79,7 +80,7 @@ size_t read_msg(FILE* fpin, FILE* fpout, HuffmanTree* hufftree){
 			bit = bits_bitAt(c, i);
 			code = (code << 1) | bit;
 			codeLen++;
-			t = huffmanTree_descend(hufftree, codeLen, code);
+			t = huffmanTree_get_child(t, bit);
 			if(!t || !huffmanTree_is_leaf(t)){
 				continue;
 			}
@@ -91,6 +92,7 @@ size_t read_msg(FILE* fpin, FILE* fpout, HuffmanTree* hufftree){
 #endif
 			code = 0;
 			codeLen = 0;
+			t = hufftree;
 
 			//If two or more NULLS exist in the last byte (which
 			//is fairly uncommon), then the decompression of the
@@ -102,7 +104,7 @@ size_t read_msg(FILE* fpin, FILE* fpout, HuffmanTree* hufftree){
 			//reading the file, since '\0' isn't by itself a
 			//signal to do so anymore. My workaround for this
 			//problem is to check if we're on the last byte of the
-			//file or not. If we are in the last byte and we read
+			//file or not. If we are reading the last byte and we read
 			//a '\0', then we stop reading.  But, what if '\0' was
 			//used in the last byte of the file just to encode
 			//information and there's one additional '\0' which is

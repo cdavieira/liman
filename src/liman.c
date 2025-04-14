@@ -10,18 +10,18 @@
 #include <malloc.h>
 #include <assert.h>
 
-static void compress_msg(char* inputfile, const char* outputfile, size_t treesz, size_t textsz);
-static void decompress_msg(char* inputfile, const char* outputfile, FILE* fpin, FILE* fpout);
-
 void compress(char* inputfile){
 	InputBytes* in = inputBytes_new(inputfile);
 	ByteFrequency* freq = byteFreq_new(in);
 	HuffmanTree* hufftree = huffman(freq);
 	char *outputfile = file_add_ext(file_rem_path(inputfile), ".comp");
 	FILE *fpout = fopen(outputfile, "wb");
-	size_t treesz = dumpHuffmanTree(hufftree, fpout);
-	size_t textsz = dumpHuffmanEncodedText(hufftree, in, fpout);
-	compress_msg(inputfile, outputfile, treesz, textsz);
+	size_t treesz = dumpHuffmanTree(hufftree, fpout); //in bits
+	size_t textsz = dumpHuffmanEncodedText(hufftree, in, fpout); //in bits
+	size_t oldsz = inputBytes_getSize(in); //in bytes
+	size_t newsz = ((treesz+textsz)>>3); //in bytes
+	printf("compression finished: %s saved as %s!\n", inputfile, outputfile);
+	printf("from %zu bytes to %zu bytes (%.2f%%)\n", oldsz, newsz, (100.0f*newsz)/oldsz);
 
 	fclose(fpout);
 	free(outputfile);
@@ -29,22 +29,6 @@ void compress(char* inputfile){
 	freq = byteFreq_destroy(freq);
 	in = inputBytes_destroy(in);
 }
-
-static void compress_msg(char* inputfile, const char* outputfile, size_t treesz, size_t textsz){
-	printf("compression finished: %s saved as %s!\n", inputfile, outputfile);
-#ifdef DEBUG
-	printf("map: %lu bytes (%lu bits)\n", treesz >> 3, treesz);
-	printf("msg: %lu bytes (%lu bits)\n", textsz >> 3, textsz);
-#endif
-	FILE* fp = fopen(inputfile, "r");
-	size_t oldsz = file_get_nbytes(fp); //bytes
-	size_t newsz = (treesz+textsz) >> 3; //bytes
-	float deflation = (double)newsz/oldsz * 100;
-	printf("from %lu bytes to %lu bytes (%.2f%%)\n", oldsz, newsz, deflation);
-	fclose(fp);
-}
-
-
 
 void decompress(char* inputfile){
 	FILE *fpin = fopen(inputfile, "rb");
@@ -54,20 +38,16 @@ void decompress(char* inputfile){
 	char* outputfile = file_add_pref(file_rem_ext(inputfile), "unhuffman-");
 	FILE *fpout = fopen(outputfile, "wb");
 	read_msg(fpin, fpout, map);
-	decompress_msg(inputfile, outputfile, fpin, fpout);
+
+	size_t oldsz = file_get_nbytes(fpin); //in bytes
+	size_t newsz = file_get_nbytes(fpout); //in bytes
+	printf("decompression finished: %s saved as %s!\n", inputfile, outputfile);
+	printf("from %zu bytes to %zu bytes\n", oldsz, newsz);
 
 	fclose(fpout);
 	free(outputfile);
 	huffmanTree_destroy(map);
 	fclose(fpin);
-}
-
-static void decompress_msg(char* inputfile, const char* outputfile, FILE* fpin, FILE* fpout){
-	size_t oldsz = file_get_nbytes(fpin); //bytes
-	size_t newsz = file_get_nbytes(fpout); //bytes
-	float inflation = ((double)newsz/oldsz - 1) * 100;
-	printf("decompression finished: %s saved as %s!\n", inputfile, outputfile);
-	printf("from %lu bytes to %lu bytes\n", oldsz, newsz);
 }
 
 
@@ -118,7 +98,6 @@ void analyze(char* compfile){
 	for(fgetc(fp); !feof(fp); fgetc(fp)){
 		totalMsg += 8;
 	}
-	printf("%zu %zu\n", totalMsg, f.msgSizeRead);
 	f.msgPadRead = totalMsg ? totalMsg - f.msgSizeRead : 0;
 
 	fclose(fp);

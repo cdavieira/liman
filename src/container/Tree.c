@@ -1,5 +1,4 @@
 #include "container/Tree.h"
-#include "utils/math.h"
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
@@ -46,6 +45,15 @@ size_t tree_get_id(Tree* t){
 
 Tree* tree_get_left(Tree* t){
 	return t ? t->left : NULL;
+}
+
+Tree* tree_get_child(Tree* root, unsigned lr){
+	switch(lr){
+		case 0: return root->left;
+		case 1: return root->right;
+		default: return NULL;
+	}
+	return NULL;
 }
 
 Tree* tree_get_right(Tree* t){
@@ -133,7 +141,9 @@ unsigned long tree_get_height(Tree* t){
 	if(!t){
 		return 0;
 	}
-	return !tree_is_leaf(t) + ulgreater(tree_get_height(t->left), tree_get_height(t->right));
+	unsigned long lh = tree_get_height(t->left);
+	unsigned long rh = tree_get_height(t->right);
+	return !tree_is_leaf(t) + (lh > rh ? lh : rh);
 }
 
 unsigned tree_exists(Tree* t, Tree* node){

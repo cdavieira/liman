@@ -10,6 +10,7 @@ Tree* tree_destroy(Tree* root, void* (*free_item)(void*));
 void* tree_get_item(Tree* root);
 Tree* tree_get_left(Tree* root);
 Tree* tree_get_right(Tree* root);
+Tree* tree_get_child(Tree* root, unsigned lr);
 size_t tree_get_id(Tree* root);
 
 Tree* tree_set_item(Tree* t, void* item);
