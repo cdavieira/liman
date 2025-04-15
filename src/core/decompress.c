@@ -48,9 +48,9 @@ HuffmanTree* bitmap2huffmanTree(Bitmap* bm, unsigned *index){
 	HuffmanTree* map = NULL;
 	if(bit){ //Leaf node
 		unsigned char ascii = 0;
-		for(unsigned i=0;i<8; i++){
+		for(int i=7; i>=0; i--){
 			bit = bitmapGetBit(bm, (*index)++);
-			bit <<= (7-i);
+			bit <<= i;
 			ascii |= bit;
 		}
 		map = huffmanTree_new(ascii, 0, 0, 0);
