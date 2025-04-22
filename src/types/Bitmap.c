@@ -4,7 +4,7 @@
  */
 
 #include <stdlib.h>
-#include "container/Bitmap.h"
+#include "types/Bitmap.h"
 
 struct bitmap {
 	unsigned int max_size;
@@ -65,13 +65,13 @@ void bitmapLibera (Bitmap* bm){
  */
 
 void bitmapDump(Bitmap *bm, FILE* fpout){
-	unsigned char* content = bitmapGetContents(bm);
 	unsigned tam = bitmapGetLength(bm);
+	tam = tam % 8 == 0 ? tam/8 : tam/8 + 1;
 	/* O buffer do Bitmap (char*) foi alocado utilizando a função
 	 * calloc, por isso apresenta um total de bits multiplo de 8.
 	 * Isso fará a funcao fwrite escrever alguns bits a mais em
 	 * relação ao tamanho real do Bitmap */
-	fwrite(content, sizeof(unsigned char), tam? (1+tam/8) : 0, fpout);
+	fwrite(bm->contents, sizeof(unsigned char), tam, fpout);
 }
 
 void bitmapConcat(Bitmap *dest, Bitmap *source){

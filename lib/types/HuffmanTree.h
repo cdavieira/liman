@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdio.h>
-#include "container/Bitmap.h"
+#include "types/Bitmap.h"
 typedef struct HuffmanTree HuffmanTree;
 
 //Instantiation/destruction
@@ -18,8 +18,8 @@ HuffmanTree* huffmanTree_get_right(HuffmanTree* hufftree);
 HuffmanTree* huffmanTree_get_child(HuffmanTree* map, unsigned lr);
 
 //Setters
-HuffmanTree* huffmanTree_set_left(HuffmanTree* hufftree, HuffmanTree* filho);
-HuffmanTree* huffmanTree_set_right(HuffmanTree* hufftree, HuffmanTree* filho);
+HuffmanTree* huffmanTree_set_left(HuffmanTree* hufftree, HuffmanTree* child);
+HuffmanTree* huffmanTree_set_right(HuffmanTree* hufftree, HuffmanTree* child);
 HuffmanTree* huffmanTree_set_bitmap(HuffmanTree* hufftree, Bitmap* bm);
 
 //To be or not to be
@@ -35,13 +35,6 @@ char* huffmanTree_find_path_str(HuffmanTree* hufftree, HuffmanTree* node);
 int huffmanTree_find_path(HuffmanTree* root, HuffmanTree* node, unsigned long *codeLen, unsigned long *nodeCode);
 HuffmanTree* huffmanTree_descend(HuffmanTree* hufftree, unsigned long codeLen, unsigned long code);
 HuffmanTree* huffmanTree_search_ASCII(HuffmanTree* hufftree, unsigned ASCII);
-/**
- * calculate the minimum number of bits needed to store the msg encoded by this tree.
- * 
- * this function can only be called by the compressor. The huffmanTree decoded
- * by the decompressor lacks the 'weights' of each byte. Therefore, if the
- * decompressor calls this function, it will always return 0.
- * */
 unsigned long huffmanTree_get_msg_size(HuffmanTree* hufftree);
 
 /* prints the huffmanTree in the .dot format */

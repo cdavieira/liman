@@ -1,4 +1,4 @@
-#include "core/Caracter.h"
+#include "types/Caracter.h"
 #include <stdio.h>
 #include <malloc.h>
 

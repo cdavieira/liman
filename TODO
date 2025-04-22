@@ -1,15 +1,8 @@
 Todo
-* [ ] finish translating from portuguese to english
-* [ ] cleanup liman.c (analyze is big, compress and decompress could be better)
-* [ ] change %lu for %zu in all printfs
-* [ ] use 'getopt' instead of using argv directly
-* [ ] add more commandline options for all 3 programs
-* [ ] struct names in CamelCase
-* [ ] var and funcnames using a mesh of pascalCase and snake_case (except for Bitmap.c)
-* [ ] use doxygen for documentation
-* [ ] create a 'help' makefile target
-* [ ] change unsigned long to uint64_t or size_t where suitable
+* [ ] add doxygen for documentation
 * [ ] centralize all bit manipulation in utils/bits.h?
+* [ ] properly handle cases where FILE* == NULL in liman.c
+* [ ] change unsigned long to uint64_t or size_t where suitable
 
 Done
 * [X] improve 'CircularLinkedList' by explicitly creating append, pop, shift
@@ -17,3 +10,17 @@ and using those, instead of relying on generic 'add' and 'remove' functions
 (for performance gains)
 * [X] fix bug where more than one '\0' was written in the end of some .comp files
 * [X] improve the implementation of Tree.c
+* [X] struct names in CamelCase
+* [X] var and funcnames using a mesh of pascalCase and snake_case (except for Bitmap.c)
+* [X] cleanup liman.c (analyze is big, compress and decompress could be better)
+* [X] provide two decompression methods (1pass and 2pass)
+* [X] replace fprintf for fputc whenever possible (fprintf is unsafe according to clangtidy)
+* [X] use 'getopt' instead of using argv directly
+* [X] add more commandline options for huhman
+* [X] run valgrind and look for leak errors
+* [X] reimplement huhman
+* [X] change %lu for %zu in all printfs
+* [X] fix total number of bytes written by 'bitmapDump'
+* [X] finish translating from portuguese to english (most parts)
+* [X] update README (on how to run huhman and the compressed filesize table)
+* [X] rewrite README (make texts shorter, add images to the huffmantree pdf and more)

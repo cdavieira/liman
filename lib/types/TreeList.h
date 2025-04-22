@@ -2,7 +2,7 @@
 
 #include <stddef.h>
 
-#include "core/HuffmanTree.h"
+#include "types/HuffmanTree.h"
 
 //A circular list of Tree's
 typedef struct TreeList TreeList;

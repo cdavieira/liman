@@ -1,6 +1,6 @@
-#include "container/TreeList.h"
 #include "container/CircularLinkedList.h"
-#include "core/HuffmanTree.h"
+#include "types/TreeList.h"
+#include "types/HuffmanTree.h"
 
 TreeList* treelist_new(unsigned long max){
 	return (TreeList*) cl_new();
@@ -19,7 +19,6 @@ HuffmanTree* treelist_get_tree(TreeList* l, long idx){
 }
 
 TreeList* treelist_shift(TreeList* l, HuffmanTree* huff){
-	// return (TreeList*)cl_add((CircularList*)l, (void*) huff, 0);
 	return (TreeList*)cl_shift((CircularList*)l, (void*) huff);
 }
 
@@ -28,6 +27,5 @@ TreeList* treelist_add_inorder(TreeList* l, HuffmanTree* huff){
 }
 
 HuffmanTree* treelist_unshift(TreeList* l){
-	// return (HuffmanTree*)cl_remove((CircularList*)l, 0);
 	return (HuffmanTree*)cl_unshift((CircularList*)l);
 }

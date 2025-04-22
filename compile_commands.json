@@ -10,9 +10,9 @@
       "obj/liman.o",
       "src/liman.c"
     ],
-    "directory": "/home/carlos/repos/misc/liman",
-    "file": "/home/carlos/repos/misc/liman/src/liman.c",
-    "output": "/home/carlos/repos/misc/liman/obj/liman.o"
+    "directory": "/home/carlos/repos/liman",
+    "file": "/home/carlos/repos/liman/src/liman.c",
+    "output": "/home/carlos/repos/liman/obj/liman.o"
   },
   {
     "arguments": [
@@ -25,24 +25,9 @@
       "obj/main.o",
       "src/main.c"
     ],
-    "directory": "/home/carlos/repos/misc/liman",
-    "file": "/home/carlos/repos/misc/liman/src/main.c",
-    "output": "/home/carlos/repos/misc/liman/obj/main.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/gcc",
-      "-c",
-      "-g",
-      "-I",
-      "lib",
-      "-o",
-      "obj/container/Bitmap.o",
-      "src/container/Bitmap.c"
-    ],
-    "directory": "/home/carlos/repos/misc/liman",
-    "file": "/home/carlos/repos/misc/liman/src/container/Bitmap.c",
-    "output": "/home/carlos/repos/misc/liman/obj/container/Bitmap.o"
+    "directory": "/home/carlos/repos/liman",
+    "file": "/home/carlos/repos/liman/src/main.c",
+    "output": "/home/carlos/repos/liman/obj/main.o"
   },
   {
     "arguments": [
@@ -55,9 +40,9 @@
       "obj/container/CircularLinkedList.o",
       "src/container/CircularLinkedList.c"
     ],
-    "directory": "/home/carlos/repos/misc/liman",
-    "file": "/home/carlos/repos/misc/liman/src/container/CircularLinkedList.c",
-    "output": "/home/carlos/repos/misc/liman/obj/container/CircularLinkedList.o"
+    "directory": "/home/carlos/repos/liman",
+    "file": "/home/carlos/repos/liman/src/container/CircularLinkedList.c",
+    "output": "/home/carlos/repos/liman/obj/container/CircularLinkedList.o"
   },
   {
     "arguments": [
@@ -70,9 +55,9 @@
       "obj/container/Tree.o",
       "src/container/Tree.c"
     ],
-    "directory": "/home/carlos/repos/misc/liman",
-    "file": "/home/carlos/repos/misc/liman/src/container/Tree.c",
-    "output": "/home/carlos/repos/misc/liman/obj/container/Tree.o"
+    "directory": "/home/carlos/repos/liman",
+    "file": "/home/carlos/repos/liman/src/container/Tree.c",
+    "output": "/home/carlos/repos/liman/obj/container/Tree.o"
   },
   {
     "arguments": [
@@ -82,12 +67,12 @@
       "-I",
       "lib",
       "-o",
-      "obj/container/TreeList.o",
-      "src/container/TreeList.c"
+      "obj/types/Bitmap.o",
+      "src/types/Bitmap.c"
     ],
-    "directory": "/home/carlos/repos/misc/liman",
-    "file": "/home/carlos/repos/misc/liman/src/container/TreeList.c",
-    "output": "/home/carlos/repos/misc/liman/obj/container/TreeList.o"
+    "directory": "/home/carlos/repos/liman",
+    "file": "/home/carlos/repos/liman/src/types/Bitmap.c",
+    "output": "/home/carlos/repos/liman/obj/types/Bitmap.o"
   },
   {
     "arguments": [
@@ -97,12 +82,12 @@
       "-I",
       "lib",
       "-o",
-      "obj/core/Caracter.o",
-      "src/core/Caracter.c"
+      "obj/types/Caracter.o",
+      "src/types/Caracter.c"
     ],
-    "directory": "/home/carlos/repos/misc/liman",
-    "file": "/home/carlos/repos/misc/liman/src/core/Caracter.c",
-    "output": "/home/carlos/repos/misc/liman/obj/core/Caracter.o"
+    "directory": "/home/carlos/repos/liman",
+    "file": "/home/carlos/repos/liman/src/types/Caracter.c",
+    "output": "/home/carlos/repos/liman/obj/types/Caracter.o"
   },
   {
     "arguments": [
@@ -112,12 +97,12 @@
       "-I",
       "lib",
       "-o",
-      "obj/core/compress.o",
-      "src/core/compress.c"
+      "obj/types/HuffmanTree.o",
+      "src/types/HuffmanTree.c"
     ],
-    "directory": "/home/carlos/repos/misc/liman",
-    "file": "/home/carlos/repos/misc/liman/src/core/compress.c",
-    "output": "/home/carlos/repos/misc/liman/obj/core/compress.o"
+    "directory": "/home/carlos/repos/liman",
+    "file": "/home/carlos/repos/liman/src/types/HuffmanTree.c",
+    "output": "/home/carlos/repos/liman/obj/types/HuffmanTree.o"
   },
   {
     "arguments": [
@@ -127,27 +112,12 @@
       "-I",
       "lib",
       "-o",
-      "obj/core/decompress.o",
-      "src/core/decompress.c"
+      "obj/types/TreeList.o",
+      "src/types/TreeList.c"
     ],
-    "directory": "/home/carlos/repos/misc/liman",
-    "file": "/home/carlos/repos/misc/liman/src/core/decompress.c",
-    "output": "/home/carlos/repos/misc/liman/obj/core/decompress.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/gcc",
-      "-c",
-      "-g",
-      "-I",
-      "lib",
-      "-o",
-      "obj/core/HuffmanTree.o",
-      "src/core/HuffmanTree.c"
-    ],
-    "directory": "/home/carlos/repos/misc/liman",
-    "file": "/home/carlos/repos/misc/liman/src/core/HuffmanTree.c",
-    "output": "/home/carlos/repos/misc/liman/obj/core/HuffmanTree.o"
+    "directory": "/home/carlos/repos/liman",
+    "file": "/home/carlos/repos/liman/src/types/TreeList.c",
+    "output": "/home/carlos/repos/liman/obj/types/TreeList.o"
   },
   {
     "arguments": [
@@ -160,9 +130,9 @@
       "obj/utils/bits.o",
       "src/utils/bits.c"
     ],
-    "directory": "/home/carlos/repos/misc/liman",
-    "file": "/home/carlos/repos/misc/liman/src/utils/bits.c",
-    "output": "/home/carlos/repos/misc/liman/obj/utils/bits.o"
+    "directory": "/home/carlos/repos/liman",
+    "file": "/home/carlos/repos/liman/src/utils/bits.c",
+    "output": "/home/carlos/repos/liman/obj/utils/bits.o"
   },
   {
     "arguments": [
@@ -175,23 +145,8 @@
       "obj/utils/file.o",
       "src/utils/file.c"
     ],
-    "directory": "/home/carlos/repos/misc/liman",
-    "file": "/home/carlos/repos/misc/liman/src/utils/file.c",
-    "output": "/home/carlos/repos/misc/liman/obj/utils/file.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/gcc",
-      "-c",
-      "-g",
-      "-I",
-      "lib",
-      "-o",
-      "obj/utils/math.o",
-      "src/utils/math.c"
-    ],
-    "directory": "/home/carlos/repos/misc/liman",
-    "file": "/home/carlos/repos/misc/liman/src/utils/math.c",
-    "output": "/home/carlos/repos/misc/liman/obj/utils/math.o"
+    "directory": "/home/carlos/repos/liman",
+    "file": "/home/carlos/repos/liman/src/utils/file.c",
+    "output": "/home/carlos/repos/liman/obj/utils/file.o"
   }
 ]

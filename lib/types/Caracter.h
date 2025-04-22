@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "container/Bitmap.h"
+#include "types/Bitmap.h"
 typedef struct Caracter Caracter;
 
 

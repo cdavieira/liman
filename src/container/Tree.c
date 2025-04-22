@@ -153,10 +153,6 @@ unsigned tree_exists(Tree* t, Tree* node){
 	return t == node? 1 : tree_exists(t->right, node) || tree_exists(t->left, node);
 }
 
-/**
- * best case: O(logN)
- * worst case: O(N)
- * */
 static int tree_get_path(
     Tree* root,
     Tree* node,
