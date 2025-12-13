@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include "types/Bitmap.h"
+
 typedef struct HuffmanTree HuffmanTree;
 
 //Instantiation/destruction
@@ -24,7 +25,6 @@ HuffmanTree* huffmanTree_set_bitmap(HuffmanTree* hufftree, Bitmap* bm);
 
 //To be or not to be
 unsigned huffmanTree_is_leaf(HuffmanTree* hufftree);
-/* h1.weight > h2.weight ? 1 : 0 */
 int huffmanTree_compare_freq(HuffmanTree* t1, HuffmanTree* t2);
 
 //Recursive calls

@@ -1,5 +1,4 @@
 #include "types/Caracter.h"
-#include <stdio.h>
 #include <malloc.h>
 
 struct Caracter{
@@ -11,7 +10,7 @@ struct Caracter{
 
 
 Caracter* caracter_new(unsigned const letra, unsigned long const weight){
-	Caracter* c = calloc(1, sizeof(Caracter));
+	Caracter* c = malloc(sizeof(Caracter));
 	*c = (Caracter) {
 	  .ASCII = letra,
 	  .weight = weight,
@@ -34,16 +33,16 @@ Caracter* caracter_destroy(Caracter* c){
 
 
 
-unsigned caracter_get_ASCII(Caracter const * const c){
-	return c?c->ASCII:0;
+unsigned caracter_get_ASCII(const Caracter * const c){
+	return c ? c->ASCII : 0;
 }
 
-unsigned long caracter_get_weight(Caracter const * const c){
-	return c?c->weight:0;
+unsigned long caracter_get_weight(const Caracter * const c){
+	return c ? c->weight : 0;
 }
 
-Bitmap* caracter_get_bmap(Caracter const * const c){
-	return c?c->bmap:0;
+Bitmap* caracter_get_bmap(const Caracter * const c){
+	return c ? c->bmap : 0;
 }
 
 
@@ -74,11 +73,11 @@ Caracter* caracter_set_bmap(Caracter* const c, Bitmap * const bm){
 
 
 
-unsigned caracter_compare_ASCII(Caracter const* const c, unsigned const* const letra){
-	return c? c->ASCII == *letra : 0;
+unsigned caracter_compare_ASCII(const Caracter* const c, unsigned const* const letra){
+	return c ? c->ASCII == *letra : 0;
 }
 
-unsigned caracter_compare_weight(Caracter const* const c1, Caracter const* const c2){
+unsigned caracter_compare_weight(const Caracter* const c1, const Caracter* const c2){
 	if(c1 && c2){
 		return c1->weight >= c2->weight;
 	}

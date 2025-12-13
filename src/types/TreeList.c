@@ -2,7 +2,7 @@
 #include "types/TreeList.h"
 #include "types/HuffmanTree.h"
 
-TreeList* treelist_new(unsigned long max){
+TreeList* treelist_new(void){
 	return (TreeList*) cl_new();
 }
 

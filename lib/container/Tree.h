@@ -26,7 +26,7 @@ void tree_print(Tree* root, FILE* fp);
  * tells if this node is a leaf node or not
  * a leaf node doesn't have neither a left nor a right node
  *
- * @return 1 if case node is a leaf node, 0 otherwise
+ * @return 1 in case the node is a leaf node, 0 otherwise
  */
 unsigned tree_is_leaf(Tree* node);
 

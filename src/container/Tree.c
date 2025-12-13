@@ -12,7 +12,7 @@ struct Tree{
 
 Tree* tree_new(void* item, Tree* left, Tree* right){
 	static size_t id = 0;
-	Tree* t = calloc(1, sizeof(Tree));
+	Tree* t = malloc(sizeof(Tree));
 	t->id = id++;
 	t->item = item;
 	t->left = left;

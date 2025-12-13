@@ -256,14 +256,7 @@ int byteFreq_compare_callback(const void* b1, const void* b2){
 
 
 HuffmanTree* huffmanAlgorithm(ByteFrequency* f){
-	unsigned nonZeroBytes = 0;
-	for(int i=0; i<256; i++){
-		if(f[i].count > 0){
-			nonZeroBytes++;
-		}
-	}
-
-	TreeList* lc = treelist_new(nonZeroBytes);
+	TreeList* lc = treelist_new();
 	for(int i=255; i>=0; i--){
 		if(f[i].count > 0){
 			lc = treelist_shift(lc, huffmanTree_new(f[i].byte, f[i].count, 0, 0));
@@ -284,7 +277,7 @@ HuffmanTree* huffmanAlgorithm(ByteFrequency* f){
 	HuffmanTree *rtree;
 	unsigned long w1;
 	unsigned long w2;
-	for(size_t sz = nonZeroBytes; sz > 1; sz--){
+	for(size_t sz = treelist_get_size(lc); sz > 1; sz--){
 		ltree = treelist_unshift(lc);
 		rtree = treelist_unshift(lc);
 		w1 = huffmanTree_get_weight(ltree);

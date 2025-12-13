@@ -7,7 +7,7 @@
 //A circular list of Tree's
 typedef struct TreeList TreeList;
 
-TreeList* treelist_new(unsigned long max);
+TreeList* treelist_new(void);
 TreeList* treelist_destroy(TreeList* l);
 
 size_t treelist_get_size(TreeList* l);

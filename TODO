@@ -3,6 +3,15 @@ Todo
 * [ ] centralize all bit manipulation in utils/bits.h?
 * [ ] properly handle cases where FILE* == NULL in liman.c
 * [ ] change unsigned long to uint64_t or size_t where suitable
+* [ ] separate liman.c in more files (inputBytes.c, byteFreq.c, fileHeader.c, fileBody.c, ...)
+* [ ] make an opaque type to handle building the filename
+* [ ] make an opaque type to handle descending a tree using 'codeLen' and 'codeBuffer' instead of explicitly using those
+* [ ] create a macro/function+callback to iterate over the bytes of a file and
+ use that instead of explicit for/while loops
+> this requires carefully reviewing each for/while loop done in liman.c
+* [ ] improve 'Caracter.c'
+* [ ] create unit tests
+* [ ] review how liman handles big files (>1GiB)
 
 Done
 * [X] improve 'CircularLinkedList' by explicitly creating append, pop, shift
