@@ -7,6 +7,8 @@ runs natively in POSIX-compatible OS's (not Windows)
 > Windows might be able to compile/run it when using MinGW or another
 compatibility layer
 
+this is a project meant for learning purposes only.
+
 ## How to compile/run
 ```bash
 # clone this repo
