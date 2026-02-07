@@ -1,37 +1,36 @@
 # print each byte compressed/decompressed and its huffman code during runtime
 debug := 0
-# enable two pass decompression (slower)
-twopass := 1
 
+project := liman
 srcdir := src
 libdir := lib
 objdir := obj
-src := $(wildcard $(srcdir)/*.c $(srcdir)/*/*.c)
-lib := $(wildcard $(libdir)/*.h $(libdir)/*/*.h)
+src := $(wildcard $(srcdir)/*.c $(srcdir)/*/*.c $(srcdir)/*/*/*.c)
+lib := $(wildcard $(libdir)/*.h $(libdir)/*/*.h $(libdir)/*/*/*.h)
 obj := $(subst $(srcdir),$(objdir),$(src:.c=.o))
 
 CC := gcc
-CFLAGS := -lm -g
+MKDIR := mkdir
+RM := rm -rf
+
+CFLAGS := -g -I$(libdir)
 ifeq ($(debug),1)
 CFLAGS += -DDEBUG
 endif
-ifeq ($(twopass),1)
-CFLAGS += -DTWO_PASS
-endif
 
-all: $(obj)
-	$(CC) $^ -o huffman $(CFLAGS)
-	$(CC) $^ -o unhuffman $(CFLAGS)
-	$(CC) $^ -o huhman $(CFLAGS)
+all: $(project)
+
+$(project): $(obj)
+	$(CC) $^ -o $@
 
 $(objdir):
-	mkdir $(sort $(dir $(obj)))
+	$(MKDIR) $(sort $(dir $(obj)))
 
-$(objdir)/%.o: $(srcdir)/%.c $(lib) | obj
-	$(CC) -c $< -o $@ $(CFLAGS) -I $(libdir)
+$(objdir)/%.o: $(srcdir)/%.c $(lib) | $(objdir)
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -rf obj huffman unhuffman huhman
+	$(RM) $(objdir) $(project)
 
 echo:
 	@echo '.h: ' $(lib)
