@@ -2,6 +2,8 @@
 #include "platform/log.h"
 #include "platform/mem.h"
 #include "platform/process.h"
+#include "utils/container/Vector.h"
+#include "utils/cstr.h"
 #include "utils/types/String.h"
 
 #include <stdio.h>
@@ -9,68 +11,160 @@
 
 #include <getopt.h>
 
-#define ARG_COUNT (10)
+#define ARG_MIN_COUNT (16)
+#define PARAM_MIN_COUNT (8)
 
-/**
- * this implementation sucks, but it suffices for now
- *
- * it will be improved over time (hopefully) */
+/* structs */
 
-struct ArgParser {
-  Arg args[ARG_COUNT];
-  int capacity;
-  int size;
+typedef struct PositionalParam {
+  const char *name;
+  int param_id;
+  Vector *args;
   int argc;
   char **argv;
   void *data;
-  void (*handler)(int, void *, char *);
+  void (*handler)(int, char *, void *);
+} PositionalParam;
+
+struct ArgParser {
+  const char *executable_name;
+  size_t default_param;
+  Vector *positional_params;
 };
+
+/* data */
 
 extern int optopt;
 extern int optind;
 extern char *optarg;
 extern int opterr;
-
 static const struct option BLANK_OPTION = (struct option){0};
-static int long_catcher = -2;
+static const Arg BLANK_ARG = (Arg){
+    .argtype = ARG_TYPE_NOARG,
+    .longopt = NULL,
+    .shortopt = 0,
+};
 
-ArgParser *argParser_new(int argc, char **argv) {
+/* private functions */
+
+static inline int map_argType(enum ArgType argType);
+static char *build_optstring(PositionalParam *param);
+static struct option *build_longopts(PositionalParam *param);
+
+static Arg *arg_new(Arg arg);
+static Arg *arg_destroy(Arg *arg);
+
+static PositionalParam *posParam_new(void);
+static PositionalParam *posParam_destroy(PositionalParam *param);
+static void posParam_set_args(PositionalParam *param, int argc, char **argv);
+static void posParam_set_id(PositionalParam *param, int param_id);
+static void posParam_set_name(PositionalParam *param, const char *name);
+static void posParam_set_data(PositionalParam *param, void *data);
+static void posParam_set_handler(PositionalParam *param,
+                                 void (*handler)(int code, char *arg,
+                                                 void *param));
+static void posParam_add(PositionalParam *param, Arg arg);
+static int posParam_pre_process_check(PositionalParam *param);
+static void posParam_process(PositionalParam *param);
+static void posParam_print(PositionalParam *param, const char *executable,
+                           int is_default);
+
+/* impl */
+
+ArgParser *argParser_new(void) {
   ArgParser *parser = mem_alloc(sizeof(struct ArgParser));
-  parser->capacity = ARG_COUNT;
-  parser->size = 0;
-  for (int i = 0; i < ARG_COUNT; i++) {
-    parser->args[i] = (Arg){
-        .argtype = ARG_TYPE_ARG,
-        .longopt = NULL,
-        .shortopt = 0,
-    };
-  }
-  parser->data = NULL;
-  parser->handler = NULL;
-  parser->argc = argc;
-  parser->argv = argv;
+  parser->positional_params = vector_new(PARAM_MIN_COUNT);
+  parser->executable_name = NULL;
   return parser;
 }
+
 ArgParser *argParser_destroy(ArgParser *parser) {
+  vector_destroy(parser->positional_params,
+                 (void *(*)(void *))posParam_destroy);
   mem_free(parser);
   return NULL;
 }
 
-void argParser_add_arg(ArgParser *parser, Arg arg) {
-  if (parser->size >= ARG_COUNT) {
-    return;
+void argParser_set_executable_name(ArgParser *parser, const char *name) {
+  parser->executable_name = name;
+}
+
+size_t argParser_add_param(ArgParser *parser, Param p) {
+  PositionalParam *param = posParam_new();
+  posParam_set_name(param, p.name);
+  posParam_set_data(param, p.data);
+  posParam_set_handler(param, p.handler);
+  size_t idx = vector_append(parser->positional_params, param);
+  posParam_set_id(param, idx);
+  return idx;
+}
+
+void argParser_add_arg(ArgParser *parser, size_t idx, Arg arg) {
+  PositionalParam *param = vector_get_item(parser->positional_params, idx);
+  posParam_add(param, arg);
+}
+
+void argParser_set_program_name(ArgParser *parser, const char *name) {
+  parser->executable_name = name;
+}
+
+void argParser_set_default_param(ArgParser *parser, size_t idx) {
+  parser->default_param = idx;
+}
+
+static inline int is_positional_param_name(const char *name) {
+  return name && name[0] != '-';
+}
+
+static int cmp_params(void *s1, void *s2) {
+  PositionalParam *p1 = (PositionalParam *)s1;
+  PositionalParam *p2 = (PositionalParam *)s2;
+  return cstr_equals(p1->name, (p2->name));
+}
+
+int argParser_process(ArgParser *parser, int argc, char **argv) {
+  if (argc <= 0) {
+    return -1;
   }
-  parser->args[parser->size++] = arg;
+
+  PositionalParam *param = NULL;
+  const char *paramName = is_positional_param_name(argv[1]) ? argv[1] : NULL;
+  if (paramName) {
+    PositionalParam key = {
+        .name = paramName,
+    };
+    param = vector_search(parser->positional_params, (void *)&key, cmp_params);
+    argc--;
+    argv++;
+  }
+
+  if (!param) {
+    param = vector_get_item(parser->positional_params, parser->default_param);
+  }
+
+  if (!param) {
+    return -1;
+  }
+
+  posParam_set_args(param, argc, argv);
+
+  posParam_process(param);
+
+  return param->param_id;
 }
 
-void argParser_set_data(ArgParser *parser, void *data) { parser->data = data; }
-
-void argParser_set_handler(ArgParser *parser,
-                           void (*handler)(int code, void *data, char *a)) {
-  parser->handler = handler;
+void argParser_print(ArgParser *parser) {
+  size_t sz = vector_get_size(parser->positional_params);
+  for (size_t i = 0; i < sz; i++) {
+    PositionalParam *param = vector_get_item(parser->positional_params, i);
+    int is_default = param->param_id == parser->default_param;
+    posParam_print(param, parser->executable_name, is_default);
+  }
 }
 
-static int argParser_map_argType(enum ArgType argType) {
+/* impl internal */
+
+static inline int map_argType(enum ArgType argType) {
   switch (argType) {
   case ARG_TYPE_ARG:
     return required_argument;
@@ -82,13 +176,15 @@ static int argParser_map_argType(enum ArgType argType) {
   }
 }
 
-static char *argParser_build_optstring(ArgParser *parser) {
+static char *build_optstring(PositionalParam *param) {
   String *s = string_new();
+  size_t sz = vector_get_size(param->args);
 
-  for (int i = 0; i < parser->size; i++) {
-    string_push_char(s, parser->args[i].shortopt);
+  for (int i = 0; i < sz; i++) {
+    Arg *arg = vector_get_item(param->args, i);
+    string_push_char(s, arg->shortopt);
 
-    switch (parser->args[i].argtype) {
+    switch (arg->argtype) {
     case ARG_TYPE_ARG:
       string_push_char(s, ':');
       break;
@@ -106,78 +202,163 @@ static char *argParser_build_optstring(ArgParser *parser) {
   return str;
 }
 
-static void argParser_build_longopts(ArgParser *parser,
-                                     struct option longopts[ARG_COUNT]) {
-  for (int i = 0; i < parser->capacity; i++) {
-    if (i >= parser->size) {
-      longopts[i] = BLANK_OPTION;
-      continue;
-    }
+static struct option *build_longopts(PositionalParam *param) {
+  size_t sz = vector_get_size(param->args);
+
+  struct option *longopts = mem_alloc((sz + 1) * sizeof(struct option));
+
+  for (int i = 0; i < sz; i++) {
+    Arg *arg = vector_get_item(param->args, i);
     longopts[i] = (struct option){
-        .has_arg = argParser_map_argType(parser->args[i].argtype),
-        .name = parser->args[i].longopt,
-        .flag = &long_catcher,
-        .val = parser->args[i].shortopt,
+        .has_arg = map_argType(arg->argtype),
+        .name = arg->longopt,
+        .flag = NULL,
+        .val = arg->shortopt,
     };
   }
+
+  longopts[sz] = BLANK_OPTION;
+
+  return longopts;
 }
 
-void argParser_process(ArgParser *parser) {
-  if (!parser->handler) {
-    return;
+static Arg *arg_new(Arg arg) {
+  Arg *a = mem_alloc(sizeof(Arg));
+  *a = arg;
+  return a;
+}
+
+static Arg *arg_destroy(Arg *arg) { return mem_free(arg); }
+
+static PositionalParam *posParam_new(void) {
+  PositionalParam *param = mem_alloc(sizeof(struct PositionalParam));
+
+  param->name = NULL;
+  param->param_id = -1;
+  param->args = vector_new(ARG_MIN_COUNT);
+  param->argc = 0;
+  param->argv = NULL;
+  param->data = NULL;
+  param->handler = NULL;
+
+  return param;
+}
+
+static PositionalParam *posParam_destroy(PositionalParam *param) {
+  param->args = vector_destroy(param->args, (void *(*)(void *))arg_destroy);
+  param = mem_free(param);
+  return param;
+}
+
+static void posParam_set_args(PositionalParam *param, int argc, char **argv) {
+  param->argc = argc;
+  param->argv = argv;
+}
+
+static void posParam_set_id(PositionalParam *param, int param_id) {
+  param->param_id = param_id;
+}
+
+static void posParam_set_name(PositionalParam *param, const char *name) {
+  param->name = name;
+}
+
+static void posParam_set_data(PositionalParam *param, void *data) {
+  param->data = data;
+}
+
+static void posParam_set_handler(PositionalParam *param,
+                                 void (*handler)(int code, char *arg,
+                                                 void *param)) {
+  param->handler = handler;
+}
+
+static void posParam_add(PositionalParam *param, Arg arg) {
+  vector_append(param->args, arg_new(arg));
+}
+
+static int posParam_pre_process_check(PositionalParam *param) {
+  if (!param) {
+    return -1;
   }
 
-  if (parser->argc == 1) {
-    argParser_print(parser);
+  if (!param->argv) {
+    return -2;
+  }
+
+  if (param->argc < 1) {
+    return -3;
+  }
+
+  if (param->handler == NULL) {
+    return -4;
+  }
+
+  if (param->name == NULL) {
+    return -5;
+  }
+
+  return 0;
+}
+
+static void posParam_process(PositionalParam *param) {
+  if (posParam_pre_process_check(param) < 0) {
     return;
   }
 
   // turn off getopt default error msg
   opterr = 0;
 
-  char *optstring = argParser_build_optstring(parser);
-
-  struct option longopts[ARG_COUNT];
-  argParser_build_longopts(parser, longopts);
+  char *optstring = build_optstring(param);
+  struct option *longopts = build_longopts(param);
 
   int longopt;
   int ch;
-  while ((ch = getopt_long(parser->argc, parser->argv, optstring, longopts,
+
+  while ((ch = getopt_long(param->argc, param->argv, optstring, longopts,
                            &longopt)) != -1) {
     switch (ch) {
     case '?':
-      log_warning("ArgParser option error: %c", optopt);
+      log_warning("%s: option error: %c", param->name, optopt);
       process_quick_abort();
       break;
     case ':':
-      log_warning("ArgParser missing argument: %d", ch);
+      log_warning("%s: missing argument: %d", param->name, ch);
       process_quick_abort();
       break;
     default:
-      ch = !ch ? long_catcher : ch;
-      parser->handler(ch, parser->data, optarg);
-      long_catcher = -2;
+      param->handler(ch, optarg, param->data);
       break;
     }
   }
 
   mem_free(optstring);
+  mem_free(longopts);
 }
 
-void argParser_print(ArgParser *parser) {
+static void posParam_print(PositionalParam *param, const char *executable,
+                           int is_default) {
   printf("SUMMARY\n");
-  printf("\t%s", parser->argv[0]);
+  if (is_default) {
+    printf("\t%s [%s]", executable, param->name);
+  } else {
+    printf("\t%s %s", executable, param->name);
+  }
 
   // print calling summary
-  if (parser->size > 0) {
+  const size_t sz = vector_get_size(param->args);
+
+  if (sz > 0) {
     putchar(' ');
 
-    for (int i = 0; i < parser->size; i++) {
-      int shortopt = parser->args[i].shortopt;
-      const char *longopt = parser->args[i].longopt;
-      enum ArgType opttype = parser->args[i].argtype;
+    for (int i = 0; i < sz; i++) {
+      Arg *arg = vector_get_item(param->args, i);
 
-      int hasshort = shortopt != NO_SHORT_OPT;
+      int shortopt = arg->shortopt;
+      const char *longopt = arg->longopt;
+      enum ArgType opttype = arg->argtype;
+
+      int hasshort = shortopt > 0;
       int haslong = longopt ? 1 : 0;
       int hasboth = hasshort && haslong;
 
@@ -210,7 +391,7 @@ void argParser_print(ArgParser *parser) {
 
       putchar(']');
 
-      if ((i + 1) < parser->size) {
+      if ((i + 1) < sz) {
         putchar(' ');
       }
     }
@@ -219,16 +400,18 @@ void argParser_print(ArgParser *parser) {
   putchar('\n');
 
   // print description
-  if (parser->size > 0) {
+  if (sz > 0) {
     printf("\nARGUMENTS\n");
 
-    for (int i = 0; i < parser->size; i++) {
-      int shortopt = parser->args[i].shortopt;
-      const char *longopt = parser->args[i].longopt;
-      enum ArgType opttype = parser->args[i].argtype;
-      const char *desc = parser->args[i].description;
+    for (int i = 0; i < sz; i++) {
+      Arg *arg = vector_get_item(param->args, i);
 
-      int hasshort = shortopt != NO_SHORT_OPT;
+      int shortopt = arg->shortopt;
+      const char *longopt = arg->longopt;
+      enum ArgType opttype = arg->argtype;
+      const char *desc = arg->description;
+
+      int hasshort = shortopt > 0;
       int haslong = longopt ? 1 : 0;
       int hasboth = hasshort && haslong;
 

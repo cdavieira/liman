@@ -1,6 +1,12 @@
 #pragma once
 
-#define NO_SHORT_OPT (-2)
+#include "utils/types/common.h"
+
+typedef struct Param {
+  const char *name;
+  void *data;
+  void (*handler)(int, char *, void *);
+} Param;
 
 enum ArgType {
   ARG_TYPE_NOARG,
@@ -17,16 +23,15 @@ typedef struct Arg {
 
 typedef struct ArgParser ArgParser;
 
-ArgParser *argParser_new(int argc, char **argv);
+ArgParser *argParser_new(void);
 ArgParser *argParser_destroy(ArgParser *parser);
 
-void argParser_add_arg(ArgParser *parser, Arg arg);
-/**
- * this pointer should be allocated.
- */
-void argParser_set_data(ArgParser *parser, void *data);
-void argParser_set_handler(ArgParser *parser,
-                           void (*handler)(int code, void *data, char *));
+size_t argParser_add_param(ArgParser *parser, Param p);
+void argParser_add_arg(ArgParser *parser, size_t idx, Arg arg);
 
-void argParser_process(ArgParser *parser);
+void argParser_set_program_name(ArgParser *parser, const char *name);
+void argParser_set_default_param(ArgParser *parser, size_t idx);
+
+int argParser_process(ArgParser *parser, int argc, char **argv);
+
 void argParser_print(ArgParser *parser);

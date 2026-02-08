@@ -8,7 +8,6 @@
 #include "platform/log.h"
 #include "platform/posix/file.h"
 #include "platform/process.h"
-#include "utils/bits.h"
 #include "utils/container/Bitmap.h"
 #include "utils/container/Tree.h"
 #include "utils/types/common.h"
@@ -20,7 +19,7 @@ static HuffmanTree *huffmanAlgorithm(ByteFrequency *f);
 static void gencodes(HuffmanTree *root);
 
 // Core
-void compress(const char *inputfile, const char *outputfile) {
+void compress(const char *inputfile, const char *outputfile, int opts) {
   ByteFrequency *freq = byteFreq_from_filename(inputfile);
   HuffmanTree *hufftree = huffmanAlgorithm(freq);
 
@@ -38,7 +37,7 @@ void compress(const char *inputfile, const char *outputfile) {
   byteFreq_destroy(freq);
 }
 
-void decompress(const char *inputfile, const char *outputfile) {
+void decompress(const char *inputfile, const char *outputfile, int opts) {
   CompReader *reader = compReader_new(inputfile);
   compReader_translate(reader, outputfile);
 
@@ -77,15 +76,15 @@ void inspect(const char *compfile, const char *outputfile, int opts) {
         compHeader_get_total_size_in_bytes(reconstructed_header);
 
     printf("About the Huffman Tree:\n"
-           "Height: %zu\n"
-           "Nodes : %zu\n"
-           "Leafs : %zu\n",
+           "\tHeight: %zu\n"
+           "\tNodes : %zu\n"
+           "\tLeafs : %zu\n",
            hdr2_height, hdr2_nodes, hdr2_leafs);
 
     printf("About the header:\n"
-           "Tree size     (read/expected): %zu bits/%lu bits\n"
-           "Padding added (read/expected): %zu bits/%lu bits\n"
-           "Total         (read/expected): %zu bytes/%lu bytes\n",
+           "\tTree size     (read/expected): %zu bits/%lu bits\n"
+           "\tPadding added (read/expected): %zu bits/%lu bits\n"
+           "\tTotal         (read/expected): %zu bytes/%lu bytes\n",
            hdr_minBits, hdr2_minBits, hdr_padBits, hdr2_padBits, hdr_totalBytes,
            hdr2_totalBytes);
 
@@ -100,9 +99,9 @@ void inspect(const char *compfile, const char *outputfile, int opts) {
     size_t body_totalSize = output.sizeBytes;
 
     printf("About the body:\n"
-           "Size:          %zu bits\n"
-           "Padding added: %zu bits\n"
-           "Total:         %zu bytes\n",
+           "\tSize:          %zu bits\n"
+           "\tPadding added: %zu bits\n"
+           "\tTotal:         %zu bytes\n",
            body_minSize, body_padBits, body_totalSize);
   }
 

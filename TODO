@@ -14,11 +14,11 @@ Todo
 * [ ] improve 'Caracter.c'
 * [ ] add const to everything
 * [ ] translate portugues comments in the code to english
-* [ ] improve cli.c implementation
 * [ ] improve filenaming.c implementation
-* [ ] rewrite ArgParser.c/ArgParser.h
 
 Done
+* [X] rewrite ArgParser.c/ArgParser.h
+* [X] improve cli.c implementation
 * [X] finish building 'compReader_translate' return type
 * [X] reimplement huhman
 	* [X] consolidated debug information on the size of the header,

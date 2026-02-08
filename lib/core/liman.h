@@ -7,8 +7,9 @@ enum HuhmanOpts {
   HUHMAN_PDF = 8,
 };
 
-void compress(const char *inputfilename, const char *outputfilename);
+void compress(const char *inputfilename, const char *outputfilename, int opts);
 
-void decompress(const char *inputfilename, const char *outputfilename);
+void decompress(const char *inputfilename, const char *outputfilename,
+                int opts);
 
 void inspect(const char *inputfilename, const char *outputfilename, int opts);
