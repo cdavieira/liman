@@ -31,7 +31,7 @@ FilenameBuilder *filenameBuilder_from_filename(const char *filename) {
   FilenameBuilder *builder = filenameBuilder_new();
 
   char *copy = mem_salloc(filename);
-  const char *basename = cstr_find_after_last_char(copy, '/');
+  char *basename = cstr_find_after_last_char(copy, '/');
   char *extension = cstr_find_at_last_char(copy, '.');
 
   if (extension) {
@@ -40,7 +40,14 @@ FilenameBuilder *filenameBuilder_from_filename(const char *filename) {
   }
 
   builder->copy = copy;
-  builder->basename = basename ? basename : filename;
+  if (basename) {
+    builder->basename = basename;
+    basename--;
+    *basename = '\0';
+    builder->path = basename;
+  } else {
+    builder->basename = filename;
+  }
   builder->extension = extension;
 
   return builder;
