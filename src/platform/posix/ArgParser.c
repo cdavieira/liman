@@ -53,6 +53,7 @@ static struct option *build_longopts(PositionalParam *param);
 
 static Arg *arg_new(Arg arg);
 static Arg *arg_destroy(Arg *arg);
+static void arg_print(Arg *arg);
 
 static PositionalParam *posParam_new(void);
 static PositionalParam *posParam_destroy(PositionalParam *param);
@@ -336,6 +337,41 @@ static void posParam_process(PositionalParam *param) {
   mem_free(longopts);
 }
 
+static void arg_print(Arg *arg) {
+  int shortopt = arg->shortopt;
+  const char *longopt = arg->longopt;
+  enum ArgType opttype = arg->argtype;
+
+  int hasshort = shortopt > 0;
+  int haslong = longopt ? 1 : 0;
+  int hasboth = hasshort && haslong;
+
+  if (hasshort) {
+    putchar('-');
+    putchar(shortopt);
+  }
+
+  if (hasboth) {
+    putchar('|');
+  }
+
+  if (haslong) {
+    printf("--%s", longopt);
+  }
+
+  switch (opttype) {
+  case ARG_TYPE_NOARG:
+    break;
+  case ARG_TYPE_ARG:
+    printf("=<arg>");
+    break;
+  case ARG_TYPE_OPTARG:
+    printf("=(arg)");
+    break;
+    break;
+  }
+}
+
 static void posParam_print(PositionalParam *param, const char *executable,
                            int is_default) {
   printf("SUMMARY\n");
@@ -354,40 +390,9 @@ static void posParam_print(PositionalParam *param, const char *executable,
     for (int i = 0; i < sz; i++) {
       Arg *arg = vector_get_item(param->args, i);
 
-      int shortopt = arg->shortopt;
-      const char *longopt = arg->longopt;
-      enum ArgType opttype = arg->argtype;
-
-      int hasshort = shortopt > 0;
-      int haslong = longopt ? 1 : 0;
-      int hasboth = hasshort && haslong;
-
       putchar('[');
 
-      if (hasshort) {
-        putchar('-');
-        putchar(shortopt);
-      }
-
-      if (hasboth) {
-        putchar('|');
-      }
-
-      if (haslong) {
-        printf("--%s", longopt);
-      }
-
-      switch (opttype) {
-      case ARG_TYPE_NOARG:
-        break;
-      case ARG_TYPE_ARG:
-        printf(" <arg>");
-        break;
-      case ARG_TYPE_OPTARG:
-        printf(" (arg)");
-        break;
-        break;
-      }
+      arg_print(arg);
 
       putchar(']');
 
@@ -406,43 +411,13 @@ static void posParam_print(PositionalParam *param, const char *executable,
     for (int i = 0; i < sz; i++) {
       Arg *arg = vector_get_item(param->args, i);
 
-      int shortopt = arg->shortopt;
-      const char *longopt = arg->longopt;
-      enum ArgType opttype = arg->argtype;
-      const char *desc = arg->description;
-
-      int hasshort = shortopt > 0;
-      int haslong = longopt ? 1 : 0;
-      int hasboth = hasshort && haslong;
-
       putchar('\t');
 
-      if (hasshort) {
-        putchar('-');
-        putchar(shortopt);
-      }
+      arg_print(arg);
 
-      if (hasboth) {
-        putchar('|');
+      if (arg->description) {
+        printf("\t: %s\n", arg->description);
       }
-
-      if (haslong) {
-        printf("--%s", longopt);
-      }
-
-      switch (opttype) {
-      case ARG_TYPE_NOARG:
-        break;
-      case ARG_TYPE_ARG:
-        printf(" <arg>");
-        break;
-      case ARG_TYPE_OPTARG:
-        printf(" (arg)");
-        break;
-        break;
-      }
-
-      printf("\t: %s\n", desc);
     }
   }
 }

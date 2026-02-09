@@ -308,6 +308,20 @@
     "output": "obj/utils/container/Tree.o"
   },
   {
+    "file": "src/utils/container/Vector.c",
+    "arguments": [
+      "gcc",
+      "-g",
+      "-Ilib",
+      "-c",
+      "-o",
+      "obj/utils/container/Vector.o",
+      "src/utils/container/Vector.c"
+    ],
+    "directory": "/home/carlos/repos/liman",
+    "output": "obj/utils/container/Vector.o"
+  },
+  {
     "file": "src/utils/types/Caracter.c",
     "arguments": [
       "gcc",

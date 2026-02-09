@@ -30,7 +30,7 @@ $(objdir)/%.o: $(srcdir)/%.c $(lib) | $(objdir)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	$(RM) $(objdir) $(project)
+	$(RM) unhuffman-* *.comp $(objdir) $(project)
 
 echo:
 	@echo '.h: ' $(lib)
