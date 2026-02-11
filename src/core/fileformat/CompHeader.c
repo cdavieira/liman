@@ -1,6 +1,7 @@
 #include "core/fileformat/CompHeader.h"
 #include "core/HuffmanTree.h"
 #include "platform/mem.h"
+#include "platform/posix/BinaryWriter.h"
 #include "utils/bits.h"
 #include "utils/container/Bitmap.h"
 
@@ -76,8 +77,9 @@ size_t compHeader_get_total_size_in_bits(CompHeader *header) {
   return header->metadata.treeTotalBits;
 }
 
-void compHeader_dump_into_fp(CompHeader *header, FILE *fp) {
-  bitmapDump(header->bm, fp);
+void compHeader_dump_into_binaryWriter(CompHeader *header,
+                                       BinaryWriter *writer) {
+  binWriter_write_bitmap(writer, header->bm);
 }
 
 static CompHeaderMetadata compHeaderMetadata_from_huffmanTree(HuffmanTree *t) {
@@ -122,7 +124,7 @@ static void compHeader_fill_bitmap_with_huffmanTree_rec(HuffmanTree *hf,
   bitmapAppendLeastSignificantBit(header, 1);
   unsigned char ch = huffmanTree_get_ASCII(hf);
   for (int i = 7; i >= 0; i--) {
-    bitmapAppendLeastSignificantBit(header, bits_bitAt(ch, i));
+    bitmapAppendLeastSignificantBit(header, bits_get_char_bit(ch, i));
   }
 }
 

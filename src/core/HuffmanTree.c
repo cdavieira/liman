@@ -1,4 +1,5 @@
 #include "core/HuffmanTree.h"
+#include "core/ByteFrequency.h"
 #include "platform/mem.h"
 #include "utils/container/Tree.h"
 #include "utils/types/Caracter.h"
@@ -128,10 +129,11 @@ void huffmanTree_print_codes(HuffmanTree *hufftree, FILE *fp) {
   HuffmanTree *t;
   char *code;
   char *const notfound = "not encoded";
+  size_t setsize = byteFreq_get_set_size();
   ssize_t nodeid;
   TreeCode tcode;
   int hasCode;
-  for (unsigned ch = 0; ch < 256; ch++) {
+  for (unsigned ch = 0; ch < setsize; ch++) {
     t = huffmanTree_search_ASCII(hufftree, ch);
     tcode = huffmanTree_get_code(hufftree);
     hasCode = tcode.len > 0;

@@ -3,6 +3,7 @@
 #include "core/fileformat/CompHeader.h"
 #include "platform/log.h"
 #include "platform/mem.h"
+#include "platform/posix/BinaryWriter.h"
 #include "platform/posix/FileStream.h"
 #include "platform/process.h"
 #include "utils/bits.h"
@@ -19,7 +20,7 @@ struct CompReader {
 typedef struct CallbackData2 {
   HuffmanTree *root;
   HuffmanTree *tree;
-  FILE *fp;
+  BinaryWriter *writer;
   CompReaderOutput output;
 } CallbackData2;
 
@@ -79,30 +80,26 @@ CompReaderOutput compReader_translate(CompReader *reader,
   fs_next_byte(reader->fs);
 
   // Writing to output
-  FILE *fp = fopen(filename, "wb");
+  BinaryWriter *writer = binWriter_new(4096 * 8); // 4 KiB
+  binWriter_open(writer, filename);
 
-  if (fp) {
-    CallbackData2 *data = mem_alloc(sizeof(CallbackData2));
+  CallbackData2 *data = mem_alloc(sizeof(CallbackData2));
 
-    data->fp = fp;
-    data->root = root;
-    data->tree = root;
-    data->output = res;
+  data->writer = writer;
+  data->root = root;
+  data->tree = root;
+  data->output = res;
 
-    size_t msgTotalBits = bits_fromBytes(fs_remaining_bytes(reader->fs));
-    size_t msgMinBits = msgTotalBits - padBits - get_null_code_length(root);
+  size_t msgTotalBits = bits_fromBytes(fs_remaining_bytes(reader->fs));
+  size_t msgMinBits = msgTotalBits - padBits - get_null_code_length(root);
 
-    fs_do_next_bits(reader->fs, msgMinBits, data,
-                    compReader_translate_callback);
+  fs_do_next_bits(reader->fs, msgMinBits, data, compReader_translate_callback);
 
-    res = data->output;
-    res.sizeBytes = bits_toBytes(res.sizeBits + res.padBits);
+  res = data->output;
+  res.sizeBytes = bits_toBytes(res.sizeBits + res.padBits);
 
-    fclose(fp);
-    data = mem_free(data);
-  } else {
-    log_error("CompReader failed when opening %s for writing", filename);
-  }
+  binWriter_destroy(writer);
+  data = mem_free(data);
 
   compHeader_destroy(header);
 
@@ -193,7 +190,7 @@ static int compReader_translate_callback(int bit, void *data) {
   d->tree = huffmanTree_get_child(d->tree, bit);
 
   if (huffmanTree_is_leaf(d->tree)) {
-    fputc(huffmanTree_get_ASCII(d->tree), d->fp);
+    binWriter_write_byte(d->writer, huffmanTree_get_ASCII(d->tree));
     d->tree = d->root;
   }
 

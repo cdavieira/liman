@@ -1,7 +1,11 @@
 #include "utils/bits.h"
 
-unsigned char bits_bitAt(char c, unsigned char index) {
+unsigned char bits_get_char_bit(char c, unsigned char index) {
   return (c >> (index & 7)) & 1;
+}
+
+unsigned char bits_get_size_bit(size_t n, int index) {
+  return (n >> (index & 63)) & 1;
 }
 
 size_t bits_fromBytes(size_t nBytes) { return nBytes << 3; }

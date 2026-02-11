@@ -3,6 +3,7 @@
 #include "core/fileformat/CompHeader.h"
 #include "platform/log.h"
 #include "platform/mem.h"
+#include "platform/posix/BinaryWriter.h"
 #include "platform/posix/file.h"
 #include "platform/process.h"
 #include "utils/bits.h"
@@ -32,7 +33,6 @@ CompWriter *compWriter_destroy(CompWriter *writer) {
 void compWriter_set_inputfile(CompWriter *writer, const char *inputfile) {
   if (writer->inputfile == NULL) {
     writer->inputfile = inputfile;
-    compBody_encode_fileStream(writer->body, writer->inputfile);
   }
 }
 
@@ -66,18 +66,18 @@ float compWriter_get_compression_rate(CompWriter *writer) {
 }
 
 void compWriter_dump(CompWriter *writer, const char *outputfile) {
-  FILE *fp = fopen(outputfile, "wb");
-  if (fp == NULL) {
-    log_error("CompWriter failed opening %s with write permissions",
-              outputfile);
-    process_quick_abort();
-  }
+  BinaryWriter *binWriter = binWriter_new(4096 * 8); // 4 KiB
+  binWriter_open(binWriter, outputfile);
 
-  // header (binary huffmanTree)
-  compHeader_dump_into_fp(writer->header, fp);
+  // Writing the header
+  compHeader_dump_into_binaryWriter(writer->header, binWriter);
+  // force writing the header with byte alignment to output file
+  // this guarantees that the header will be written with a size in bits that is
+  // a multiple of 8
+  binWriter_flush(binWriter);
 
-  // pad + body
-  compBody_dump_into_fp(writer->body, fp);
+  // Writing the padding + body
+  compBody_encode(writer->body, writer->inputfile, binWriter);
 
-  fclose(fp);
+  binWriter_destroy(binWriter);
 }

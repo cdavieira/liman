@@ -131,7 +131,8 @@ void inspect(const char *compfile, const char *outputfile, int opts) {
 
 static HuffmanTree *huffmanAlgorithm(ByteFrequency *f) {
   TreeList *lc = treelist_new();
-  for (int i = 255; i >= 0; i--) {
+  int bytes_set_size = byteFreq_get_set_size();
+  for (int i = bytes_set_size - 1; i >= 0; i--) {
     unsigned ch = byteFreq_get_byte(f, i);
     unsigned count = byteFreq_get_count(f, i);
     if (count > 0) {

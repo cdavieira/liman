@@ -5,6 +5,8 @@
 
 #include <stdlib.h>
 
+#define SET_SIZE 256
+
 struct ByteFrequency {
   unsigned byte;
   size_t count;
@@ -47,7 +49,7 @@ size_t byteFreq_get_count(ByteFrequency *bf, unsigned ch) {
 size_t byteFreq_get_total_bytes(ByteFrequency *bf) {
   size_t total = 0;
 
-  for (int i = 0; i < 256; i++) {
+  for (int i = 0; i < SET_SIZE; i++) {
     total += bf[i].count;
   }
 
@@ -69,8 +71,8 @@ static int byteFreq_fileStream_handler(int byte, void *smth) {
 }
 
 static ByteFrequency *byteFreq_new(void) {
-  ByteFrequency *freq = mem_zalloc(256 * sizeof(ByteFrequency));
-  for (int i = 0; i < 256; i++) {
+  ByteFrequency *freq = mem_zalloc(SET_SIZE * sizeof(ByteFrequency));
+  for (int i = 0; i < SET_SIZE; i++) {
     freq[i].count = 0;
     freq[i].byte = i;
   }
@@ -79,11 +81,13 @@ static ByteFrequency *byteFreq_new(void) {
 }
 
 static void byteFreq_sort(ByteFrequency *freq) {
-  qsort(freq, 256, sizeof(ByteFrequency), byteFreq_compare_callback);
+  qsort(freq, SET_SIZE, sizeof(ByteFrequency), byteFreq_compare_callback);
 }
 
 static void byteFreq_print(ByteFrequency *freq) {
-  for (int i = 0; i < 256; i++) {
+  for (int i = 0; i < SET_SIZE; i++) {
     log_info("%d: %zu", freq[i].byte, freq[i].count);
   }
 }
+
+size_t byteFreq_get_set_size(void) { return SET_SIZE; }

@@ -1,12 +1,8 @@
 Todo
-* [ ] review how liman handles big files (>1GiB)
-	* [ ] is it actually necessary to have the type Bitmap now that we have TreeCode? (perhaps it can be removed, but not for now)
-	* [ ] change the way compWriter dumps its data (do not store the whole thing in
-		a Bitmap, but instead accumulate a fixed amount in Bitmap before dumping and restarting)
-	* [ ] perhaps do not use Bitmap* at all when compressing (ditch it for decompression as well)?
-* [ ] maybe create a separate file to handle the lookup instance of the huffmanTree
-	> this could be specialized to deal with TreeCode and other details
+* [ ] create generic functions to visit the nodes of a tree and use that function to generate the Bitmap*/TreeCodes of leafs
+* [ ] use TreeCode instead of Bitmap*?
 * [ ] generalize the HuffmanTree to work with sets other than the ASCII set?
+* [ ] test how liman handles big files (>1GiB)
 * [ ] add doxygen for documentation
 * [ ] centralize all bit manipulation in utils/bits.h
 * [ ] change unsigned long to uint64_t or size_t where suitable
@@ -17,6 +13,10 @@ Todo
 * [ ] improve filenaming.c implementation
 
 Done
+* [X] change the way compWriter dumps its data (do not store the whole thing in
+	a Bitmap, but instead accumulate a fixed amount in Bitmap before dumping and restarting)
+* [X] maybe create a separate file to handle the lookup instance of the huffmanTree
+	> this could be specialized to deal with TreeCode and other details
 * [X] rewrite ArgParser.c/ArgParser.h
 * [X] improve cli.c implementation
 * [X] finish building 'compReader_translate' return type

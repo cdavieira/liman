@@ -12,3 +12,4 @@ size_t byteFreq_get_total_size_in_bytes(ByteFrequency *bf);
 
 unsigned byteFreq_get_byte(ByteFrequency *bf, unsigned ch);
 size_t byteFreq_get_count(ByteFrequency *bf, unsigned ch);
+size_t byteFreq_get_set_size(void);

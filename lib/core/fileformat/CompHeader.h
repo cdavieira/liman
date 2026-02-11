@@ -5,6 +5,7 @@
 #include "utils/types/common.h"
 
 typedef struct CompHeader CompHeader;
+typedef struct BinaryWriter BinaryWriter;
 
 CompHeader *compHeader_from_huffmanTree(HuffmanTree *huffmanTree);
 
@@ -50,4 +51,5 @@ size_t compHeader_get_total_size_in_bytes(CompHeader *header);
  * 2. if a leaf node is encountered, print bit '1' followed by 8 bits. Otherwise
  * print bit '0'.
  * */
-void compHeader_dump_into_fp(CompHeader *header, FILE *fp);
+void compHeader_dump_into_binaryWriter(CompHeader *header,
+                                       BinaryWriter *writer);

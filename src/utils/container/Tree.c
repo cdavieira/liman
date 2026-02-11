@@ -1,5 +1,6 @@
 #include "utils/container/Tree.h"
 #include "platform/mem.h"
+#include "utils/bits.h"
 
 #include <stdio.h>
 
@@ -150,7 +151,7 @@ unsigned tree_exists(Tree *t, Tree *node) {
 Tree *tree_descend(Tree *node, const TreeCode *code) {
   unsigned char bit;
   for (int i = code->len - 1; node && i >= 0; i--) {
-    bit = (code->value >> i) & 1;
+    bit = bits_get_size_bit(code->value, i);
     if (bit == 0) {
       node = node->left;
     } else {
@@ -196,7 +197,7 @@ void treeCode_right(TreeCode *code) {
 char *treeCode_to_cstr(const TreeCode *code) {
   char *route = mem_zalloc((code->len + 1) * sizeof(char));
   for (int i = code->len - 1, j = 0; i >= 0; i--, j++) {
-    route[j] = '0' + ((code->value >> i) & 1);
+    route[j] = '0' + bits_get_size_bit(code->value, i);
   }
   route[code->len] = '\0';
   return route;

@@ -120,7 +120,7 @@ int fs_get_byte(FileStream *fs) {
 }
 
 int fs_get_bit(FileStream *fs, int idx) {
-  return bits_bitAt(*fs->buffer_ptr, idx);
+  return bits_get_char_bit(*fs->buffer_ptr, idx);
 }
 
 size_t fs_total_blocks(FileStream *fs) { return fs->total_blocks; }
@@ -252,9 +252,9 @@ static void fs_set_initial_state(FileStream *fs) {
 }
 
 void fs_debug_internal_state(FileStream *fs) {
-  log_debug("fd: %d\n", fs->fd);
-  log_debug("buffer: %p (%zu)\n", fs->buffer, fs->buffer_size);
-  log_debug("buffer_ptr: %p(+%zu)\n", fs->buffer_ptr, fs->buffer_ptr_offset);
-  log_debug("bytes: %zu/%zu\n", fs->current_byte_idx, fs->total_bytes);
-  log_debug("blocks: %zu/%zu\n", fs->blocks_read, fs->total_blocks);
+  log_debug("fd: %d", fs->fd);
+  log_debug("buffer: %p (%zu)", fs->buffer, fs->buffer_size);
+  log_debug("buffer_ptr: %p(+%zu)", fs->buffer_ptr, fs->buffer_ptr_offset);
+  log_debug("bytes: %zu/%zu", fs->current_byte_idx, fs->total_bytes);
+  log_debug("blocks: %zu/%zu", fs->blocks_read, fs->total_blocks);
 }

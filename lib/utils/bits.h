@@ -2,7 +2,8 @@
 
 #include "utils/types/common.h"
 
-unsigned char bits_bitAt(char c, unsigned char index);
+unsigned char bits_get_char_bit(char c, unsigned char index);
+unsigned char bits_get_size_bit(size_t n, int index);
 
 size_t bits_fromBytes(size_t nBytes);
 size_t bits_toBytes(size_t nbits);
