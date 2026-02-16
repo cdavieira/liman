@@ -20,7 +20,7 @@ char *liman_build_uncompressed_filename(const char *inputfile) {
 
   filename = filenameBuilder_build(b);
 
-  b = filenameBuilder_destroy(b);
+  filenameBuilder_destroy(b);
   mem_free(outputfile);
 
   return filename;
@@ -29,7 +29,7 @@ char *liman_build_uncompressed_filename(const char *inputfile) {
 char *liman_get_uncompressed_filename(const char *inputfile) {
   char *outputfile = NULL;
   const char *prefix = "unhuffman-";
-  char *basename = cstr_find_after_last_char(inputfile, '/');
+  const char *basename = cstr_find_after_last_char(inputfile, '/');
   String *s = string_from_ptr(basename ? basename : inputfile);
 
   string_shift(s, prefix);
@@ -75,7 +75,7 @@ char *liman_build_compressed_filename(const char *inputfile) {
 
   filename = filenameBuilder_build(b);
 
-  b = filenameBuilder_destroy(b);
+  filenameBuilder_destroy(b);
 
   return filename;
 }

@@ -65,9 +65,8 @@ unsigned tree_exists(Tree *root, Tree *t);
 /**
  * transverse the root node using the given nodeCode.
  *
- * the number should be interpreted as a sequence of bits (just like if
- * reading in binary) and should be read from the most significant bit to the
- * least one
+ * the number should be interpreted as a sequence of bits and should be read
+ * from the most significant bit to the least one
  *
  * nodeCode is made of 0's and 1's, where:
  * 0 indicates that the next tree is the left one

@@ -31,8 +31,8 @@ FilenameBuilder *filenameBuilder_from_filename(const char *filename) {
   FilenameBuilder *builder = filenameBuilder_new();
 
   char *copy = mem_salloc(filename);
-  char *basename = cstr_find_after_last_char(copy, '/');
-  char *extension = cstr_find_at_last_char(copy, '.');
+  char *basename = (char*) cstr_find_after_last_char(copy, '/');
+  char *extension = (char*) cstr_find_at_last_char(copy, '.');
 
   if (extension) {
     *extension = '\0';

@@ -3,10 +3,10 @@
 
 #include <string.h>
 
-char *cstr_find_at_last_char(const char *s, char ch) { return strrchr(s, ch); }
+const char *cstr_find_at_last_char(const char *s, char ch) { return strrchr(s, ch); }
 
-char *cstr_find_after_last_char(const char *s, char ch) {
-  char *last = cstr_find_at_last_char(s, ch);
+const char *cstr_find_after_last_char(const char *s, char ch) {
+  const char *last = cstr_find_at_last_char(s, ch);
   return last ? last + 1 : NULL;
 }
 
