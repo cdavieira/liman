@@ -1,4 +1,5 @@
 #include "core/fileformat/CompReader.h"
+#include "core/HuffmanCode.h"
 #include "core/HuffmanTree.h"
 #include "core/fileformat/CompHeader.h"
 #include "platform/log.h"
@@ -8,7 +9,6 @@
 #include "platform/process.h"
 #include "utils/bits.h"
 #include "utils/container/Bitmap.h"
-#include "utils/container/Tree.h"
 
 #include <stdio.h>
 
@@ -83,7 +83,7 @@ CompReaderOutput compReader_translate(CompReader *reader,
   fs_next_byte(reader->fs);
 
   // Writing to output
-  BinaryWriter *writer = binWriter_new(4096 * 8); // 4 KiB
+  BinaryWriter *writer = binWriter_new(4 * 1024); // 4 KiB
   binWriter_open(writer, filename);
 
   CallbackData2 *data = mem_alloc(sizeof(CallbackData2));
@@ -194,7 +194,7 @@ static int compReader_translate_callback(int bit, void *data) {
   d->tree = huffmanTree_get_child(d->tree, bit);
 
   if (huffmanTree_is_leaf(d->tree)) {
-    binWriter_write_byte(d->writer, huffmanTree_get_ASCII(d->tree));
+    binWriter_write_byte(d->writer, huffmanTree_get_key(d->tree));
     d->tree = d->root;
   }
 
@@ -204,7 +204,10 @@ static int compReader_translate_callback(int bit, void *data) {
 }
 
 static unsigned long get_null_code_length(HuffmanTree *root) {
-  HuffmanTree *nullhf = huffmanTree_search_ASCII(root, '\0');
-  TreeCode code = huffmanTree_get_code(nullhf);
-  return code.len;
+  HuffmanTree *nullhf = huffmanTree_search_key(root, '\0');
+  if (nullhf == NULL) {
+    return 0;
+  }
+  HuffmanCode *code = huffmanTree_get_value(nullhf);
+  return huffmanCode_get_value(code).len;
 }

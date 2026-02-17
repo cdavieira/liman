@@ -3,10 +3,6 @@
 #include "utils/types/common.h"
 
 typedef struct Tree Tree;
-typedef struct TreeCode {
-  size_t len;
-  size_t value;
-} TreeCode;
 
 Tree *tree_new(void *conteudo, Tree *sae, Tree *sad);
 Tree *tree_destroy(Tree *root, void *(*free_item)(void *));
@@ -16,16 +12,10 @@ Tree *tree_get_left(Tree *root);
 Tree *tree_get_right(Tree *root);
 Tree *tree_get_child(Tree *root, unsigned lr);
 size_t tree_get_id(Tree *root);
-TreeCode tree_get_code(Tree *root);
 
 Tree *tree_set_item(Tree *t, void *item);
 Tree *tree_set_left(Tree *root, Tree *filho);
 Tree *tree_set_right(Tree *root, Tree *filho);
-
-/**
- * print this tree in .dot format
- */
-void tree_print(Tree *root, FILE *fp);
 
 /**
  * tells if this node is a leaf node or not
@@ -55,40 +45,5 @@ unsigned long tree_get_leaf_count(Tree *root);
  */
 unsigned long tree_get_height(Tree *root);
 
-/**
- * checks if 't' can be found from 'root'
- *
- * @return 1 in case it can, 0 otherwise
- */
-unsigned tree_exists(Tree *root, Tree *t);
-
-/**
- * transverse the root node using the given nodeCode.
- *
- * the number should be interpreted as a sequence of bits and should be read
- * from the most significant bit to the least one
- *
- * nodeCode is made of 0's and 1's, where:
- * 0 indicates that the next tree is the left one
- * 1 indicates that the next tree is the right one
- *
- * codeLen is the number of bits that makes up 'nodeCode'
- *
- * For example:
- * codeLen=3 nodeCode=010, node = root->left->right->left
- * codeLen=5 nodeCode=1110, node = root->right->right->right->left
- *
- * @return NULL if the nodeCode leads to a NULL node, otherwise a pointer to
- * that node
- */
-Tree *tree_descend(Tree *root, const TreeCode *code);
-
-/**
- * Fills the 'treeCode' field for all nodes of this tree
- */
-void tree_gen_treeCodes(Tree *root);
-
-TreeCode treeCode_init(void);
-void treeCode_left(TreeCode *code);
-void treeCode_right(TreeCode *code);
-char *treeCode_to_cstr(const TreeCode *code);
+void tree_visit_leafs(Tree *root, void (*callback)(Tree *leaf, unsigned height,
+                                                   unsigned long path));

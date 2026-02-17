@@ -1,9 +1,9 @@
 #include "platform/posix/BinaryWriter.h"
+#include "core/HuffmanCode.h"
 #include "platform/log.h"
 #include "platform/mem.h"
 #include "utils/bits.h"
 #include "utils/container/Bitmap.h"
-#include "utils/container/Tree.h"
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -89,8 +89,7 @@ void binWriter_flush(BinaryWriter *writer) {
   ssize_t bytes_written = write(writer->fd, buffer, required_bytes);
 
   if (required_bytes != bytes_written) {
-    log_warning("binWriter: bytes attempted/written mismatch", writer->filename,
-                padding);
+    log_warning("binWriter: bytes attempted/written mismatch");
   }
 
   binWriter_cleanup_buffer(writer);
@@ -150,13 +149,19 @@ void binWriter_write_bitmap(BinaryWriter *writer, const Bitmap *bm) {
   writer->bits_written += exceeding_bits;
 }
 
-void binWriter_write_treeCode(BinaryWriter *writer, TreeCode code) {
+void binWriter_write_huffmanCode(BinaryWriter *writer,
+                                 const HuffmanCode *hfcode) {
+  Code code = huffmanCode_get_value(hfcode);
   size_t sz = code.len;
+  if (!sz) {
+    return;
+  }
+
   size_t remaining_bits = binWriter_remaining_bits_until_dump(writer);
   if (sz <= remaining_bits) {
     for (int i = sz - 1; i >= 0; i--) {
       bitmapAppendLeastSignificantBit(writer->buffer,
-                                      bits_get_size_bit(code.value, i));
+                                      bits_get_size_bit(code.code, i));
     }
     writer->bits_written += sz;
     return;
@@ -166,13 +171,13 @@ void binWriter_write_treeCode(BinaryWriter *writer, TreeCode code) {
   int i = sz - 1;
   for (; i >= exceeding_bits; i--) {
     bitmapAppendLeastSignificantBit(writer->buffer,
-                                    bits_get_size_bit(code.value, i));
+                                    bits_get_size_bit(code.code, i));
   }
   writer->bits_written += remaining_bits;
   binWriter_flush(writer);
   for (; i >= 0; i--) {
     bitmapAppendLeastSignificantBit(writer->buffer,
-                                    bits_get_size_bit(code.value, i));
+                                    bits_get_size_bit(code.code, i));
   }
   writer->bits_written += exceeding_bits;
 }

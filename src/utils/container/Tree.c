@@ -1,13 +1,10 @@
 #include "utils/container/Tree.h"
 #include "platform/mem.h"
-#include "utils/bits.h"
 
 #include <stdio.h>
 
 struct Tree {
   size_t id;
-
-  TreeCode code;
 
   void *item;
 
@@ -19,7 +16,6 @@ Tree *tree_new(void *item, Tree *left, Tree *right) {
   static size_t id = 0;
   Tree *t = mem_alloc(sizeof(Tree));
   t->id = id++;
-  t->code = treeCode_init();
   t->item = item;
   t->left = left;
   t->right = right;
@@ -57,10 +53,6 @@ Tree *tree_get_child(Tree *root, unsigned lr) {
   return NULL;
 }
 
-TreeCode tree_get_code(Tree *root) {
-  return root ? root->code : treeCode_init();
-}
-
 Tree *tree_get_right(Tree *t) { return t ? t->right : NULL; }
 
 Tree *tree_set_item(Tree *t, void *item) {
@@ -76,34 +68,6 @@ Tree *tree_set_left(Tree *root, Tree *t) {
 Tree *tree_set_right(Tree *root, Tree *t) {
   root->right = t;
   return root;
-}
-
-static void tree_print_rec(Tree *node, FILE *fp) {
-  if (!node) {
-    return;
-  }
-
-  if (node->left) {
-    fprintf(fp, "    %lu -> %lu;\n", node->id, node->left->id);
-    tree_print_rec(node->left, fp);
-  }
-  if (node->right) {
-    fprintf(fp, "    %lu -> %lu;\n", node->id, node->right->id);
-    tree_print_rec(node->right, fp);
-  }
-}
-
-void tree_print(Tree *root, FILE *fp) {
-  fprintf(fp, "digraph Tree {\n"
-              "    node [fontname=\"Arial\"];\n");
-  if (!root) {
-    fprintf(fp, "\n");
-  } else if (!root->left && !root->right) {
-    fprintf(fp, "    %lu;\n", root->id);
-  } else {
-    tree_print_rec(root, fp);
-  }
-  fprintf(fp, "}\n");
 }
 
 unsigned tree_is_leaf(Tree *t) { return t ? !t->right && !t->left : 0; }
@@ -140,65 +104,21 @@ unsigned long tree_get_height(Tree *t) {
   return !tree_is_leaf(t) + (lh > rh ? lh : rh);
 }
 
-unsigned tree_exists(Tree *t, Tree *node) {
-  if (!t) {
-    return 0;
-  }
-  return t == node ? 1
-                   : tree_exists(t->right, node) || tree_exists(t->left, node);
-}
-
-Tree *tree_descend(Tree *node, const TreeCode *code) {
-  unsigned char bit;
-  for (int i = code->len - 1; node && i >= 0; i--) {
-    bit = bits_get_size_bit(code->value, i);
-    if (bit == 0) {
-      node = node->left;
-    } else {
-      node = node->right;
-    }
-  }
-  return node;
-}
-
-void tree_gen_treeCodes(Tree *root) {
+void tree_visit_leafs_r(Tree *root,
+                        void (*callback)(Tree *leaf, unsigned height,
+                                         unsigned long path),
+                        unsigned height, unsigned long path) {
   if (!root) {
     return;
   }
-
-  if (root->left) {
-    root->left->code = root->code;
-    treeCode_left(&root->left->code);
+  if (tree_is_leaf(root)) {
+    callback(root, height, path);
   }
-
-  if (root->right) {
-    root->right->code = root->code;
-    treeCode_right(&root->right->code);
-  }
-
-  tree_gen_treeCodes(root->left);
-  tree_gen_treeCodes(root->right);
+  tree_visit_leafs_r(root->left, callback, height + 1, (path << 1) | 0);
+  tree_visit_leafs_r(root->right, callback, height + 1, (path << 1) | 1);
 }
 
-/**/
-
-TreeCode treeCode_init(void) { return (TreeCode){0, 0}; }
-
-void treeCode_left(TreeCode *code) {
-  code->value = (code->value << 1) | 0;
-  code->len++;
-}
-
-void treeCode_right(TreeCode *code) {
-  code->value = (code->value << 1) | 1;
-  code->len++;
-}
-
-char *treeCode_to_cstr(const TreeCode *code) {
-  char *route = mem_zalloc((code->len + 1) * sizeof(char));
-  for (int i = code->len - 1, j = 0; i >= 0; i--, j++) {
-    route[j] = '0' + bits_get_size_bit(code->value, i);
-  }
-  route[code->len] = '\0';
-  return route;
+void tree_visit_leafs(Tree *root, void (*callback)(Tree *leaf, unsigned height,
+                                                   unsigned long path)) {
+  tree_visit_leafs_r(root, callback, 0, 0);
 }

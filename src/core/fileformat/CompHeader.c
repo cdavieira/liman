@@ -122,7 +122,7 @@ static void compHeader_fill_bitmap_with_huffmanTree_rec(HuffmanTree *hf,
   }
 
   bitmapAppendLeastSignificantBit(header, 1);
-  unsigned char ch = huffmanTree_get_ASCII(hf);
+  unsigned char ch = huffmanTree_get_key(hf);
   for (int i = 7; i >= 0; i--) {
     bitmapAppendLeastSignificantBit(header, bits_get_char_bit(ch, i));
   }
@@ -131,7 +131,7 @@ static void compHeader_fill_bitmap_with_huffmanTree_rec(HuffmanTree *hf,
 static HuffmanTree *compHeader_build_tree_from_bitmap(CompHeader *header) {
   unsigned idx = 0;
   HuffmanTree *ht = compHeader_build_tree_from_bitmap_rec(header->bm, &idx);
-  huffmanTree_gen_treeCodes(ht);
+  huffmanTree_gencodes(ht);
   return ht;
 }
 

@@ -1,5 +1,6 @@
 #include "core/fileformat/CompBody.h"
 #include "core/CodeLookup.h"
+#include "core/HuffmanCode.h"
 #include "core/HuffmanTree.h"
 #include "platform/log.h"
 #include "platform/mem.h"
@@ -8,7 +9,6 @@
 #include "platform/posix/file.h"
 #include "platform/process.h"
 #include "utils/bits.h"
-#include "utils/container/Bitmap.h"
 
 #include <stdio.h>
 
@@ -68,7 +68,7 @@ void compBody_encode(CompBody *body, const char *filename,
   binWriter_write_byte(writer,
                        (unsigned char)body->metadata.compressed_pad_bits);
   fs_loop_over_all_bytes(fs, filename, (void *)data, compBody_encode_handler);
-  binWriter_write_bitmap(writer, codeLookup_get(data->lookup, 0));
+  binWriter_write_huffmanCode(writer, codeLookup_get(data->lookup, 0));
 
   fs_destroy(fs);
 
@@ -108,16 +108,10 @@ static CompBodyMetadata compBodyMetadata_from_fp(FILE *fp) {
 static int compBody_encode_handler(int byte, void *smth) {
   CallbackData *data = (CallbackData *)smth;
 
-  const Bitmap *bmapCode = codeLookup_get(data->lookup, byte);
+  const HuffmanCode *code = codeLookup_get(data->lookup, byte);
 
-  if (bmapCode) {
-#ifdef DEBUG
-    log_debug("%d -> ", byte);
-    bitmapPrint(bmapCode, stdout);
-    putchar('\n');
-#endif
-
-    binWriter_write_bitmap(data->writer, bmapCode);
+  if (huffmanCode_has_value(code)) {
+    binWriter_write_huffmanCode(data->writer, code);
   }
 
   return 0;

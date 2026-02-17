@@ -1,6 +1,3 @@
-# print each byte compressed/decompressed and its huffman code during runtime
-debug := 0
-
 project := liman
 srcdir := src
 libdir := lib
@@ -14,9 +11,6 @@ MKDIR := mkdir
 RM := rm -rf
 
 CFLAGS := -g -I$(libdir)
-ifeq ($(debug),1)
-CFLAGS += -DDEBUG
-endif
 
 all: $(project)
 

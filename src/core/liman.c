@@ -8,14 +8,12 @@
 #include "platform/log.h"
 #include "platform/process.h"
 #include "utils/container/Bitmap.h"
-#include "utils/container/Tree.h"
 #include "utils/types/common.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
 static HuffmanTree *huffmanAlgorithm(ByteFrequency *f);
-static void gencodes(HuffmanTree *root);
 
 // Core
 void compress(const char *inputfile, const char *outputfile, int opts) {
@@ -106,7 +104,7 @@ void inspect(const char *compfile, const char *outputfile, int opts) {
   if (opts & HUHMAN_CODES) {
     FILE *fpo = fopen(outputfile, "w");
     if (fpo) {
-      huffmanTree_print_codes(root, fpo);
+      huffmanTree_printfp_codes(root, fpo);
       printf("Tree codes: %s\n", outputfile);
       fclose(fpo);
     }
@@ -115,7 +113,7 @@ void inspect(const char *compfile, const char *outputfile, int opts) {
   if (opts & HUHMAN_PDF) {
     FILE *fpo = fopen(outputfile, "w");
     if (fpo) {
-      huffmanTree_print(root, fpo);
+      huffmanTree_printfp_dot(root, fpo);
       printf("Tree dotfile: %s\n", outputfile);
       printf("Tip: run 'dot -Tpdf %s -o %s.pdf' and generate its pdf!\n",
              outputfile, outputfile);
@@ -138,17 +136,6 @@ static HuffmanTree *huffmanAlgorithm(ByteFrequency *f) {
     }
   }
 
-#ifdef DEBUG
-  log_debug("BEGIN - list to be processed");
-  HuffmanTree *debug_tree;
-  for (int i = 0; i < treelist_get_size(lc); i++) {
-    debug_tree = treelist_get_tree(lc, i);
-    log_debug("%u: %lu", huffmanTree_get_ASCII(debug_tree),
-              huffmanTree_get_weight(debug_tree));
-  }
-  log_debug("END");
-#endif
-
   HuffmanTree *ltree;
   HuffmanTree *rtree;
   unsigned long w1;
@@ -163,35 +150,6 @@ static HuffmanTree *huffmanAlgorithm(ByteFrequency *f) {
 
   HuffmanTree *hufftree = treelist_unshift(lc);
   treelist_destroy(lc);
-  huffmanTree_gen_treeCodes(hufftree);
-  gencodes(hufftree);
+  huffmanTree_gencodes(hufftree);
   return hufftree;
-}
-
-// static and recursive
-static void gencodes(HuffmanTree *root) {
-  if (!root) {
-    return;
-  }
-  // nodeCode is a byte-encoded number which takes the root tree to one of its
-  // leaf nodes. For example: for nodeCode=101 (codeLen=3), then: leaf =
-  // root->right->left->right for nodeCode=10001 (codeLen=5), then: leaf =
-  // root->right->left->left->left->right
-  //
-  // Since nodeCode is a 64bit number, the maximum height of the huffmanTree
-  // becomes 64.
-  //
-  // In the original project, nodeCode was built as a string in this
-  // function, which allowed the generation of arbitrary code lengths.
-
-  if (huffmanTree_is_leaf(root)) {
-    TreeCode code = huffmanTree_get_code(root);
-    Bitmap *bm = bitmapInit(code.len);
-    for (int i = code.len; i > 0; i--) {
-      bitmapAppendLeastSignificantBit(bm, (code.value >> (i - 1)) & 1);
-    }
-    huffmanTree_set_bitmap(root, bm);
-  }
-  gencodes(huffmanTree_get_left(root));
-  gencodes(huffmanTree_get_right(root));
 }
