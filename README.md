@@ -31,13 +31,13 @@ make clean
 
 # get information about a .comp file
 ## information about the header
-./liman inspect -r -i ./pikachu.gif.comp
+./liman inspect -r -i pikachu.gif.comp
 ## information about the body
-./liman inspect -b -i ./pikachu.gif.comp
+./liman inspect -b -i pikachu.gif.comp
 ## creates 'huhman-pikachu.gif.comp.txt': all codes used to encode each byte of the file
-./liman inspect -c -i ./pikachu.gif.comp
+./liman inspect -c -i pikachu.gif.comp
 ## creates 'huhman-pikachu.gif.comp.dot': a dot file, which can then be parsed by tools to visualize the huffman tree!
-./liman inspect -p -i ./pikachu.gif.comp
+./liman inspect -p -i pikachu.gif.comp
 # in case 'dot' is installed, a pdf can be generated like so:
 # dot -Tpdf ./pikachu.gif.comp.dot -o ./huffman.pdf
 ```
