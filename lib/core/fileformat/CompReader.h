@@ -5,9 +5,10 @@
 
 typedef struct CompReader CompReader;
 typedef struct CompReaderOutput {
-  size_t sizeBytes;
-  size_t sizeBits;
-  size_t padBits;
+  size_t input_total_size_bytes;
+  size_t output_total_size_bytes;
+  size_t output_min_size_bits;
+  size_t output_pad_bits;
 } CompReaderOutput;
 
 CompReader *compReader_new(const char *filename);

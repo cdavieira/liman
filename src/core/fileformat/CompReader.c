@@ -64,7 +64,10 @@ CompHeader *compReader_get_header(CompReader *reader) {
 
 CompReaderOutput compReader_translate(CompReader *reader,
                                       const char *filename) {
-  CompReaderOutput res = {.sizeBits = 0, .sizeBytes = 0};
+  CompReaderOutput res = {.output_min_size_bits = 0,
+                          .output_total_size_bytes = 0,
+                          .output_pad_bits = 0,
+                          .input_total_size_bytes = fs_total_bytes(reader->fs)};
 
   CompHeader *header = compReader_get_header(reader);
   HuffmanTree *root = compHeader_get_huffmanTree(header);
@@ -74,7 +77,7 @@ CompReaderOutput compReader_translate(CompReader *reader,
   if ((padBits < 0) || padBits > 7) {
     process_abort("Body pad field out of range");
   }
-  res.padBits = padBits;
+  res.output_pad_bits = padBits;
 
   // Advancing pad field
   fs_next_byte(reader->fs);
@@ -96,7 +99,8 @@ CompReaderOutput compReader_translate(CompReader *reader,
   fs_do_next_bits(reader->fs, msgMinBits, data, compReader_translate_callback);
 
   res = data->output;
-  res.sizeBytes = bits_toBytes(res.sizeBits + res.padBits);
+  res.output_total_size_bytes =
+      bits_toBytes(res.output_min_size_bits + res.output_pad_bits);
 
   binWriter_destroy(writer);
   data = mem_free(data);
@@ -194,7 +198,7 @@ static int compReader_translate_callback(int bit, void *data) {
     d->tree = d->root;
   }
 
-  d->output.sizeBits++;
+  d->output.output_min_size_bits++;
 
   return 0;
 }

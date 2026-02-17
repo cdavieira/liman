@@ -6,7 +6,6 @@
 #include "core/fileformat/CompReader.h"
 #include "core/fileformat/CompWriter.h"
 #include "platform/log.h"
-#include "platform/posix/file.h"
 #include "platform/process.h"
 #include "utils/container/Bitmap.h"
 #include "utils/container/Tree.h"
@@ -39,12 +38,11 @@ void compress(const char *inputfile, const char *outputfile, int opts) {
 
 void decompress(const char *inputfile, const char *outputfile, int opts) {
   CompReader *reader = compReader_new(inputfile);
-  compReader_translate(reader, outputfile);
+  CompReaderOutput output = compReader_translate(reader, outputfile);
 
-  size_t oldsz = file_get_total_size_in_bytes_filename(inputfile);
-  size_t newsz = file_get_total_size_in_bytes_filename(outputfile);
   log_info("decompression finished: %s saved as %s!", inputfile, outputfile);
-  log_info("from %zu bytes to %zu bytes", oldsz, newsz);
+  log_info("from %zu bytes to %zu bytes", output.input_total_size_bytes,
+           output.output_total_size_bytes);
 
   compReader_destroy(reader);
 }
@@ -94,9 +92,9 @@ void inspect(const char *compfile, const char *outputfile, int opts) {
   if (opts & HUHMAN_BODY) {
     CompReaderOutput output = compReader_translate(reader, outputfile);
 
-    size_t body_minSize = output.sizeBits;
-    size_t body_padBits = output.padBits;
-    size_t body_totalSize = output.sizeBytes;
+    size_t body_minSize = output.output_min_size_bits;
+    size_t body_padBits = output.output_pad_bits;
+    size_t body_totalSize = output.output_total_size_bytes;
 
     printf("About the body:\n"
            "\tSize:          %zu bits\n"
