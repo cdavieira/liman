@@ -20,3 +20,4 @@ void bitmapPrint(const Bitmap *bm, FILE *fpout);
 void bitmapDump(Bitmap *bm, FILE *fpout);
 void bitmapConcat(Bitmap *dest, const Bitmap *source);
 Bitmap *bitmapClone(Bitmap *src);
+unsigned char bitmapGetByte(const Bitmap *bm, unsigned int index);

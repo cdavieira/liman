@@ -23,7 +23,7 @@ struct CompBody {
   CompBodyMetadata metadata;
 };
 
-typedef struct {
+typedef struct CallbackData {
   CodeLookup *lookup;
   BinaryWriter *writer;
 } CallbackData;
@@ -33,7 +33,6 @@ static CompBodyMetadata compBodyMetadata_from_fp(FILE *fp);
 static int compBody_encode_handler(int byte, void *smth);
 
 static void compBody_init_bitmap_from_huffmanTree(CompBody *body);
-static void compBody_init_bitmap_from_fp(CompBody *body, FILE *fp);
 
 CompBody *compBody_from_huffmanTree(HuffmanTree *root) {
   CompBody *body = mem_alloc(sizeof(CompBody));
@@ -48,10 +47,6 @@ CompBody *compBody_destroy(CompBody *body) {
 
 size_t compBody_get_total_compressed_size_in_bits(CompBody *body) {
   return body->metadata.compressed_total_size_in_bits;
-}
-
-size_t compBody_get_total_compressed_size_in_bytes(CompBody *body) {
-  return bits_toBytes(body->metadata.compressed_total_size_in_bits);
 }
 
 void compBody_encode(CompBody *body, const char *filename,
@@ -119,8 +114,4 @@ static int compBody_encode_handler(int byte, void *smth) {
 
 static void compBody_init_bitmap_from_huffmanTree(CompBody *body) {
   body->metadata = compBodyMetadata_from_huffmanTree(body->hf);
-}
-
-static void compBody_init_bitmap_from_fp(CompBody *body, FILE *fp) {
-  body->metadata = compBodyMetadata_from_fp(fp);
 }

@@ -144,12 +144,8 @@ static HuffmanTree *compHeader_build_tree_from_bitmap_rec(Bitmap *bm,
   unsigned char bit = bitmapGetBit(bm, (*index)++);
   HuffmanTree *node = NULL;
   if (bit) { // Leaf node
-    unsigned char ascii = 0;
-    for (int i = 7; i >= 0; i--) {
-      bit = bitmapGetBit(bm, (*index)++);
-      bit <<= i;
-      ascii |= bit;
-    }
+    unsigned char ascii = bitmapGetByte(bm, *index);
+    *index = *index + 8;
     node = huffmanTree_new(ascii, 0, 0, 0);
   } else { // Non leaf node
     node = huffmanTree_new(0, 0, 0, 0);

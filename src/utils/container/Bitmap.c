@@ -89,3 +89,16 @@ Bitmap *bitmapClone(Bitmap *src) {
   memcpy(bm->contents, src->contents, (src->max_size + 7) / 8);
   return bm;
 }
+
+unsigned char bitmapGetByte(const Bitmap *bm,
+                            unsigned int index) // index in bits
+{
+  unsigned char ascii = 0;
+  unsigned char bit;
+  for (int i = 7, j = 0; i >= 0; i--, j++) {
+    bit = bitmapGetBit(bm, index + j);
+    bit <<= i;
+    ascii |= bit;
+  }
+  return ascii;
+}
