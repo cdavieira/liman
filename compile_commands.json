@@ -126,6 +126,20 @@
     "output": "obj/core/TreeList.o"
   },
   {
+    "file": "src/platform/ArgParser.c",
+    "arguments": [
+      "/usr/bin/gcc",
+      "-g",
+      "-Ilib",
+      "-c",
+      "-o",
+      "obj/platform/ArgParser.o",
+      "src/platform/ArgParser.c"
+    ],
+    "directory": "/home/carlos/repos/projects/liman",
+    "output": "obj/platform/ArgParser.o"
+  },
+  {
     "file": "src/platform/log.c",
     "arguments": [
       "/usr/bin/gcc",
@@ -250,20 +264,6 @@
     ],
     "directory": "/home/carlos/repos/projects/liman",
     "output": "obj/core/fileformat/CompWriter.o"
-  },
-  {
-    "file": "src/platform/posix/ArgParser.c",
-    "arguments": [
-      "/usr/bin/gcc",
-      "-g",
-      "-Ilib",
-      "-c",
-      "-o",
-      "obj/platform/posix/ArgParser.o",
-      "src/platform/posix/ArgParser.c"
-    ],
-    "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/platform/posix/ArgParser.o"
   },
   {
     "file": "src/platform/posix/BinaryWriter.c",
