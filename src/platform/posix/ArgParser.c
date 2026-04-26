@@ -8,8 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#include <getopt.h>
+#include <string.h>
 
 #define ARG_MIN_COUNT (16)
 #define PARAM_MIN_COUNT (8)
@@ -32,24 +31,19 @@ struct ArgParser {
   Vector *positional_params;
 };
 
-/* data */
+enum ArgFormat {
+  ARG_FORMAT_SHORT,
+  ARG_FORMAT_LONG,
+  ARG_FORMAT_INVALID,
+};
 
-extern int optopt;
-extern int optind;
-extern char *optarg;
-extern int opterr;
-static const struct option BLANK_OPTION = (struct option){0};
-static const Arg BLANK_ARG = (Arg){
-    .argtype = ARG_TYPE_NOARG,
-    .longopt = NULL,
-    .shortopt = 0,
+struct ParsedArg {
+  enum ArgFormat fmt;
+  char *key;
+  char *value;
 };
 
 /* private functions */
-
-static inline int map_argType(enum ArgType argType);
-static char *build_optstring(PositionalParam *param);
-static struct option *build_longopts(PositionalParam *param);
 
 static Arg *arg_new(Arg arg);
 static Arg *arg_destroy(Arg *arg);
@@ -69,6 +63,12 @@ static int posParam_pre_process_check(PositionalParam *param);
 static void posParam_process(PositionalParam *param);
 static void posParam_print(PositionalParam *param, const char *executable,
                            int is_default);
+
+enum ArgFormat parsedArg_infer_type(const char *s);
+char *parsedArg_parse_key(char *token);
+char *parsedArg_parse_value(char *token);
+static struct ParsedArg *parsedArg_from_str(char *s);
+static struct ParsedArg *parsedArg_destroy(struct ParsedArg *a);
 
 /* impl */
 
@@ -165,64 +165,6 @@ void argParser_print(ArgParser *parser) {
 
 /* impl internal */
 
-static inline int map_argType(enum ArgType argType) {
-  switch (argType) {
-  case ARG_TYPE_ARG:
-    return required_argument;
-  case ARG_TYPE_OPTARG:
-    return optional_argument;
-  case ARG_TYPE_NOARG:
-  default:
-    return no_argument;
-  }
-}
-
-static char *build_optstring(PositionalParam *param) {
-  String *s = string_new();
-  size_t sz = vector_get_size(param->args);
-
-  for (int i = 0; i < sz; i++) {
-    Arg *arg = vector_get_item(param->args, i);
-    string_push_char(s, arg->shortopt);
-
-    switch (arg->argtype) {
-    case ARG_TYPE_ARG:
-      string_push_char(s, ':');
-      break;
-    case ARG_TYPE_OPTARG:
-      string_push_char(s, ':');
-      string_push_char(s, ':');
-      break;
-    case ARG_TYPE_NOARG:
-      break;
-    }
-  }
-
-  char *str = string_drain(s);
-
-  return str;
-}
-
-static struct option *build_longopts(PositionalParam *param) {
-  size_t sz = vector_get_size(param->args);
-
-  struct option *longopts = mem_alloc((sz + 1) * sizeof(struct option));
-
-  for (int i = 0; i < sz; i++) {
-    Arg *arg = vector_get_item(param->args, i);
-    longopts[i] = (struct option){
-        .has_arg = map_argType(arg->argtype),
-        .name = arg->longopt,
-        .flag = NULL,
-        .val = arg->shortopt,
-    };
-  }
-
-  longopts[sz] = BLANK_OPTION;
-
-  return longopts;
-}
-
 static Arg *arg_new(Arg arg) {
   Arg *a = mem_alloc(sizeof(Arg));
   *a = arg;
@@ -302,39 +244,91 @@ static int posParam_pre_process_check(PositionalParam *param) {
   return 0;
 }
 
+int posParam_search_handler(void *a1, void *a2) {
+  Arg *candidate = a1;
+  struct ParsedArg *target = a2;
+  if (target->fmt == ARG_FORMAT_SHORT) {
+    return candidate->shortopt == target->key[0];
+  }
+  return cstr_equals(candidate->longopt, target->key);
+}
+
+int posParam_is_value(const char *s) {
+  return s && (strlen(s) > 0) && s[0] != '-';
+}
+
 static void posParam_process(PositionalParam *param) {
   if (posParam_pre_process_check(param) < 0) {
     return;
   }
 
-  // turn off getopt default error msg
-  opterr = 0;
+  char *raw_token;
+  Arg *token_arg;
+  for (int i = 0; i < param->argc; i++) {
+    raw_token = param->argv[i];
+    if (!raw_token) {
+      continue;
+    }
 
-  char *optstring = build_optstring(param);
-  struct option *longopts = build_longopts(param);
+    struct ParsedArg *parsedArg = parsedArg_from_str(raw_token);
+    if (!parsedArg->key) {
+      parsedArg = parsedArg_destroy(parsedArg);
+      continue;
+    }
 
-  int longopt;
-  int ch;
+    token_arg = vector_search(param->args, parsedArg, posParam_search_handler);
+    if (!token_arg) {
+      log_warning("Unregistered token %s", raw_token);
+      parsedArg = parsedArg_destroy(parsedArg);
+      continue;
+    }
 
-  while ((ch = getopt_long(param->argc, param->argv, optstring, longopts,
-                           &longopt)) != -1) {
-    switch (ch) {
-    case '?':
-      log_warning("%s: option error: %c", param->name, optopt);
-      process_quick_abort();
+    switch (token_arg->argtype) {
+    case ARG_TYPE_OPTARG:
+      if (parsedArg->value == NULL) {
+        if ((i + 1) < param->argc) {
+          parsedArg->value = mem_salloc(param->argv[i + 1]);
+          i++;
+        }
+      }
+      if (!posParam_is_value(parsedArg->value)) {
+        log_error("Invalid argument for param '%c'", token_arg->shortopt);
+        parsedArg = parsedArg_destroy(parsedArg);
+        process_quick_abort();
+      }
+      param->handler(token_arg->shortopt, parsedArg->value, param->data);
+      parsedArg = parsedArg_destroy(parsedArg);
       break;
-    case ':':
-      log_warning("%s: missing argument: %d", param->name, ch);
-      process_quick_abort();
+    case ARG_TYPE_ARG:
+      if (parsedArg->value == NULL) {
+        if ((i + 1) < param->argc) {
+          parsedArg->value = mem_salloc(param->argv[i + 1]);
+          i++;
+        }
+      }
+      if (parsedArg->value == NULL) {
+        log_error("Missing argument for param '%c'", token_arg->shortopt);
+        parsedArg = parsedArg_destroy(parsedArg);
+        process_quick_abort();
+      }
+      if (!posParam_is_value(parsedArg->value)) {
+        log_error("Invalid argument for param '%c'", token_arg->shortopt);
+        parsedArg = parsedArg_destroy(parsedArg);
+        process_quick_abort();
+      }
+      param->handler(token_arg->shortopt, parsedArg->value, param->data);
+      parsedArg = parsedArg_destroy(parsedArg);
+      break;
+    case ARG_TYPE_NOARG:
+      param->handler(token_arg->shortopt, NULL, param->data);
+      parsedArg = parsedArg_destroy(parsedArg);
       break;
     default:
-      param->handler(ch, optarg, param->data);
-      break;
+      log_error("Unknown arg type", NULL);
+      parsedArg = parsedArg_destroy(parsedArg);
+      process_quick_abort();
     }
   }
-
-  mem_free(optstring);
-  mem_free(longopts);
 }
 
 static void arg_print(Arg *arg) {
@@ -420,4 +414,97 @@ static void posParam_print(PositionalParam *param, const char *executable,
       }
     }
   }
+}
+
+enum ArgFormat parsedArg_infer_type(const char *s) {
+  size_t len = strlen(s);
+  if (len <= 1) {
+    return ARG_FORMAT_INVALID;
+  }
+  if (s[0] == '-' && s[1] != '-') {
+    return ARG_FORMAT_SHORT;
+  }
+  if (s[0] == '-' && s[1] == '-') {
+    return ARG_FORMAT_LONG;
+  }
+  return ARG_FORMAT_INVALID;
+}
+
+char *parsedArg_parse_key(char *token) {
+  enum ArgFormat token_type = parsedArg_infer_type(token);
+  String *s;
+  char *res = NULL;
+  const char *anchor = NULL;
+
+  switch (token_type) {
+  case ARG_FORMAT_SHORT:
+    s = string_new();
+    string_push_char(s, token[1]);
+    res = string_drain(s);
+    break;
+  case ARG_FORMAT_LONG:
+    s = string_new();
+    anchor = cstr_find_at_first_char(token, '=');
+    if (anchor) {
+      for (const char *a = token + 2; a != anchor; a++) {
+        string_push_char(s, a[0]);
+      }
+    } else {
+      string_append(s, token + 2);
+    }
+    res = string_drain(s);
+    break;
+  default:
+  case ARG_FORMAT_INVALID:
+    break;
+  }
+
+  return res;
+}
+
+char *parsedArg_parse_value(char *token) {
+  enum ArgFormat token_type = parsedArg_infer_type(token);
+  String *s;
+  char *res = NULL;
+  const char *anchor = NULL;
+
+  switch (token_type) {
+  case ARG_FORMAT_SHORT:
+    if (strlen(token) > 2) {
+      s = string_from_ptr(token + 2);
+      res = string_drain(s);
+      break;
+    }
+  case ARG_FORMAT_LONG:
+    anchor = cstr_find_after_first_char(token, '=');
+    if (anchor) {
+      s = string_from_ptr(anchor);
+      res = string_drain(s);
+    }
+    break;
+  default:
+  case ARG_FORMAT_INVALID:
+    break;
+  }
+
+  return res;
+}
+
+static struct ParsedArg *parsedArg_from_str(char *s) {
+  int t = parsedArg_infer_type(s);
+  struct ParsedArg *a = mem_alloc(sizeof(struct ParsedArg));
+  a->fmt = t;
+  a->key = parsedArg_parse_key(s);
+  a->value = parsedArg_parse_value(s);
+  return a;
+}
+
+static struct ParsedArg *parsedArg_destroy(struct ParsedArg *a) {
+  if (a->key) {
+    a->key = mem_free(a->key);
+  }
+  if (a->value) {
+    a->value = mem_free(a->value);
+  }
+  return mem_free(a);
 }

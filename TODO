@@ -6,7 +6,7 @@ Todo
   * [ ] the -c flag for the inspect param isnt working properly
   * [ ] add this test to the test.sh script
 * improve the cli parsing
-  * [ ] the output flag doesnt work in cases like: '-i somefile -ooutputfilename'
+  * [X] the output flag doesnt work in cases like: '-i somefile -ooutputfilename'
 
 * [ ] improve filenaming.c implementation
 * [ ] generalize the HuffmanTree to work with sets other than the ASCII set?

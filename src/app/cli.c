@@ -17,8 +17,7 @@ typedef struct CallbackData {
 
 typedef struct Command {
   char *inputfilename;
-  char *built_outputfilename;
-  const char *outputfilename;
+  char *outputfilename;
   int mode;
   int opts;
   void (*handler)(const char *in, const char *out, int opts);
@@ -84,7 +83,7 @@ static const Arg inspect_args[] = {
 };
 
 static const Command EMPTY_CMD = (Command){
-    NULL, NULL, NULL, 0, 0, NULL,
+    NULL, NULL, 0, 0, NULL,
 };
 
 /* impl */
@@ -156,22 +155,18 @@ static void cli_parse(CLI *cli) {
   switch (cmd.mode) {
   case 0:
     cmd.inputfilename = opts.inputfilename;
-    if (opts.outputfilename) {
-      cmd.outputfilename = opts.outputfilename;
-    } else {
-      cmd.built_outputfilename =
-          liman_build_compressed_filename(cmd.inputfilename);
+    cmd.outputfilename = opts.outputfilename;
+    if (!cmd.outputfilename) {
+      cmd.outputfilename = liman_build_compressed_filename(cmd.inputfilename);
     }
     cmd.opts = opts.flags;
     cmd.handler = compress;
     break;
   case 1:
     cmd.inputfilename = opts.inputfilename;
-    if (opts.outputfilename) {
-      cmd.outputfilename = opts.outputfilename;
-    } else {
-      cmd.built_outputfilename =
-          liman_build_uncompressed_filename(cmd.inputfilename);
+    cmd.outputfilename = opts.outputfilename;
+    if (!cmd.outputfilename) {
+      cmd.outputfilename = liman_build_uncompressed_filename(cmd.inputfilename);
     }
     cmd.opts = opts.flags;
     cmd.handler = decompress;
@@ -181,18 +176,16 @@ static void cli_parse(CLI *cli) {
     if (opts.outputfilename) {
       cmd.outputfilename = opts.outputfilename;
     } else if (opts.flags & HUHMAN_CODES) {
-      cmd.built_outputfilename = liman_get_codes_filename(cmd.inputfilename);
+      cmd.outputfilename = liman_get_codes_filename(cmd.inputfilename);
     } else if (opts.flags & HUHMAN_PDF) {
-      cmd.built_outputfilename = liman_get_tree_filename(cmd.inputfilename);
+      cmd.outputfilename = liman_get_tree_filename(cmd.inputfilename);
     } else if (opts.flags & HUHMAN_HEADER) {
-      cmd.built_outputfilename = NULL;
+      cmd.outputfilename = NULL;
     } else if (opts.flags & HUHMAN_BODY) {
-      cmd.built_outputfilename =
-          liman_build_uncompressed_filename(cmd.inputfilename);
+      cmd.outputfilename = liman_build_uncompressed_filename(cmd.inputfilename);
     } else {
       opts.flags = HUHMAN_HEADER | HUHMAN_BODY;
-      cmd.built_outputfilename =
-          liman_build_uncompressed_filename(cmd.inputfilename);
+      cmd.outputfilename = liman_build_uncompressed_filename(cmd.inputfilename);
     }
     cmd.opts = opts.flags;
     cmd.handler = inspect;
@@ -205,20 +198,15 @@ static void cli_parse(CLI *cli) {
 static void cli_execute(CLI *cli) {
   Command *cmd = &cli->cmd;
   if (cmd->handler && cmd->inputfilename) {
-    const char *outputfilename = cmd->built_outputfilename;
-    if (cmd->outputfilename) {
-      outputfilename = cmd->outputfilename;
-    }
-    cmd->handler(cmd->inputfilename, outputfilename, cmd->opts);
+    cmd->handler(cmd->inputfilename, cmd->outputfilename, cmd->opts);
   }
 }
 
 static void cli_destroy(CLI *cli) {
   Command *cmd = &cli->cmd;
 
-  if (cmd->built_outputfilename) {
-    mem_free(cmd->built_outputfilename);
-  }
+  mem_free(cmd->outputfilename);
+  mem_free(cmd->inputfilename);
 
   if (cli->data) {
     cli->data = callback_destroy(cli->data);
@@ -249,10 +237,10 @@ static void callback(int code, char *arg, void *data) {
 
   switch (code) {
   case 'i':
-    opts->inputfilename = arg;
+    opts->inputfilename = mem_salloc(arg);
     break;
   case 'o':
-    opts->outputfilename = arg;
+    opts->outputfilename = mem_salloc(arg);
     break;
   case 'h':
     argParser_print(opts->parser);
