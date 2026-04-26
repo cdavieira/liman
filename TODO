@@ -1,4 +1,14 @@
 Todo
+* fix the geekforgeeks.txt test
+  * [ ] apparently, the generated tree isn't the same as the one documented in
+> [how the algorithm should work](https://www.geeksforgeeks.org/dsa/huffman-coding-greedy-algo-3/)
+> [online tool to check the huffman method](https://www.w3schools.com/dsa/dsa_ref_huffman_coding.php)
+  * [ ] the -c flag for the inspect param isnt working properly
+  * [ ] add this test to the test.sh script
+* improve the cli parsing
+  * [ ] the output flag doesnt work in cases like: '-i somefile -ooutputfilename'
+
+* [ ] improve filenaming.c implementation
 * [ ] generalize the HuffmanTree to work with sets other than the ASCII set?
 * [ ] test how liman handles big files (>1GiB)
 * [ ] create diagrams explaining how things work
@@ -6,7 +16,6 @@ Todo
 * [ ] change unsigned long to uint64_t or size_t where suitable
 * [ ] add const to everything
 * [ ] translate portuguese comments in the code to english
-* [ ] improve filenaming.c implementation
 
 Done
 * [X] rename Caracter to HuffmanCode and its methods
