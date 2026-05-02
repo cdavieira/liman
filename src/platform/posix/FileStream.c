@@ -128,7 +128,9 @@ size_t fs_total_blocks(FileStream *fs) { return fs->total_blocks; }
 size_t fs_total_bytes(FileStream *fs) { return fs->total_bytes; }
 
 size_t fs_remaining_bytes(FileStream *fs) {
-  return fs->total_bytes - fs->current_byte_idx;
+  return fs->total_bytes > fs->current_byte_idx
+             ? fs->total_bytes - fs->current_byte_idx
+             : 0;
 }
 
 void fs_do_next_bytes(FileStream *fs, size_t count, void *data,
@@ -148,12 +150,24 @@ void fs_do_next_bytes(FileStream *fs, size_t count, void *data,
 void fs_do_next_bits(FileStream *fs, size_t count, void *data,
                      int (*callback)(int bit, void *data)) {
   const size_t byte_count = bits_get_minimum_amount_of_required_bytes(count);
+  size_t current_bit_idx = 0;
   for (size_t i = 0; i < byte_count; i++) {
     for (int i = 7; i >= 0; i--) {
+      if (current_bit_idx >= count) {
+        // We break instead of returning, so that we advance to the next byte.
+        // Effectively, this means that we'll skip some bits after reaching the
+        // provided count number. For example:
+        // If count=3 (bits), then this 'if' will cause the remaining 5 bits of
+        // the byte to be skipped, because the byte itself was consumed when
+        // attempting to read those 3 bits.
+        break;
+      }
+
       int bit = fs_get_bit(fs, i);
       if (callback(bit, data)) {
         return;
       }
+      current_bit_idx++;
     }
 
     if (fs_next_byte(fs) < 0) {
