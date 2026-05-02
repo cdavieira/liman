@@ -1,13 +1,4 @@
 Todo
-* fix the geekforgeeks.txt test
-  * [ ] apparently, the generated tree isn't the same as the one documented in
-> [how the algorithm should work](https://www.geeksforgeeks.org/dsa/huffman-coding-greedy-algo-3/)
-> [online tool to check the huffman method](https://www.w3schools.com/dsa/dsa_ref_huffman_coding.php)
-  * [ ] the -c flag for the inspect param isnt working properly
-  * [ ] add this test to the test.sh script
-* improve the cli parsing
-  * [X] the output flag doesnt work in cases like: '-i somefile -ooutputfilename'
-
 * [ ] improve filenaming.c implementation
 * [ ] generalize the HuffmanTree to work with sets other than the ASCII set?
 * [ ] test how liman handles big files (>1GiB)
@@ -18,54 +9,15 @@ Todo
 * [ ] translate portuguese comments in the code to english
 
 Done
-* [X] rename Caracter to HuffmanCode and its methods
-	internals: key (int), value (treecode), weight
-* [X] move the treecode generation code to HuffmanTree.c
-* [X] move print_dot logic to HuffmanTree.c
-* [X] modify the label/attribute of the generated leaf-tree dot representation
-	https://en.wikipedia.org/wiki/DOT_(graph_description_language)
-* [X] create generic functions to visit the nodes of a tree and use that function to generate the Bitmap*/TreeCodes of leafs
-* [X] use TreeCode instead of Bitmap*?
-* [A] centralize all bit manipulation in utils/bits.h
-* [X] change the way compWriter dumps its data (do not store the whole thing in
-	a Bitmap, but instead accumulate a fixed amount in Bitmap before dumping and restarting)
-* [X] maybe create a separate file to handle the lookup instance of the huffmanTree
-	> this could be specialized to deal with TreeCode and other details
-* [X] rewrite ArgParser.c/ArgParser.h
-* [X] improve cli.c implementation
-* [X] finish building 'compReader_translate' return type
-* [X] reimplement huhman
-	* [X] consolidated debug information on the size of the header,
-	      uncompressed body, compressed body, padding bits,...
-* [X] add info in README about the folder structure of this project
-* [X] translate README
-* [X] replace all exits by functions defined in 'process.h'
-* [X] properly handle cases where FILE* == NULL in liman.c
-* [X] merge the three executables into a single one and add flags to choose the mode (encode, decode and analyze)
-* [X] create file which abstracts memory allocation
-* [X] make an opaque type to handle building the filename
-* [X] make an opaque type to handle descending a tree using 'codeLen' and 'codeBuffer' instead of explicitly using those
-* [X] generate treeCode when building the Tree
-* [X] create a macro/function+callback to iterate over the bytes of a file and
- use that instead of explicit for/while loops
-* [X] create tests
-* [X] separate liman.c in more files (inputBytes.c, byteFreq.c, fileHeader.c, fileBody.c, ...)
-* [X] improve 'CircularLinkedList' by explicitly creating append, pop, shift
-and using those, instead of relying on generic 'add' and 'remove' functions
-(for performance gains)
-* [X] fix bug where more than one '\0' was written in the end of some .comp files
-* [X] improve the implementation of Tree.c
-* [X] struct names in CamelCase
-* [X] var and funcnames using a mesh of pascalCase and snake_case (except for Bitmap.c)
-* [X] cleanup liman.c (analyze is big, compress and decompress could be better)
-* [X] provide two decompression methods (1pass and 2pass)
-* [X] replace fprintf for fputc whenever possible (fprintf is unsafe according to clangtidy)
-* [X] use 'getopt' instead of using argv directly
-* [X] add more commandline options for huhman
-* [X] run valgrind and look for leak errors
-* [X] reimplement huhman
-* [X] change %lu for %zu in all printfs
-* [X] fix total number of bytes written by 'bitmapDump'
-* [X] finish translating from portuguese to english (most parts)
-* [X] update README (on how to run huhman and the compressed filesize table)
-* [X] rewrite README (make texts shorter, add images to the huffmantree pdf and more)
+* fix the geekforgeeks.txt test
+  * [X] apparently, the generated tree isn't the same as the one documented in
+> [how the algorithm should work](https://www.geeksforgeeks.org/dsa/huffman-coding-greedy-algo-3/)
+> [online tool to check the huffman method](https://www.w3schools.com/dsa/dsa_ref_huffman_coding.php)
+>> the generated tree is actually the same, but since the test file had a ghost
+>> carriage-return/linefeed, the resulting tree had two additional nodes which
+>> shouldn't be there. But when using a bare string as input instead of reading
+>> from a file, the generated tree was the same as the one shown in the
+>> geeksforgeeks site
+  * [X] the -c flag for the inspect param isnt working properly
+* improve the cli parsing
+  * [X] the output flag doesnt work in cases like: '-i somefile -ooutputfilename'
