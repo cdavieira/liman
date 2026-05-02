@@ -42,7 +42,6 @@ static int compReader_count_header_callback(int bit, void *data);
 static Bitmap *compReader_read_header_bitmap(CompReader *reader);
 static int compReader_read_header_bitmap_callback(int bit, void *data);
 static int compReader_translate_callback(int bit, void *data);
-static unsigned long get_null_code_length(HuffmanTree *root);
 
 CompReader *compReader_new(const char *filename) {
   CompReader *reader = mem_alloc(sizeof(struct CompReader));
@@ -94,7 +93,7 @@ CompReaderOutput compReader_translate(CompReader *reader,
   data->output = res;
 
   size_t msgTotalBits = bits_fromBytes(fs_remaining_bytes(reader->fs));
-  size_t msgMinBits = msgTotalBits - padBits - get_null_code_length(root);
+  size_t msgMinBits = msgTotalBits - padBits;
 
   fs_do_next_bits(reader->fs, msgMinBits, data, compReader_translate_callback);
 
@@ -195,19 +194,9 @@ static int compReader_translate_callback(int bit, void *data) {
 
   if (huffmanTree_is_leaf(d->tree)) {
     binWriter_write_byte(d->writer, huffmanTree_get_key(d->tree));
+    d->output.output_min_size_bits += 8;
     d->tree = d->root;
   }
 
-  d->output.output_min_size_bits++;
-
   return 0;
-}
-
-static unsigned long get_null_code_length(HuffmanTree *root) {
-  HuffmanTree *nullhf = huffmanTree_search_key(root, '\0');
-  if (nullhf == NULL) {
-    return 0;
-  }
-  HuffmanCode *code = huffmanTree_get_value(nullhf);
-  return huffmanCode_get_value(code).len;
 }

@@ -5,6 +5,7 @@
 typedef struct ByteFrequency ByteFrequency;
 typedef struct InputBytes InputBytes;
 
+ByteFrequency *byteFreq_from_string(const char *buffer);
 ByteFrequency *byteFreq_from_filename(const char *filename);
 ByteFrequency *byteFreq_destroy(ByteFrequency *f);
 

@@ -63,7 +63,6 @@ void compBody_encode(CompBody *body, const char *filename,
   binWriter_write_byte(writer,
                        (unsigned char)body->metadata.compressed_pad_bits);
   fs_loop_over_all_bytes(fs, filename, (void *)data, compBody_encode_handler);
-  binWriter_write_huffmanCode(writer, codeLookup_get(data->lookup, 0));
 
   fs_destroy(fs);
 

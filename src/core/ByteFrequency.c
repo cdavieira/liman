@@ -4,6 +4,7 @@
 #include "platform/posix/FileStream.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 #define SET_SIZE 256
 
@@ -17,6 +18,15 @@ static int byteFreq_fileStream_handler(int byte, void *smth);
 static ByteFrequency *byteFreq_new(void);
 static void byteFreq_sort(ByteFrequency *freq);
 static void byteFreq_print(ByteFrequency *freq);
+
+ByteFrequency *byteFreq_from_string(const char *buffer) {
+  ByteFrequency *freq = byteFreq_new();
+  size_t len = strlen(buffer);
+  for (size_t i = 0; i < len; i++) {
+    freq[buffer[i]].count++;
+  }
+  return freq;
+}
 
 ByteFrequency *byteFreq_from_filename(const char *filename) {
   ByteFrequency *freq = byteFreq_new();
@@ -76,7 +86,6 @@ static ByteFrequency *byteFreq_new(void) {
     freq[i].count = 0;
     freq[i].byte = i;
   }
-  freq[0].count = 1;
   return freq;
 }
 
