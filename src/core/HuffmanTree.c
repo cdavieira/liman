@@ -198,7 +198,10 @@ void huffmanTree_printfp_codes(HuffmanTree *hufftree, FILE *fp) {
   int hasCode;
   for (unsigned ch = 0; ch < setsize; ch++) {
     t = huffmanTree_search_key(hufftree, ch);
-    code = huffmanTree_get_value(hufftree);
+    if (!t) {
+      continue;
+    }
+    code = huffmanTree_get_value(t);
     hasCode = huffmanCode_has_value(code);
     strcode = hasCode ? huffmanCode_stringify(code) : notfound;
     nodeid = t ? huffmanTree_get_id(t) : -1;
