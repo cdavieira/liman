@@ -134,11 +134,11 @@ compression performance for different types of files.
 
   input     | extension | original size     |  compressed size     | compression rate    |
 :------:    | :------:  |:----------------: | :------------------: | :----------------:  | 
-bible.txt   |   txt     |  4_451_368 bytes  |    2_577_871 bytes   |       +42.09%       |
-teste.txt   |   txt     |  97_042 bytes     |    79_228 bytes      |       +18.36%       |
-pikachu.gif |   gif     |  4_459_259 bytes  |    4_449_597 bytes   |       +00.22%       |
-gatinhu.png |   png     |  160_039 bytes    |    160_363 bytes     |       -00.20%       |
-jpg.jpg     |   jpg     |  35_989 bytes     |    36_033 bytes      |       -00.12%       |
+bible.txt   |   txt     |  4_451_368 bytes  |    2_577_867 bytes   |       +42.09%       |
+teste.txt   |   txt     |  97_042 bytes     |    79_207 bytes      |       +18.36%       |
+pikachu.gif |   gif     |  4_459_259 bytes  |    4_449_596 bytes   |       +00.22%       |
+gatinhu.png |   png     |  160_039 bytes    |    160_362 bytes     |       -00.20%       |
+jpg.jpg     |   jpg     |  35_989 bytes     |    36_032 bytes      |       -00.12%       |
 
 ## Discussions
 

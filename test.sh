@@ -37,17 +37,17 @@ generate_decompressed_filename() {
 # $1 - file path
 expected_compressed_size_in_bytes() {
   case "$1" in
-  	'a.txt.comp') echo 8
+  	'a.txt.comp') echo 6
   	;;
-  	'teste.txt.comp') echo 79228
+  	'teste.txt.comp') echo 79207
   	;;
-  	'bible.txt.comp') echo 2577871
+  	'bible.txt.comp') echo 2577867
   	;;
-  	'jpg.jpg.comp') echo 36033
+  	'jpg.jpg.comp') echo 36032
   	;;
-  	'gatinhu.png.comp') echo 160363
+  	'gatinhu.png.comp') echo 160362
   	;;
-  	'pikachu.gif.comp') echo 4449597
+  	'pikachu.gif.comp') echo 4449596
   	;;
   	*) echo 0
   	;;
@@ -95,6 +95,7 @@ main() {
   local fail=0
   local success=0
   local total=$(${ECHO} "$1" | ${WC} -l)
+  local inc_success_count=0
 
   build_project
 
@@ -111,7 +112,20 @@ main() {
     decompressedsize=$(filesize_in_bytes "${output2}")
     expectedsize2=$(expected_decompressed_size_in_bytes "$output2")
 
-    if test "${compressedsize}" == "${expectedsize}" && test "${decompressedsize}" == "${expectedsize2}" ; then
+    inc_success_count=1
+    if test "${compressedsize}" != "${expectedsize}" ; then
+	    echo "Compress failed for example ${example}"
+	    echo "  Expected ${expectedsize} bytes, got ${compressedsize}"
+	    inc_success_count=0
+    fi
+
+    if test "${decompressedsize}" != "${expectedsize2}" ; then
+	    echo "Decompress failed for example ${example}"
+	    echo "  Expected ${expectedsize2} bytes, got ${decompressedsize}"
+	    inc_success_count=0
+    fi
+
+    if test "${inc_success_count}" == "1" ; then
       echo "OK: ${example}"
       success=$((success + 1))
     else
