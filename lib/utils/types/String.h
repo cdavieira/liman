@@ -6,7 +6,6 @@ typedef struct String String;
 
 String *string_new(void);
 String *string_from_ptr(const char *ptr);
-String *string_empty_from_ptrs(size_t size, const char *ptr[size]);
 
 String *string_destroy(String *s);
 char *string_drain(String *s);

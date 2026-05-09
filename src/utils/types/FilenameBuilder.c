@@ -5,6 +5,9 @@
 #include "utils/types/String.h"
 #include <string.h> //strlen, strrchr
 
+// TODO: this struct name is pretty bad, it should be something like
+// 'FilenameExtractor'
+
 struct FilenameBuilder {
   char *copy;
   const char *path;
@@ -16,6 +19,48 @@ static void filenameBuilder_assert(const FilenameBuilder *builder) {
   if (builder->basename == NULL) {
     process_abort("At least a basename is required when building a filename.");
   }
+}
+
+static char *filenameBuilder_assemble(const char *path, const char *basename,
+                                      const char *extension, const char *delim,
+                                      const char *dot) {
+  String *s = string_new();
+
+  if (path) {
+    string_append(s, path);
+    string_append(s, delim);
+  }
+
+  string_append(s, basename);
+
+  if (extension) {
+    string_append(s, dot);
+    string_append(s, extension);
+  }
+
+  return string_drain(s);
+}
+
+static enum PathType filenameBuilder_infer_type(const char *filename) {
+  if (!filename) {
+    return PATH_INVALID;
+  }
+
+  size_t sz = strlen(filename);
+  if (!sz) {
+    return PATH_INVALID;
+  }
+
+  // the following doesn't work for windows
+  if (filename[0] == '/') {
+    return PATH_ABSOLUTE;
+  }
+
+  if (cstr_find_after_last_char(filename, '/')) {
+    return PATH_RELATIVE;
+  }
+
+  return PATH_FILENAME;
 }
 
 FilenameBuilder *filenameBuilder_new(void) {
@@ -31,8 +76,8 @@ FilenameBuilder *filenameBuilder_from_filename(const char *filename) {
   FilenameBuilder *builder = filenameBuilder_new();
 
   char *copy = mem_salloc(filename);
-  char *basename = (char*) cstr_find_after_last_char(copy, '/');
-  char *extension = (char*) cstr_find_at_last_char(copy, '.');
+  char *basename = (char *)cstr_find_after_last_char(copy, '/');
+  char *extension = (char *)cstr_find_at_last_char(copy, '.');
 
   if (extension) {
     *extension = '\0';
@@ -44,13 +89,32 @@ FilenameBuilder *filenameBuilder_from_filename(const char *filename) {
     builder->basename = basename;
     basename--;
     *basename = '\0';
-    builder->path = basename;
+    builder->path = copy;
   } else {
-    builder->basename = filename;
+    builder->basename = copy;
   }
   builder->extension = extension;
 
   return builder;
+}
+
+FilenameParts filenameBuilder_drain(FilenameBuilder *builder) {
+  FilenameParts parts = {
+      .pathType = filenameBuilder_infer_type(builder->copy),
+      .filename = builder->basename ? mem_salloc(builder->basename) : NULL,
+      .extension = builder->extension ? mem_salloc(builder->extension) : NULL,
+      .path = builder->path ? mem_salloc(builder->path) : NULL,
+  };
+  filenameBuilder_destroy(builder);
+  return parts;
+}
+
+FilenameBuilder *filenameBuilder_from_parts(FilenameParts parts) {
+  char *copy = filenameBuilder_assemble(parts.path, parts.filename,
+                                        parts.extension, "/", ".");
+  FilenameBuilder *b = filenameBuilder_from_filename(copy);
+  copy = mem_free(copy);
+  return b;
 }
 
 FilenameBuilder *filenameBuilder_destroy(FilenameBuilder *builder) {
@@ -83,27 +147,8 @@ void filenameBuilder_remove_extension(FilenameBuilder *builder) {
 char *filenameBuilder_build(const FilenameBuilder *builder) {
   filenameBuilder_assert(builder);
 
-  char *filename = NULL;
-  const char *delim = "/";
-  const char *dot = ".";
-  const char *ptrs[] = {
-      builder->path, delim, builder->basename, dot, builder->extension,
-  };
-  String *s = string_empty_from_ptrs(5, ptrs);
-
-  if (builder->path) {
-    string_append(s, builder->path);
-    string_append(s, delim);
-  }
-
-  string_append(s, builder->basename);
-
-  if (builder->extension) {
-    string_append(s, dot);
-    string_append(s, builder->extension);
-  }
-
-  filename = string_drain(s);
+  char *filename = filenameBuilder_assemble(builder->path, builder->basename,
+                                            builder->extension, "/", ".");
 
   return filename;
 }

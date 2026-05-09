@@ -8,7 +8,6 @@ const char *cstr_find_at_first_char(const char *s, char ch);
 const char *cstr_find_after_first_char(const char *s, char ch);
 size_t cstr_count_occurrences(const char *s, char ch);
 
-char *cstr_min(const size_t size, const char *s[size]);
 char *cstr_min2(const char *s1, const char *s2);
 char *cstr_expand(const char *s, size_t sz);
 

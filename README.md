@@ -34,9 +34,9 @@ make clean
 ./liman inspect -r -i pikachu.gif.comp
 ## information about the body
 ./liman inspect -b -i pikachu.gif.comp
-## creates 'huhman-pikachu.gif.comp.txt': all codes used to encode each byte of the file
+## creates 'inspect-pikachu.gif.comp.txt': all codes used to encode each byte of the file
 ./liman inspect -c -i pikachu.gif.comp
-## creates 'huhman-pikachu.gif.comp.dot': a dot file, which can then be parsed by tools to visualize the huffman tree!
+## creates 'inspect-pikachu.gif.comp.dot': a dot file, which can then be parsed by tools to visualize the huffman tree!
 ./liman inspect -p -i pikachu.gif.comp
 # in case 'dot' is installed, a pdf can be generated like so:
 # dot -Tpdf ./pikachu.gif.comp.dot -o ./huffman.pdf
@@ -126,7 +126,7 @@ The cool part is that these can be visualized! Here is one of the
 Huffman trees produced by liman for the test 'bible.txt':
 
 ![Huffman tree for bible.txt test](./assets/bible-huffmantree.png)
-> image generated using './huhman' and the program 'dot'
+> image generated using './liman inspect' and the program 'dot'
 
 ## Compression performance
 The project contains some files in the `tests` folder, which were used to test

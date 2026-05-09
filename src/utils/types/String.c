@@ -30,13 +30,6 @@ String *string_from_ptr(const char *ptr) {
   return s;
 }
 
-String *string_empty_from_ptrs(size_t size, const char *ptr[size]) {
-  String *s = mem_zalloc(sizeof(struct String));
-  s->str = cstr_min(size, ptr);
-  s->sz = strlen(s->str);
-  return s;
-}
-
 String *string_destroy(String *s) {
   if (s->str) {
     mem_free(s->str);

@@ -2,8 +2,24 @@
 
 typedef struct FilenameBuilder FilenameBuilder;
 
+enum PathType {
+  PATH_ABSOLUTE,
+  PATH_RELATIVE,
+  PATH_FILENAME,
+  PATH_INVALID,
+};
+
+typedef struct FilenameParts {
+  char *path;
+  char *filename;
+  char *extension;
+  enum PathType pathType;
+} FilenameParts;
+
 FilenameBuilder *filenameBuilder_new(void);
 FilenameBuilder *filenameBuilder_from_filename(const char *filename);
+FilenameParts filenameBuilder_drain(FilenameBuilder *builder);
+FilenameBuilder *filenameBuilder_from_parts(FilenameParts parts);
 FilenameBuilder *filenameBuilder_destroy(FilenameBuilder *builder);
 
 void filenameBuilder_set_basename(FilenameBuilder *builder,

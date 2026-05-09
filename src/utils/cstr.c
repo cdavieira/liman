@@ -30,18 +30,6 @@ size_t cstr_count_occurrences(const char *s, char ch) {
   return count;
 }
 
-char *cstr_min(const size_t size, const char *s[size]) {
-  size_t total = 0;
-
-  for (size_t i = 0; i < size; i++) {
-    if (s[i]) {
-      total += strlen(s[i]);
-    }
-  }
-
-  return mem_zalloc((total + 1) * sizeof(char));
-}
-
 char *cstr_min2(const char *s1, const char *s2) {
   size_t s1len = strlen(s1);
   size_t s2len = strlen(s2);

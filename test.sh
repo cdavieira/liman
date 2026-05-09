@@ -102,13 +102,13 @@ main() {
   for example in $1; do
     originalsize=$(filesize_in_bytes "${example}")
 
-    ${HUFFMAN} "-i" "${example}" >/dev/null 2>&1 
     output=$(generate_compressed_filename "${example}")
+    ${HUFFMAN} "-i" "${example}" "-o" "${output}" >/dev/null 2>&1 
     compressedsize=$(filesize_in_bytes "${output}")
     expectedsize=$(expected_compressed_size_in_bytes "$output")
 
-    ${UNHUFFMAN} "-i" "${output}" >/dev/null 2>&1 
     output2=$(generate_decompressed_filename "${example}")
+    ${UNHUFFMAN} "-i" "${output}" "-o" "${output2}" >/dev/null 2>&1 
     decompressedsize=$(filesize_in_bytes "${output2}")
     expectedsize2=$(expected_decompressed_size_in_bytes "$output2")
 
