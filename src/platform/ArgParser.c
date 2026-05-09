@@ -286,15 +286,14 @@ static void posParam_process(PositionalParam *param) {
     switch (token_arg->argtype) {
     case ARG_TYPE_OPTARG:
       if (parsedArg->value == NULL) {
+        char *optional_value = NULL;
         if ((i + 1) < param->argc) {
-          parsedArg->value = mem_salloc(param->argv[i + 1]);
+          optional_value = param->argv[i + 1];
+        }
+        if (posParam_is_value(optional_value)) {
+          parsedArg->value = mem_salloc(optional_value);
           i++;
         }
-      }
-      if (!posParam_is_value(parsedArg->value)) {
-        log_error("Invalid argument for param '%c'", token_arg->shortopt);
-        parsedArg = parsedArg_destroy(parsedArg);
-        process_quick_abort();
       }
       param->handler(token_arg->shortopt, parsedArg->value, param->data);
       parsedArg = parsedArg_destroy(parsedArg);
