@@ -11,6 +11,7 @@
 ## Code improvements
 * [ ] improve filenaming.c implementation
 * [ ] make FilenameParts private
+* [ ] the 'CompWriterStatistics' struct should be renamed to 'CompWriterEstimate' or something better
 
 ## Documentation
 * [ ] add doxygen for documentation (probably use ai for this)
@@ -28,3 +29,6 @@
 * [ ] add const to everything
 * [ ] change unsigned long to uint64_t or size_t where suitable
 * [ ] proper deallocation when the program fails
+
+## Recently done
+* [X] support detecting if the input file for 'decompress' is a valid comp file or not

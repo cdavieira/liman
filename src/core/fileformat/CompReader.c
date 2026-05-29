@@ -34,6 +34,9 @@ typedef struct CallbackData {
 
   // the total number of bits read
   size_t totalBits;
+
+  // the max total number of bits for the file header
+  size_t maxTotalBits;
 } CallbackData;
 
 // static size_t liman_count_header(FILE *fpin);
@@ -71,38 +74,41 @@ CompReaderOutput compReader_translate(CompReader *reader,
   CompHeader *header = compReader_get_header(reader);
   HuffmanTree *root = compHeader_get_huffmanTree(header);
 
-  // Reading pad bits
-  int padBits = fs_get_byte(reader->fs);
-  if ((padBits < 0) || padBits > 7) {
-    process_abort("Body pad field out of range");
+  if (root) {
+    // Reading pad bits
+    int padBits = fs_get_byte(reader->fs);
+    if ((padBits < 0) || padBits > 7) {
+      process_abort("Body pad field out of range");
+    }
+    res.output_pad_bits = padBits;
+
+    // Advancing pad field
+    fs_next_byte(reader->fs);
+
+    // Writing to output
+    BinaryWriter *writer = binWriter_new(4 * 1024); // 4 KiB
+    binWriter_open(writer, filename);
+
+    CallbackData2 *data = mem_alloc(sizeof(CallbackData2));
+
+    data->writer = writer;
+    data->root = root;
+    data->tree = root;
+    data->output = res;
+
+    size_t msgTotalBits = bits_fromBytes(fs_remaining_bytes(reader->fs));
+    size_t msgMinBits = msgTotalBits - padBits;
+
+    fs_do_next_bits(reader->fs, msgMinBits, data,
+                    compReader_translate_callback);
+
+    res = data->output;
+    res.output_total_size_bytes =
+        bits_toBytes(res.output_min_size_bits + res.output_pad_bits);
+
+    binWriter_destroy(writer);
+    data = mem_free(data);
   }
-  res.output_pad_bits = padBits;
-
-  // Advancing pad field
-  fs_next_byte(reader->fs);
-
-  // Writing to output
-  BinaryWriter *writer = binWriter_new(4 * 1024); // 4 KiB
-  binWriter_open(writer, filename);
-
-  CallbackData2 *data = mem_alloc(sizeof(CallbackData2));
-
-  data->writer = writer;
-  data->root = root;
-  data->tree = root;
-  data->output = res;
-
-  size_t msgTotalBits = bits_fromBytes(fs_remaining_bytes(reader->fs));
-  size_t msgMinBits = msgTotalBits - padBits;
-
-  fs_do_next_bits(reader->fs, msgMinBits, data, compReader_translate_callback);
-
-  res = data->output;
-  res.output_total_size_bytes =
-      bits_toBytes(res.output_min_size_bits + res.output_pad_bits);
-
-  binWriter_destroy(writer);
-  data = mem_free(data);
 
   compHeader_destroy(header);
 
@@ -132,11 +138,19 @@ static size_t compReader_count_header(CompReader *reader) {
   data->leafs = 1;
   data->totalBits = 0;
   data->remainingLeafBits = 0;
+  data->maxTotalBits = compHeader_get_max_theoretical_size_in_bits();
 
   fs_loop_over_all_bits(reader->fs, reader->filename, data,
                         compReader_count_header_callback);
 
-  size_t totalBits = data->totalBits;
+  // if leafs > 0, then this probably means that the tree is invalid.
+  // this could happen for non-comp files.
+  size_t totalBits = data->leafs == 0 ? data->totalBits : 0;
+  if (totalBits == 0) {
+    log_error("CompReader: totalBits zero'd for a total of %zu bits read, with "
+              "%zu leaf nodes remaining",
+              data->totalBits, data->leafs);
+  }
 
   data = mem_free(data);
 
@@ -147,6 +161,13 @@ static size_t compReader_count_header(CompReader *reader) {
 
 static int compReader_count_header_callback(int bit, void *data) {
   CallbackData *d = data;
+
+  if (d->totalBits > d->maxTotalBits) {
+    log_error("CompReader: attempted to read more bits than %zu bits "
+              "(theoretical maximum size)",
+              d->maxTotalBits);
+    return 1;
+  }
 
   int not_reading_byte = d->remainingLeafBits == 0;
   if (not_reading_byte) {

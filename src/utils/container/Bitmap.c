@@ -51,7 +51,9 @@ void bitmapAppendLeastSignificantBit(Bitmap *bm, unsigned char bit) {
 }
 
 void bitmapLibera(Bitmap *bm) {
-  mem_free(bm->contents);
+  if (bm) {
+    mem_free(bm->contents);
+  }
   mem_free(bm);
 }
 

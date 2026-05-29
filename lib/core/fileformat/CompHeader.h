@@ -32,6 +32,8 @@ size_t compHeader_get_min_size_in_bits(CompHeader *header);
 size_t compHeader_get_padding_size_in_bits(CompHeader *header);
 size_t compHeader_get_total_size_in_bits(CompHeader *header);
 size_t compHeader_get_total_size_in_bytes(CompHeader *header);
+size_t compHeader_get_max_theoretical_size_in_bits(void);
+size_t compHeader_get_max_theoretical_size_in_bytes(void);
 
 /*
  * tree encoding convention:

@@ -1,6 +1,5 @@
 [
   {
-    "file": "src/main.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -11,10 +10,10 @@
       "src/main.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/main.o"
+    "file": "/home/carlos/repos/projects/liman/src/main.c",
+    "output": "/home/carlos/repos/projects/liman/obj/main.o"
   },
   {
-    "file": "src/app/cli.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -25,10 +24,10 @@
       "src/app/cli.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/app/cli.o"
+    "file": "/home/carlos/repos/projects/liman/src/app/cli.c",
+    "output": "/home/carlos/repos/projects/liman/obj/app/cli.o"
   },
   {
-    "file": "src/app/filenaming.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -39,10 +38,10 @@
       "src/app/filenaming.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/app/filenaming.o"
+    "file": "/home/carlos/repos/projects/liman/src/app/filenaming.c",
+    "output": "/home/carlos/repos/projects/liman/obj/app/filenaming.o"
   },
   {
-    "file": "src/core/ByteFrequency.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -53,10 +52,10 @@
       "src/core/ByteFrequency.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/core/ByteFrequency.o"
+    "file": "/home/carlos/repos/projects/liman/src/core/ByteFrequency.c",
+    "output": "/home/carlos/repos/projects/liman/obj/core/ByteFrequency.o"
   },
   {
-    "file": "src/core/CodeLookup.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -67,10 +66,10 @@
       "src/core/CodeLookup.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/core/CodeLookup.o"
+    "file": "/home/carlos/repos/projects/liman/src/core/CodeLookup.c",
+    "output": "/home/carlos/repos/projects/liman/obj/core/CodeLookup.o"
   },
   {
-    "file": "src/core/HuffmanCode.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -81,10 +80,10 @@
       "src/core/HuffmanCode.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/core/HuffmanCode.o"
+    "file": "/home/carlos/repos/projects/liman/src/core/HuffmanCode.c",
+    "output": "/home/carlos/repos/projects/liman/obj/core/HuffmanCode.o"
   },
   {
-    "file": "src/core/HuffmanTree.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -95,10 +94,10 @@
       "src/core/HuffmanTree.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/core/HuffmanTree.o"
+    "file": "/home/carlos/repos/projects/liman/src/core/HuffmanTree.c",
+    "output": "/home/carlos/repos/projects/liman/obj/core/HuffmanTree.o"
   },
   {
-    "file": "src/core/liman.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -109,10 +108,10 @@
       "src/core/liman.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/core/liman.o"
+    "file": "/home/carlos/repos/projects/liman/src/core/liman.c",
+    "output": "/home/carlos/repos/projects/liman/obj/core/liman.o"
   },
   {
-    "file": "src/core/TreeList.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -123,10 +122,10 @@
       "src/core/TreeList.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/core/TreeList.o"
+    "file": "/home/carlos/repos/projects/liman/src/core/TreeList.c",
+    "output": "/home/carlos/repos/projects/liman/obj/core/TreeList.o"
   },
   {
-    "file": "src/platform/ArgParser.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -137,10 +136,10 @@
       "src/platform/ArgParser.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/platform/ArgParser.o"
+    "file": "/home/carlos/repos/projects/liman/src/platform/ArgParser.c",
+    "output": "/home/carlos/repos/projects/liman/obj/platform/ArgParser.o"
   },
   {
-    "file": "src/platform/log.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -151,10 +150,10 @@
       "src/platform/log.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/platform/log.o"
+    "file": "/home/carlos/repos/projects/liman/src/platform/log.c",
+    "output": "/home/carlos/repos/projects/liman/obj/platform/log.o"
   },
   {
-    "file": "src/platform/mem.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -165,10 +164,10 @@
       "src/platform/mem.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/platform/mem.o"
+    "file": "/home/carlos/repos/projects/liman/src/platform/mem.c",
+    "output": "/home/carlos/repos/projects/liman/obj/platform/mem.o"
   },
   {
-    "file": "src/platform/process.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -179,10 +178,10 @@
       "src/platform/process.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/platform/process.o"
+    "file": "/home/carlos/repos/projects/liman/src/platform/process.c",
+    "output": "/home/carlos/repos/projects/liman/obj/platform/process.o"
   },
   {
-    "file": "src/utils/bits.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -193,10 +192,10 @@
       "src/utils/bits.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/utils/bits.o"
+    "file": "/home/carlos/repos/projects/liman/src/utils/bits.c",
+    "output": "/home/carlos/repos/projects/liman/obj/utils/bits.o"
   },
   {
-    "file": "src/utils/cstr.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -207,10 +206,10 @@
       "src/utils/cstr.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/utils/cstr.o"
+    "file": "/home/carlos/repos/projects/liman/src/utils/cstr.c",
+    "output": "/home/carlos/repos/projects/liman/obj/utils/cstr.o"
   },
   {
-    "file": "src/core/fileformat/CompBody.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -221,10 +220,10 @@
       "src/core/fileformat/CompBody.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/core/fileformat/CompBody.o"
+    "file": "/home/carlos/repos/projects/liman/src/core/fileformat/CompBody.c",
+    "output": "/home/carlos/repos/projects/liman/obj/core/fileformat/CompBody.o"
   },
   {
-    "file": "src/core/fileformat/CompHeader.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -235,10 +234,10 @@
       "src/core/fileformat/CompHeader.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/core/fileformat/CompHeader.o"
+    "file": "/home/carlos/repos/projects/liman/src/core/fileformat/CompHeader.c",
+    "output": "/home/carlos/repos/projects/liman/obj/core/fileformat/CompHeader.o"
   },
   {
-    "file": "src/core/fileformat/CompReader.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -249,10 +248,10 @@
       "src/core/fileformat/CompReader.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/core/fileformat/CompReader.o"
+    "file": "/home/carlos/repos/projects/liman/src/core/fileformat/CompReader.c",
+    "output": "/home/carlos/repos/projects/liman/obj/core/fileformat/CompReader.o"
   },
   {
-    "file": "src/core/fileformat/CompWriter.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -263,10 +262,10 @@
       "src/core/fileformat/CompWriter.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/core/fileformat/CompWriter.o"
+    "file": "/home/carlos/repos/projects/liman/src/core/fileformat/CompWriter.c",
+    "output": "/home/carlos/repos/projects/liman/obj/core/fileformat/CompWriter.o"
   },
   {
-    "file": "src/platform/posix/BinaryWriter.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -277,10 +276,10 @@
       "src/platform/posix/BinaryWriter.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/platform/posix/BinaryWriter.o"
+    "file": "/home/carlos/repos/projects/liman/src/platform/posix/BinaryWriter.c",
+    "output": "/home/carlos/repos/projects/liman/obj/platform/posix/BinaryWriter.o"
   },
   {
-    "file": "src/platform/posix/file.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -291,10 +290,10 @@
       "src/platform/posix/file.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/platform/posix/file.o"
+    "file": "/home/carlos/repos/projects/liman/src/platform/posix/file.c",
+    "output": "/home/carlos/repos/projects/liman/obj/platform/posix/file.o"
   },
   {
-    "file": "src/platform/posix/FileStream.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -305,10 +304,10 @@
       "src/platform/posix/FileStream.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/platform/posix/FileStream.o"
+    "file": "/home/carlos/repos/projects/liman/src/platform/posix/FileStream.c",
+    "output": "/home/carlos/repos/projects/liman/obj/platform/posix/FileStream.o"
   },
   {
-    "file": "src/utils/container/Bitmap.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -319,10 +318,10 @@
       "src/utils/container/Bitmap.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/utils/container/Bitmap.o"
+    "file": "/home/carlos/repos/projects/liman/src/utils/container/Bitmap.c",
+    "output": "/home/carlos/repos/projects/liman/obj/utils/container/Bitmap.o"
   },
   {
-    "file": "src/utils/container/CircularLinkedList.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -333,10 +332,10 @@
       "src/utils/container/CircularLinkedList.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/utils/container/CircularLinkedList.o"
+    "file": "/home/carlos/repos/projects/liman/src/utils/container/CircularLinkedList.c",
+    "output": "/home/carlos/repos/projects/liman/obj/utils/container/CircularLinkedList.o"
   },
   {
-    "file": "src/utils/container/Tree.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -347,10 +346,10 @@
       "src/utils/container/Tree.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/utils/container/Tree.o"
+    "file": "/home/carlos/repos/projects/liman/src/utils/container/Tree.c",
+    "output": "/home/carlos/repos/projects/liman/obj/utils/container/Tree.o"
   },
   {
-    "file": "src/utils/container/Vector.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -361,10 +360,10 @@
       "src/utils/container/Vector.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/utils/container/Vector.o"
+    "file": "/home/carlos/repos/projects/liman/src/utils/container/Vector.c",
+    "output": "/home/carlos/repos/projects/liman/obj/utils/container/Vector.o"
   },
   {
-    "file": "src/utils/types/FilenameBuilder.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -375,10 +374,10 @@
       "src/utils/types/FilenameBuilder.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/utils/types/FilenameBuilder.o"
+    "file": "/home/carlos/repos/projects/liman/src/utils/types/FilenameBuilder.c",
+    "output": "/home/carlos/repos/projects/liman/obj/utils/types/FilenameBuilder.o"
   },
   {
-    "file": "src/utils/types/String.c",
     "arguments": [
       "/usr/bin/gcc",
       "-g",
@@ -389,6 +388,7 @@
       "src/utils/types/String.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/utils/types/String.o"
+    "file": "/home/carlos/repos/projects/liman/src/utils/types/String.c",
+    "output": "/home/carlos/repos/projects/liman/obj/utils/types/String.o"
   }
 ]

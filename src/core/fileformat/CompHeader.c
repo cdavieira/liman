@@ -82,6 +82,18 @@ void compHeader_dump_into_binaryWriter(CompHeader *header,
   binWriter_write_bitmap(writer, header->bm);
 }
 
+size_t compHeader_get_max_theoretical_size_in_bits(void) {
+  const size_t max_leaf_count = 256;
+  const size_t max_non_leaf_count = max_leaf_count - 1;
+  const size_t max_node_count = max_non_leaf_count + max_leaf_count;
+  const size_t max_size_bits = max_leaf_count * 8 + max_node_count;
+  return max_size_bits + bits_padding(max_size_bits);
+}
+
+size_t compHeader_get_max_theorical_size(void) {
+  return bits_toBytes(compHeader_get_max_theoretical_size_in_bits());
+}
+
 static CompHeaderMetadata compHeaderMetadata_from_huffmanTree(HuffmanTree *t) {
   CompHeaderMetadata h;
   h.treeHeight = huffmanTree_get_height(t);
@@ -97,7 +109,7 @@ static CompHeaderMetadata compHeaderMetadata_from_huffmanTree(HuffmanTree *t) {
 
 static CompHeaderMetadata compHeaderMetadata_from_bitmap(Bitmap *bm) {
   CompHeaderMetadata metadata;
-  size_t minBits = bitmapGetLength(bm);
+  size_t minBits = bm ? bitmapGetLength(bm) : 0;
   metadata.treeMinBits = minBits;
   metadata.treePadBits = bits_padding(minBits);
   metadata.treeTotalBits = minBits + metadata.treePadBits;
@@ -129,6 +141,9 @@ static void compHeader_fill_bitmap_with_huffmanTree_rec(HuffmanTree *hf,
 }
 
 static HuffmanTree *compHeader_build_tree_from_bitmap(CompHeader *header) {
+  if (!header->bm) {
+    return NULL;
+  }
   unsigned idx = 0;
   HuffmanTree *ht = compHeader_build_tree_from_bitmap_rec(header->bm, &idx);
   huffmanTree_gencodes(ht);
