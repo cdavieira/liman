@@ -1,4 +1,5 @@
 #include "core/fileformat/CompHeader.h"
+#include "core/ByteFrequency.h"
 #include "core/HuffmanTree.h"
 #include "platform/mem.h"
 #include "platform/posix/BinaryWriter.h"
@@ -83,7 +84,7 @@ void compHeader_dump_into_binaryWriter(CompHeader *header,
 }
 
 size_t compHeader_get_max_theoretical_size_in_bits(void) {
-  const size_t max_leaf_count = 256;
+  const size_t max_leaf_count = byteFreq_get_set_size();
   const size_t max_non_leaf_count = max_leaf_count - 1;
   const size_t max_node_count = max_non_leaf_count + max_leaf_count;
   const size_t max_size_bits = max_leaf_count * 8 + max_node_count;
