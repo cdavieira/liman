@@ -13,6 +13,7 @@ typedef struct CallbackData {
   char *inputfilename;
   char *outputfilename;
   int flags;
+  int printmode;
 } CallbackData;
 
 typedef struct Command {
@@ -47,6 +48,7 @@ static void cli_destroy(CLI *cli);
 static CallbackData *callback_new(ArgParser *parser);
 static CallbackData *callback_destroy(CallbackData *data);
 static void callback(int code, char *arg, void *data);
+static int cli_should_print_usage(CallbackData *cli);
 
 /* data */
 
@@ -147,8 +149,9 @@ static void cli_parse(CLI *cli) {
   cmd.mode = argParser_process(parser, argc, argv);
 
   CallbackData opts = *cli->data;
-  if (!opts.inputfilename) {
-    log_warning("no inputfile detected, nothing will be done.");
+
+  if (cli_should_print_usage(&opts)) {
+    argParser_print(parser);
     return;
   }
 
@@ -223,6 +226,7 @@ static CallbackData *callback_new(ArgParser *parser) {
   data->inputfilename = NULL;
   data->outputfilename = NULL;
   data->flags = 0;
+  data->printmode = 0;
   return data;
 }
 
@@ -243,7 +247,7 @@ static void callback(int code, char *arg, void *data) {
     opts->outputfilename = mem_salloc(arg);
     break;
   case 'h':
-    argParser_print(opts->parser);
+    opts->printmode = 1;
     break;
   case 'b':
     opt = HUHMAN_BODY;
@@ -260,4 +264,14 @@ static void callback(int code, char *arg, void *data) {
   }
 
   opts->flags = opts->flags | opt;
+}
+
+static int cli_should_print_usage(CallbackData *data) {
+  if (data->printmode) {
+    return 1;
+  }
+  if (!data->inputfilename) {
+    return 1;
+  }
+  return 0;
 }

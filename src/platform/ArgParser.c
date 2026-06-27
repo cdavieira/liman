@@ -155,12 +155,23 @@ int argParser_process(ArgParser *parser, int argc, char **argv) {
 }
 
 void argParser_print(ArgParser *parser) {
+  printf("Help for program '%s'\n\n", parser->executable_name);
+
   size_t sz = vector_get_size(parser->positional_params);
+
   for (size_t i = 0; i < sz; i++) {
-    PositionalParam *param = vector_get_item(parser->positional_params, i);
-    int is_default = param->param_id == parser->default_param;
-    posParam_print(param, parser->executable_name, is_default);
+    argParser_print_param(parser, i);
+
+    if ((i + 1) != sz) {
+      printf("\n===========================================\n\n");
+    }
   }
+}
+
+void argParser_print_param(ArgParser *parser, size_t idx) {
+  PositionalParam *param = vector_get_item(parser->positional_params, idx);
+  int is_default = param->param_id == parser->default_param;
+  posParam_print(param, parser->executable_name, is_default);
 }
 
 /* impl internal */

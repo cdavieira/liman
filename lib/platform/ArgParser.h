@@ -35,3 +35,4 @@ void argParser_set_default_param(ArgParser *parser, size_t idx);
 int argParser_process(ArgParser *parser, int argc, char **argv);
 
 void argParser_print(ArgParser *parser);
+void argParser_print_param(ArgParser *parser, size_t idx);
