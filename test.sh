@@ -21,7 +21,7 @@ EXAMPLES=$(${FIND} ./tests/* -type f)
 
 # $1 - file path
 filesize_in_bytes() {
-  ${LS} -l $1 | ${AWK} '{print $5}' | ${TR} -d ' '
+  test -f $1 && ${LS} -l $1 | ${AWK} '{print $5}' | ${TR} -d ' ' || echo "0"
 }
 
 # $1 - file path
@@ -31,7 +31,7 @@ generate_compressed_filename() {
 
 # $1 - file path
 generate_decompressed_filename() {
-  ${ECHO} "unhuffman-$(basename $1).comp"
+  ${ECHO} "unhuffman-$(basename $1)"
 }
 
 # $1 - file path
@@ -58,17 +58,17 @@ expected_compressed_size_in_bytes() {
 # $1 - file path
 expected_decompressed_size_in_bytes() {
   case "$1" in
-  	'unhuffman-a.txt.comp') echo 15
+  	'unhuffman-a.txt') echo 15
   	;;
-  	'unhuffman-teste.txt.comp') echo 97042
+  	'unhuffman-teste.txt') echo 97042
   	;;
-  	'unhuffman-bible.txt.comp') echo 4451368
+  	'unhuffman-bible.txt') echo 4451368
   	;;
-  	'unhuffman-jpg.jpg.comp') echo 35989
+  	'unhuffman-jpg.jpg') echo 35989
   	;;
-  	'unhuffman-gatinhu.png.comp') echo 160041
+  	'unhuffman-gatinhu.png') echo 160041
   	;;
-  	'unhuffman-pikachu.gif.comp') echo 4459259
+  	'unhuffman-pikachu.gif') echo 4459259
   	;;
   	*) echo 0
   	;;
@@ -96,6 +96,8 @@ main() {
   local success=0
   local total=$(${ECHO} "$1" | ${WC} -l)
   local inc_success_count=0
+  local compression_cmd=''
+  local decompression_cmd=''
 
   build_project
 
@@ -103,26 +105,39 @@ main() {
     originalsize=$(filesize_in_bytes "${example}")
 
     output=$(generate_compressed_filename "${example}")
-    ${HUFFMAN} "-i" "${example}" "-o" "${output}" >/dev/null 2>&1 
+    compression_cmd="${HUFFMAN} -i ${example} -o ${output}"
+    ${compression_cmd} >/dev/null 2>&1
     compressedsize=$(filesize_in_bytes "${output}")
     expectedsize=$(expected_compressed_size_in_bytes "$output")
 
     output2=$(generate_decompressed_filename "${example}")
-    ${UNHUFFMAN} "-i" "${output}" "-o" "${output2}" >/dev/null 2>&1 
+    decompression_cmd="${UNHUFFMAN} -i ${output} -o ${output2}"
+    ${decompression_cmd} >/dev/null 2>&1
     decompressedsize=$(filesize_in_bytes "${output2}")
     expectedsize2=$(expected_decompressed_size_in_bytes "$output2")
 
     inc_success_count=1
     if test "${compressedsize}" != "${expectedsize}" ; then
 	    echo "Compress failed for example ${example}"
+	    echo "  Compress Cmd: ${compression_cmd}"
 	    echo "  Expected ${expectedsize} bytes, got ${compressedsize}"
 	    inc_success_count=0
     fi
 
     if test "${decompressedsize}" != "${expectedsize2}" ; then
 	    echo "Decompress failed for example ${example}"
+	    echo "  Compress Cmd: ${compression_cmd}"
+	    echo "  Decompress Cmd: ${decompression_cmd}"
 	    echo "  Expected ${expectedsize2} bytes, got ${decompressedsize}"
 	    inc_success_count=0
+    fi
+
+    if test -e "${output}"; then
+	    ${RM} "${output}"
+    fi
+
+    if test -e "${output2}"; then
+	    ${RM} "${output2}"
     fi
 
     if test "${inc_success_count}" == "1" ; then
@@ -132,9 +147,6 @@ main() {
       echo "FAIL: ${example}"
       fail=$((fail + 1))
     fi
-
-    ${RM} "${output}"
-    ${RM} "${output2}"
   done
 
   clean_project
