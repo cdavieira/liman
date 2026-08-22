@@ -2,11 +2,11 @@
 #include "core/HuffmanCode.h"
 #include "core/HuffmanTree.h"
 #include "core/fileformat/CompHeader.h"
+#include "platform/abort.h"
 #include "platform/log.h"
 #include "platform/mem.h"
 #include "platform/posix/BinaryWriter.h"
 #include "platform/posix/FileStream.h"
-#include "platform/process.h"
 #include "utils/bits.h"
 #include "utils/container/Bitmap.h"
 
@@ -78,7 +78,7 @@ CompReaderOutput compReader_translate(CompReader *reader,
     // Reading pad bits
     int padBits = fs_get_byte(reader->fs);
     if ((padBits < 0) || padBits > 7) {
-      process_abort("Body pad field out of range");
+      abort_default("Body pad field out of range");
     }
     res.output_pad_bits = padBits;
 

@@ -21,17 +21,17 @@ EXAMPLES=$(${FIND} ./tests/* -type f)
 
 # $1 - file path
 filesize_in_bytes() {
-  test -f $1 && ${LS} -l $1 | ${AWK} '{print $5}' | ${TR} -d ' ' || echo "0"
+  test -f $1 && ${LS} -l $1 | ${AWK} '{print $5}' | ${TR} -d ' ' || ${ECHO} "0"
 }
 
 # $1 - file path
 generate_compressed_filename() {
-  ${ECHO} "$(basename $1).comp"
+  ${ECHO} "$(${BASENAME} $1).comp"
 }
 
 # $1 - file path
 generate_decompressed_filename() {
-  ${ECHO} "unhuffman-$(basename $1)"
+  ${ECHO} "unhuffman-$(${BASENAME} $1)"
 }
 
 # $1 - file path

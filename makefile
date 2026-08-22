@@ -9,6 +9,7 @@ obj := $(subst $(srcdir),$(objdir),$(src:.c=.o))
 CC := gcc
 MKDIR := mkdir
 RM := rm -rf
+BEAR := bear
 
 CFLAGS := -g -I$(libdir)
 
@@ -24,7 +25,13 @@ $(objdir)/%.o: $(srcdir)/%.c $(lib) | $(objdir)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	$(RM) unhuffman-* *.comp $(objdir) $(project)
+	$(RM) unhuffman-* inspect-* *.comp $(objdir) $(project)
+
+run:
+	./$(project)
+
+dev:
+	$(BEAR) -- make
 
 echo:
 	@echo '.h: ' $(lib)

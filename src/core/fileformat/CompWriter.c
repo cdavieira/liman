@@ -1,11 +1,11 @@
 #include "core/fileformat/CompWriter.h"
 #include "core/fileformat/CompBody.h"
 #include "core/fileformat/CompHeader.h"
+#include "platform/abort.h"
 #include "platform/log.h"
 #include "platform/mem.h"
 #include "platform/posix/BinaryWriter.h"
 #include "platform/posix/file.h"
-#include "platform/process.h"
 #include "utils/bits.h"
 #include <stdio.h>
 

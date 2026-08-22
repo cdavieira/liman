@@ -2,9 +2,9 @@
 #include "app/filenaming.h"
 #include "core/liman.h"
 #include "platform/ArgParser.h"
+#include "platform/abort.h"
 #include "platform/log.h"
 #include "platform/mem.h"
-#include "platform/process.h"
 
 /* structs */
 
@@ -52,41 +52,34 @@ static int cli_should_print_usage(CallbackData *cli);
 
 /* data */
 
-static Param compressParam = (Param){
-    .name = "compress",
-    .handler = callback,
-    .data = NULL,
-};
+#define PARAM(n, h)                                                            \
+  (Param) { .name = n, .handler = h, .data = NULL }
+#define ARG(s, l, t, d)                                                        \
+  (Arg) { s, l, t, d }
 
-static Param decompressParam = (Param){
-    .name = "decompress",
-    .handler = callback,
-    .data = NULL,
-};
-
-static Param inspectParam = (Param){
-    .name = "inspect",
-    .handler = callback,
-    .data = NULL,
-};
+static Param compressParam = PARAM("compress", callback);
+static Param decompressParam = PARAM("decompress", callback);
+static Param inspectParam = PARAM("inspect", callback);
 
 static const Arg args[] = {
-    (Arg){'i', "input", ARG_TYPE_ARG, "Set inputfile filename"},
-    (Arg){'o', "output", ARG_TYPE_OPTARG, "Set output filename"},
-    (Arg){'h', "help", ARG_TYPE_NOARG, "Show this help"},
+    ARG('i', "input", ARG_TYPE_ARG, "Set inputfile filename"),
+    ARG('o', "output", ARG_TYPE_OPTARG, "Set output filename"),
+    ARG('h', "help", ARG_TYPE_NOARG, "Show this help"),
 };
-
 static const Arg inspect_args[] = {
-    (Arg){'r', "header", ARG_TYPE_NOARG, "Analyze the header of a .comp file"},
-    (Arg){'b', "body", ARG_TYPE_NOARG, "Analyze the body of a .comp file"},
-    (Arg){'c', "codes", ARG_TYPE_NOARG,
-          "Analyze the code generated for each ASCII letter of a file"},
-    (Arg){'t', "tree", ARG_TYPE_NOARG, "Analyze the tree of a .comp file"},
+    ARG('r', "header", ARG_TYPE_NOARG, "Analyze the header of a .comp file"),
+    ARG('b', "body", ARG_TYPE_NOARG, "Analyze the body of a .comp file"),
+    ARG('c', "codes", ARG_TYPE_NOARG,
+        "Analyze the code generated for each ASCII letter of a file"),
+    ARG('t', "tree", ARG_TYPE_NOARG, "Analyze the tree of a .comp file"),
 };
 
 static const Command EMPTY_CMD = (Command){
     NULL, NULL, 0, 0, NULL,
 };
+
+#undef PARAM
+#undef ARG
 
 /* impl */
 
@@ -178,16 +171,17 @@ static void cli_parse(CLI *cli) {
     cmd.inputfilename = opts.inputfilename;
     if (opts.outputfilename) {
       cmd.outputfilename = opts.outputfilename;
-    } else if (opts.flags & HUHMAN_CODES) {
+    } else if (limanOpts_has_opt(opts.flags, LIMAN_OPT_CODES)) {
       cmd.outputfilename = liman_get_codes_filename(cmd.inputfilename);
-    } else if (opts.flags & HUHMAN_PDF) {
+    } else if (limanOpts_has_opt(opts.flags, LIMAN_OPT_PDF)) {
       cmd.outputfilename = liman_get_tree_filename(cmd.inputfilename);
-    } else if (opts.flags & HUHMAN_HEADER) {
+    } else if (limanOpts_has_opt(opts.flags, LIMAN_OPT_HEADER)) {
       cmd.outputfilename = NULL;
-    } else if (opts.flags & HUHMAN_BODY) {
+    } else if (limanOpts_has_opt(opts.flags, LIMAN_OPT_BODY)) {
       cmd.outputfilename = liman_build_uncompressed_filename(cmd.inputfilename);
     } else {
-      opts.flags = HUHMAN_HEADER | HUHMAN_BODY;
+      opts.flags = limanOpts_add_opt(opts.flags, LIMAN_OPT_HEADER);
+      opts.flags = limanOpts_add_opt(opts.flags, LIMAN_OPT_BODY);
       cmd.outputfilename = liman_build_uncompressed_filename(cmd.inputfilename);
     }
     cmd.opts = opts.flags;
@@ -250,20 +244,20 @@ static void callback(int code, char *arg, void *data) {
     opts->printmode = 1;
     break;
   case 'b':
-    opt = HUHMAN_BODY;
+    opt = LIMAN_OPT_BODY;
     break;
   case 'c':
-    opt = HUHMAN_CODES;
+    opt = LIMAN_OPT_CODES;
     break;
   case 'r':
-    opt = HUHMAN_HEADER;
+    opt = LIMAN_OPT_HEADER;
     break;
   case 't':
-    opt = HUHMAN_PDF;
+    opt = LIMAN_OPT_PDF;
     break;
   }
 
-  opts->flags = opts->flags | opt;
+  opts->flags = limanOpts_add_opt(opts->flags, opt);
 }
 
 static int cli_should_print_usage(CallbackData *data) {

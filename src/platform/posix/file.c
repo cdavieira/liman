@@ -1,5 +1,5 @@
 #include "platform/posix/file.h"
-#include "platform/process.h"
+#include "platform/abort.h"
 
 #include <stdio.h>
 
@@ -36,7 +36,7 @@ ssize_t file_get_total_size_in_bytes_fd(int fd) {
   struct stat st;
 
   if (fstat(fd, &st) == -1) {
-    process_abort("fstat failed when reading fd");
+    abort_default("fstat failed when reading fd");
   }
 
   return st.st_size;

@@ -7,11 +7,16 @@
 
 ## Known problems
 * [ ] both '-c' and '-t' options for the 'inspect' command dont work together
+> outputfile gets overriden by the last option used
 
 ## Code improvements
 * [ ] improve filenaming.c implementation
 * [ ] make FilenameParts private
 * [ ] the 'CompWriterStatistics' struct should be renamed to 'CompWriterEstimate' or something better
+* [ ] improve error handling
+* [ ] improve implementation of ArgParser.c
+* [ ] improve implementation of String.c
+* [ ] CompReader/CompWriter API
 
 ## Documentation
 * [ ] add doxygen for documentation (probably use ai for this)
@@ -29,6 +34,10 @@
 * [ ] add const to everything
 * [ ] change unsigned long to uint64_t or size_t where suitable
 * [ ] proper deallocation when the program fails
+* [ ] add linting rule to makefile
 
 ## Recently done
+* [X] add rule to regenerate compile_commands.json
+* [X] run dot automatically
+* [X] improve 'opts' handling in liman.c and cli.c
 * [X] support detecting if the input file for 'decompress' is a valid comp file or not

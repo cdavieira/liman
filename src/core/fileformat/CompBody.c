@@ -2,12 +2,12 @@
 #include "core/CodeLookup.h"
 #include "core/HuffmanCode.h"
 #include "core/HuffmanTree.h"
+#include "platform/abort.h"
 #include "platform/log.h"
 #include "platform/mem.h"
 #include "platform/posix/BinaryWriter.h"
 #include "platform/posix/FileStream.h"
 #include "platform/posix/file.h"
-#include "platform/process.h"
 #include "utils/bits.h"
 
 #include <stdio.h>
@@ -85,7 +85,7 @@ static CompBodyMetadata compBodyMetadata_from_huffmanTree(HuffmanTree *root) {
 static CompBodyMetadata compBodyMetadata_from_fp(FILE *fp) {
   char padBits = fgetc(fp);
   if ((padBits < 0) || padBits > 7) {
-    process_abort("Body pad field out of range");
+    abort_default("Body pad field out of range");
   }
 
   CompBodyMetadata metadata;

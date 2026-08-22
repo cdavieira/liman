@@ -1,6 +1,6 @@
 #include "utils/types/FilenameBuilder.h"
+#include "platform/abort.h"
 #include "platform/mem.h"
-#include "platform/process.h"
 #include "utils/cstr.h"
 #include "utils/types/String.h"
 #include <string.h> //strlen, strrchr
@@ -17,7 +17,7 @@ struct FilenameBuilder {
 
 static void filenameBuilder_assert(const FilenameBuilder *builder) {
   if (builder->basename == NULL) {
-    process_abort("At least a basename is required when building a filename.");
+    abort_default("At least a basename is required when building a filename.");
   }
 }
 

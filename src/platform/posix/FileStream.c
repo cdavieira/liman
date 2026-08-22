@@ -1,8 +1,8 @@
 #include "platform/posix/FileStream.h"
+#include "platform/abort.h"
 #include "platform/log.h"
 #include "platform/mem.h"
 #include "platform/posix/file.h"
-#include "platform/process.h"
 #include "utils/bits.h"
 
 #include <stdio.h>
@@ -62,7 +62,7 @@ int fs_open_file(FileStream *fs, const char *filename) {
   fs->fd = open(filename, O_RDONLY);
   if (fs->fd == -1) {
     log_error("FileStream failed opening file: %s", filename);
-    process_quick_abort();
+    abort_fast();
   }
 
   fs->total_bytes = file_get_total_size_in_bytes_fd(fs->fd);

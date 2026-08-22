@@ -9,6 +9,7 @@ unsigned char bits_get_size_bit(size_t n, int index) {
 }
 
 size_t bits_fromBytes(size_t nBytes) { return nBytes << 3; }
+
 size_t bits_toBytes(size_t nbits) { return nbits >> 3; }
 
 size_t bits_padding(size_t nbits) {

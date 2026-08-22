@@ -17,12 +17,12 @@ CompReader *compReader_destroy(CompReader *reader);
 CompHeader *compReader_get_header(CompReader *reader);
 
 /**
- * Traduz o conteudo de um arquivo compactado segundo a árvore de codificação
- * fornecida
+ * Translate the contents of a .comp file according to its huffmanTree
  *
- * Funcionamento:
- * 1. ler um bit
- * 2. verificar se esse bit leva até algum no folha da arvore/HuffmanTree
- * 3. se sim, então chegou-se a uma letra. Caso contrário, continua leitura
+ * Algorithm:
+ * 1. read one bit
+ * 2. check if that bit take us to a leaf node of the huffmanTree
+ * 3. If yes, then print the associated caracter with the leaf Node. Otherwise,
+ * continue until no bits are left
  */
 CompReaderOutput compReader_translate(CompReader *reader, const char *filename);

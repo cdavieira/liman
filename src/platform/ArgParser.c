@@ -1,7 +1,7 @@
 #include "platform/ArgParser.h"
+#include "platform/abort.h"
 #include "platform/log.h"
 #include "platform/mem.h"
-#include "platform/process.h"
 #include "utils/container/Vector.h"
 #include "utils/cstr.h"
 #include "utils/types/String.h"
@@ -319,12 +319,12 @@ static void posParam_process(PositionalParam *param) {
       if (parsedArg->value == NULL) {
         log_error("Missing argument for param '%c'", token_arg->shortopt);
         parsedArg = parsedArg_destroy(parsedArg);
-        process_quick_abort();
+        abort_fast();
       }
       if (!posParam_is_value(parsedArg->value)) {
         log_error("Invalid argument for param '%c'", token_arg->shortopt);
         parsedArg = parsedArg_destroy(parsedArg);
-        process_quick_abort();
+        abort_fast();
       }
       param->handler(token_arg->shortopt, parsedArg->value, param->data);
       parsedArg = parsedArg_destroy(parsedArg);
@@ -336,7 +336,7 @@ static void posParam_process(PositionalParam *param) {
     default:
       log_error("Unknown arg type", NULL);
       parsedArg = parsedArg_destroy(parsedArg);
-      process_quick_abort();
+      abort_fast();
     }
   }
 }
