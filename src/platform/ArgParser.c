@@ -64,9 +64,9 @@ static void posParam_process(PositionalParam *param);
 static void posParam_print(PositionalParam *param, const char *executable,
                            int is_default);
 
-enum ArgFormat parsedArg_infer_type(const char *s);
-char *parsedArg_parse_key(char *token);
-char *parsedArg_parse_value(char *token);
+static enum ArgFormat parsedArg_infer_type(const char *s);
+static char *parsedArg_parse_key(char *token);
+static char *parsedArg_parse_value(char *token);
 static struct ParsedArg *parsedArg_from_str(char *s);
 static struct ParsedArg *parsedArg_destroy(struct ParsedArg *a);
 
@@ -426,7 +426,7 @@ static void posParam_print(PositionalParam *param, const char *executable,
   }
 }
 
-enum ArgFormat parsedArg_infer_type(const char *s) {
+static enum ArgFormat parsedArg_infer_type(const char *s) {
   size_t len = strlen(s);
   if (len <= 1) {
     return ARG_FORMAT_INVALID;
@@ -440,7 +440,7 @@ enum ArgFormat parsedArg_infer_type(const char *s) {
   return ARG_FORMAT_INVALID;
 }
 
-char *parsedArg_parse_key(char *token) {
+static char *parsedArg_parse_key(char *token) {
   enum ArgFormat token_type = parsedArg_infer_type(token);
   String *s;
   char *res = NULL;
@@ -472,7 +472,7 @@ char *parsedArg_parse_key(char *token) {
   return res;
 }
 
-char *parsedArg_parse_value(char *token) {
+static char *parsedArg_parse_value(char *token) {
   enum ArgFormat token_type = parsedArg_infer_type(token);
   String *s;
   char *res = NULL;
