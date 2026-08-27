@@ -29,11 +29,15 @@ struct FileStream {
 };
 
 static int fs_next_block(FileStream *fs);
-static int fs_loop_init(FileStream *fs, const char *filename, void *data,
+static int fs_loop_init(FileStream *fs,
+                        const char *filename,
+                        void *data,
                         int (*callback)(int byte, void *data));
 static void fs_set_initial_state(FileStream *fs);
 
-FileStream *fs_new(size_t blocksize) {
+FileStream *
+fs_new(size_t blocksize)
+{
   FileStream *fs = mem_zalloc(sizeof(struct FileStream));
 
   fs_set_initial_state(fs);
@@ -44,23 +48,30 @@ FileStream *fs_new(size_t blocksize) {
   return fs;
 }
 
-FileStream *fs_destroy(FileStream *fs) {
-  if (fs_is_open(fs)) {
+FileStream *
+fs_destroy(FileStream *fs)
+{
+  if (fs_is_open(fs))
+  {
     fs_close_file(fs);
   }
   fs->buffer = mem_free(fs->buffer);
   return mem_free(fs);
 }
 
-int fs_open_file(FileStream *fs, const char *filename) {
-  if (!filename) {
+int
+fs_open_file(FileStream *fs, const char *filename)
+{
+  if (!filename)
+  {
     return -1;
   }
 
   fs_set_initial_state(fs);
 
   fs->fd = open(filename, O_RDONLY);
-  if (fs->fd == -1) {
+  if (fs->fd == -1)
+  {
     log_error("FileStream failed opening file: %s", filename);
     abort_fast();
   }
@@ -72,7 +83,9 @@ int fs_open_file(FileStream *fs, const char *filename) {
   return fs_next_block(fs);
 }
 
-int fs_close_file(FileStream *fs) {
+int
+fs_close_file(FileStream *fs)
+{
   int status = close(fs->fd);
 
   fs_set_initial_state(fs);
@@ -80,12 +93,16 @@ int fs_close_file(FileStream *fs) {
   return status;
 }
 
-int fs_rewind(FileStream *fs) {
-  if (!fs_is_open(fs)) {
+int
+fs_rewind(FileStream *fs)
+{
+  if (!fs_is_open(fs))
+  {
     return -1;
   }
 
-  if (lseek(fs->fd, 0, SEEK_SET) == -1) {
+  if (lseek(fs->fd, 0, SEEK_SET) == -1)
+  {
     return -1;
   }
 
@@ -96,17 +113,27 @@ int fs_rewind(FileStream *fs) {
   return fs_next_block(fs);
 }
 
-int fs_is_open(FileStream *fs) { return fs && fs->fd != -1; }
+int
+fs_is_open(FileStream *fs)
+{
+  return fs && fs->fd != -1;
+}
 
-int fs_next_byte(FileStream *fs) {
+int
+fs_next_byte(FileStream *fs)
+{
   size_t next_ptr_offset = fs->buffer_ptr_offset + 1;
   int out_of_buffer_boundary = next_ptr_offset >= fs->buffer_size;
 
-  if (out_of_buffer_boundary) {
-    if (fs_next_block(fs) <= 0) {
+  if (out_of_buffer_boundary)
+  {
+    if (fs_next_block(fs) <= 0)
+    {
       return -1;
     }
-  } else {
+  }
+  else
+  {
     fs->buffer_ptr++;
     fs->buffer_ptr_offset++;
   }
@@ -115,45 +142,73 @@ int fs_next_byte(FileStream *fs) {
   return 0;
 }
 
-int fs_get_byte(FileStream *fs) {
+int
+fs_get_byte(FileStream *fs)
+{
   return fs->buffer_ptr ? *fs->buffer_ptr : EOF;
 }
 
-int fs_get_bit(FileStream *fs, int idx) {
+int
+fs_get_bit(FileStream *fs, int idx)
+{
   return bits_get_char_bit(*fs->buffer_ptr, idx);
 }
 
-size_t fs_total_blocks(FileStream *fs) { return fs->total_blocks; }
+size_t
+fs_total_blocks(FileStream *fs)
+{
+  return fs->total_blocks;
+}
 
-size_t fs_total_bytes(FileStream *fs) { return fs->total_bytes; }
+size_t
+fs_total_bytes(FileStream *fs)
+{
+  return fs->total_bytes;
+}
 
-size_t fs_remaining_bytes(FileStream *fs) {
+size_t
+fs_remaining_bytes(FileStream *fs)
+{
   return fs->total_bytes > fs->current_byte_idx
              ? fs->total_bytes - fs->current_byte_idx
              : 0;
 }
 
-void fs_do_next_bytes(FileStream *fs, size_t count, void *data,
-                      int (*callback)(int byte, void *data)) {
-  for (size_t i = 0; i < count; i++) {
+void
+fs_do_next_bytes(FileStream *fs,
+                 size_t count,
+                 void *data,
+                 int (*callback)(int byte, void *data))
+{
+  for (size_t i = 0; i < count; i++)
+  {
     int byte = fs_get_byte(fs);
-    if (callback(byte, data)) {
+    if (callback(byte, data))
+    {
       break;
     }
 
-    if (fs_next_byte(fs) < 0) {
+    if (fs_next_byte(fs) < 0)
+    {
       break;
     }
   }
 }
 
-void fs_do_next_bits(FileStream *fs, size_t count, void *data,
-                     int (*callback)(int bit, void *data)) {
+void
+fs_do_next_bits(FileStream *fs,
+                size_t count,
+                void *data,
+                int (*callback)(int bit, void *data))
+{
   const size_t byte_count = bits_get_minimum_amount_of_required_bytes(count);
   size_t current_bit_idx = 0;
-  for (size_t i = 0; i < byte_count; i++) {
-    for (int i = 7; i >= 0; i--) {
-      if (current_bit_idx >= count) {
+  for (size_t i = 0; i < byte_count; i++)
+  {
+    for (int i = 7; i >= 0; i--)
+    {
+      if (current_bit_idx >= count)
+      {
         // We break instead of returning, so that we advance to the next byte.
         // Effectively, this means that we'll skip some bits after reaching the
         // provided count number. For example:
@@ -164,32 +219,42 @@ void fs_do_next_bits(FileStream *fs, size_t count, void *data,
       }
 
       int bit = fs_get_bit(fs, i);
-      if (callback(bit, data)) {
+      if (callback(bit, data))
+      {
         return;
       }
       current_bit_idx++;
     }
 
-    if (fs_next_byte(fs) < 0) {
+    if (fs_next_byte(fs) < 0)
+    {
       break;
     }
   }
 }
 
-void fs_loop_over_all_bytes(FileStream *fs, const char *filename, void *data,
-                            int (*callback)(int byte, void *data)) {
-  if (fs_loop_init(fs, filename, data, callback) == -1) {
+void
+fs_loop_over_all_bytes(FileStream *fs,
+                       const char *filename,
+                       void *data,
+                       int (*callback)(int byte, void *data))
+{
+  if (fs_loop_init(fs, filename, data, callback) == -1)
+  {
     return;
   }
 
-  while (fs->current_byte_idx < fs->total_bytes) {
+  while (fs->current_byte_idx < fs->total_bytes)
+  {
     int byte = fs_get_byte(fs);
 
-    if (callback(byte, data)) {
+    if (callback(byte, data))
+    {
       return;
     }
 
-    if (fs_next_byte(fs) < 0) {
+    if (fs_next_byte(fs) < 0)
+    {
       return;
     }
   }
@@ -197,21 +262,30 @@ void fs_loop_over_all_bytes(FileStream *fs, const char *filename, void *data,
   fs_close_file(fs);
 }
 
-void fs_loop_over_all_bits(FileStream *fs, const char *filename, void *data,
-                           int (*callback)(int bit, void *data)) {
-  if (fs_loop_init(fs, filename, data, callback) == -1) {
+void
+fs_loop_over_all_bits(FileStream *fs,
+                      const char *filename,
+                      void *data,
+                      int (*callback)(int bit, void *data))
+{
+  if (fs_loop_init(fs, filename, data, callback) == -1)
+  {
     return;
   }
 
-  while (fs->current_byte_idx < fs->total_bytes) {
-    for (int i = 7; i >= 0; i--) {
+  while (fs->current_byte_idx < fs->total_bytes)
+  {
+    for (int i = 7; i >= 0; i--)
+    {
       int bit = fs_get_bit(fs, i);
-      if (callback(bit, data)) {
+      if (callback(bit, data))
+      {
         return;
       }
     }
 
-    if (fs_next_byte(fs) < 0) {
+    if (fs_next_byte(fs) < 0)
+    {
       return;
     }
   }
@@ -219,8 +293,11 @@ void fs_loop_over_all_bits(FileStream *fs, const char *filename, void *data,
   fs_close_file(fs);
 }
 
-static int fs_next_block(FileStream *fs) {
-  if (!fs_is_open(fs)) {
+static int
+fs_next_block(FileStream *fs)
+{
+  if (!fs_is_open(fs))
+  {
     return -1;
   }
 
@@ -234,14 +311,21 @@ static int fs_next_block(FileStream *fs) {
   return bytes_read;
 }
 
-static int fs_loop_init(FileStream *fs, const char *filename, void *data,
-                        int (*callback)(int byte, void *data)) {
-  if (!fs || !callback) {
+static int
+fs_loop_init(FileStream *fs,
+             const char *filename,
+             void *data,
+             int (*callback)(int byte, void *data))
+{
+  if (!fs || !callback)
+  {
     return -1;
   }
 
-  if (!fs_is_open(fs) && filename) {
-    if (fs_open_file(fs, filename) <= 0) {
+  if (!fs_is_open(fs) && filename)
+  {
+    if (fs_open_file(fs, filename) <= 0)
+    {
       return -1;
     }
   }
@@ -249,7 +333,9 @@ static int fs_loop_init(FileStream *fs, const char *filename, void *data,
   return 0;
 }
 
-static void fs_set_initial_state(FileStream *fs) {
+static void
+fs_set_initial_state(FileStream *fs)
+{
   fs->fd = -1;
 
   // fs->block_buffer = NULL;
@@ -265,7 +351,9 @@ static void fs_set_initial_state(FileStream *fs) {
   fs->blocks_read = 0;
 }
 
-void fs_debug_internal_state(FileStream *fs) {
+void
+fs_debug_internal_state(FileStream *fs)
+{
   log_debug("fd: %d", fs->fd);
   log_debug("buffer: %p (%zu)", fs->buffer, fs->buffer_size);
   log_debug("buffer_ptr: %p(+%zu)", fs->buffer_ptr, fs->buffer_ptr_offset);

@@ -29,28 +29,35 @@ typedef struct CallbackData {
 } CallbackData;
 
 static CompBodyMetadata compBodyMetadata_from_huffmanTree(HuffmanTree *root);
-static CompBodyMetadata compBodyMetadata_from_fp(FILE *fp);
+// static CompBodyMetadata compBodyMetadata_from_fp(FILE *fp);
 static int compBody_encode_handler(int byte, void *smth);
 
 static void compBody_init_bitmap_from_huffmanTree(CompBody *body);
 
-CompBody *compBody_from_huffmanTree(HuffmanTree *root) {
+CompBody *
+compBody_from_huffmanTree(HuffmanTree *root)
+{
   CompBody *body = mem_alloc(sizeof(CompBody));
   body->hf = root;
   return body;
 }
 
-CompBody *compBody_destroy(CompBody *body) {
+CompBody *
+compBody_destroy(CompBody *body)
+{
   mem_free(body);
   return NULL;
 }
 
-size_t compBody_get_total_compressed_size_in_bits(CompBody *body) {
+size_t
+compBody_get_total_compressed_size_in_bits(CompBody *body)
+{
   return body->metadata.compressed_total_size_in_bits;
 }
 
-void compBody_encode(CompBody *body, const char *filename,
-                     BinaryWriter *writer) {
+void
+compBody_encode(CompBody *body, const char *filename, BinaryWriter *writer)
+{
   const size_t buffersize = 1024 * 1024; // 1 MiB
   FileStream *fs = fs_new(buffersize);
 
@@ -70,7 +77,9 @@ void compBody_encode(CompBody *body, const char *filename,
   mem_free(data);
 }
 
-static CompBodyMetadata compBodyMetadata_from_huffmanTree(HuffmanTree *root) {
+static CompBodyMetadata
+compBodyMetadata_from_huffmanTree(HuffmanTree *root)
+{
   CompBodyMetadata metadata;
 
   metadata.compressed_min_size_in_bits = huffmanTree_get_msg_size(root);
@@ -82,35 +91,43 @@ static CompBodyMetadata compBodyMetadata_from_huffmanTree(HuffmanTree *root) {
   return metadata;
 }
 
-static CompBodyMetadata compBodyMetadata_from_fp(FILE *fp) {
-  char padBits = fgetc(fp);
-  if ((padBits < 0) || padBits > 7) {
-    abort_default("Body pad field out of range");
-  }
+// static CompBodyMetadata
+// compBodyMetadata_from_fp(FILE *fp)
+// {
+//   char padBits = fgetc(fp);
+//   if ((padBits < 0) || padBits > 7)
+//   {
+//     abort_default("Body pad field out of range");
+//   }
+//
+//   CompBodyMetadata metadata;
+//
+//   metadata.compressed_total_size_in_bits =
+//       file_get_remaining_size_in_bytes(fp) * 8;
+//   metadata.compressed_pad_bits = padBits;
+//   metadata.compressed_min_size_in_bits =
+//       metadata.compressed_total_size_in_bits - metadata.compressed_pad_bits;
+//
+//   return metadata;
+// }
 
-  CompBodyMetadata metadata;
-
-  metadata.compressed_total_size_in_bits =
-      file_get_remaining_size_in_bytes(fp) * 8;
-  metadata.compressed_pad_bits = padBits;
-  metadata.compressed_min_size_in_bits =
-      metadata.compressed_total_size_in_bits - metadata.compressed_pad_bits;
-
-  return metadata;
-}
-
-static int compBody_encode_handler(int byte, void *smth) {
+static int
+compBody_encode_handler(int byte, void *smth)
+{
   CallbackData *data = (CallbackData *)smth;
 
   const HuffmanCode *code = codeLookup_get(data->lookup, byte);
 
-  if (huffmanCode_has_value(code)) {
+  if (huffmanCode_has_value(code))
+  {
     binWriter_write_huffmanCode(data->writer, code);
   }
 
   return 0;
 }
 
-static void compBody_init_bitmap_from_huffmanTree(CompBody *body) {
+static void
+compBody_init_bitmap_from_huffmanTree(CompBody *body)
+{
   body->metadata = compBodyMetadata_from_huffmanTree(body->hf);
 }

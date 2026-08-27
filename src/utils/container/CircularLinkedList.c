@@ -16,7 +16,9 @@ struct CircularList {
 
 static Element *element_new(void *item, Element *next, Element *prev);
 static Element *element_destroy(Element *elem, void *(*free_item)(void *));
-static inline void element_connect(Element *first, Element *second) {
+static inline void
+element_connect(Element *first, Element *second)
+{
   // first <-> second
   first->next = second;
   second->prev = first;
@@ -58,15 +60,20 @@ static void *cl_unsafe_rm_first(CircularList *l);
 static void *cl_unsafe_rm_start(CircularList *l);
 static void *cl_unsafe_rm_end(CircularList *l);
 
-CircularList *cl_new(void) {
+CircularList *
+cl_new(void)
+{
   CircularList *lc = mem_zalloc(sizeof(CircularList));
   return lc;
 }
 
-CircularList *cl_destroy(CircularList *l, void *(*free_element)(void *)) {
+CircularList *
+cl_destroy(CircularList *l, void *(*free_element)(void *))
+{
   Element *elem = NULL;
   Element *next = l->begin;
-  while ((elem = next)) {
+  while ((elem = next))
+  {
     next = elem->next;
     element_destroy(elem, free_element);
   }
@@ -75,22 +82,32 @@ CircularList *cl_destroy(CircularList *l, void *(*free_element)(void *)) {
   return NULL;
 }
 
-size_t cl_get_size(CircularList *lc) { return lc ? lc->n : 0; }
+size_t
+cl_get_size(CircularList *lc)
+{
+  return lc ? lc->n : 0;
+}
 
-void *cl_get_item(CircularList *lc, size_t index) {
+void *
+cl_get_item(CircularList *lc, size_t index)
+{
   return cl_get_element(lc, index)->item;
 }
 
-CircularList *cl_add(CircularList *l, void *item,
-                     size_t index) { // l desordenada
+CircularList *
+cl_add(CircularList *l, void *item, size_t index)
+{ // l desordenada
   Element *e = element_new(item, 0, 0);
-  if (l->n == 0) {
+  if (l->n == 0)
+  {
     return cl_unsafe_add_first(l, e);
   }
-  if (index == 0) {
+  if (index == 0)
+  {
     return cl_unsafe_add_start(l, e);
   }
-  if (index >= l->n) {
+  if (index >= l->n)
+  {
     return cl_unsafe_add_end(l, e);
   }
   Element *old = cl_get_element(l, index);
@@ -102,44 +119,59 @@ CircularList *cl_add(CircularList *l, void *item,
   return l;
 }
 
-CircularList *cl_append(CircularList *l, void *item) {
+CircularList *
+cl_append(CircularList *l, void *item)
+{
   Element *e = element_new(item, 0, 0);
-  if (l->n == 0) {
+  if (l->n == 0)
+  {
     return cl_unsafe_add_first(l, e);
   }
   return cl_unsafe_add_end(l, e);
 }
 
-CircularList *cl_shift(CircularList *l, void *item) {
+CircularList *
+cl_shift(CircularList *l, void *item)
+{
   Element *e = element_new(item, 0, 0);
-  if (l->n == 0) {
+  if (l->n == 0)
+  {
     return cl_unsafe_add_first(l, e);
   }
   return cl_unsafe_add_start(l, e);
 }
 
-CircularList *cl_add_inorder(CircularList *lc, void *item,
-                             int (*fcmp)(void *, void *)) {
+CircularList *
+cl_add_inorder(CircularList *lc, void *item, int (*fcmp)(void *, void *))
+{
   const size_t sz = lc->n;
-  for (size_t i = 0; i < sz; i++) {
-    if (!fcmp(item, cl_get_item(lc, i))) {
+  for (size_t i = 0; i < sz; i++)
+  {
+    if (!fcmp(item, cl_get_item(lc, i)))
+    {
       return cl_add(lc, item, i);
     }
   }
   return cl_append(lc, item);
 }
 
-void *cl_remove(CircularList *l, size_t index) {
-  if (l->n == 0) {
+void *
+cl_remove(CircularList *l, size_t index)
+{
+  if (l->n == 0)
+  {
     return NULL;
   }
-  if (l->n == 1) {
+  if (l->n == 1)
+  {
     return cl_unsafe_rm_first(l);
   }
-  if (index == 0) {
+  if (index == 0)
+  {
     return cl_unsafe_rm_start(l);
   }
-  if (index >= l->n) {
+  if (index >= l->n)
+  {
     return cl_unsafe_rm_end(l);
   }
   Element *removed = cl_get_element(l, index);
@@ -152,53 +184,72 @@ void *cl_remove(CircularList *l, size_t index) {
   return item;
 }
 
-void *cl_pop(CircularList *l) {
-  if (l->n == 0) {
+void *
+cl_pop(CircularList *l)
+{
+  if (l->n == 0)
+  {
     return NULL;
   }
-  if (l->n == 1) {
+  if (l->n == 1)
+  {
     return cl_unsafe_rm_first(l);
   }
   return cl_unsafe_rm_end(l);
 }
 
-void *cl_unshift(CircularList *l) {
-  if (l->n == 0) {
+void *
+cl_unshift(CircularList *l)
+{
+  if (l->n == 0)
+  {
     return NULL;
   }
-  if (l->n == 1) {
+  if (l->n == 1)
+  {
     return cl_unsafe_rm_first(l);
   }
   return cl_unsafe_rm_start(l);
 }
 
-static Element *element_new(void *item, Element *next, Element *prev) {
+static Element *
+element_new(void *item, Element *next, Element *prev)
+{
   Element *elem = mem_zalloc(sizeof(Element));
   *elem = (Element){.item = item, .next = next, .prev = prev};
   return elem;
 }
 
-static Element *element_destroy(Element *elem, void *(*free_item)(void *)) {
-  if (!elem) {
+static Element *
+element_destroy(Element *elem, void *(*free_item)(void *))
+{
+  if (!elem)
+  {
     return NULL;
   }
-  if (elem->item) {
+  if (elem->item)
+  {
     free_item(elem->item);
   }
   mem_free(elem);
   return NULL;
 }
 
-static Element *cl_get_element(CircularList *lc, size_t index) {
+static Element *
+cl_get_element(CircularList *lc, size_t index)
+{
   Element *elem = lc->begin;
   index %= lc->n;
-  for (size_t i = 0; elem && i < index; i++) {
+  for (size_t i = 0; elem && i < index; i++)
+  {
     elem = elem->next;
   }
   return elem;
 }
 
-static CircularList *cl_unsafe_add_first(CircularList *l, Element *e) {
+static CircularList *
+cl_unsafe_add_first(CircularList *l, Element *e)
+{
   // NULL
   element_connect(e, e);
   //... <-> e <-> e <-> e <-> ...
@@ -208,7 +259,9 @@ static CircularList *cl_unsafe_add_first(CircularList *l, Element *e) {
   return l;
 }
 
-static CircularList *cl_unsafe_add_start(CircularList *l, Element *e) {
+static CircularList *
+cl_unsafe_add_start(CircularList *l, Element *e)
+{
   // l->begin->prev <-> l->begin <-> l->begin->next
   element_connect(l->begin->prev, e);
   element_connect(e, l->begin);
@@ -219,7 +272,9 @@ static CircularList *cl_unsafe_add_start(CircularList *l, Element *e) {
   return l;
 }
 
-static CircularList *cl_unsafe_add_end(CircularList *l, Element *e) {
+static CircularList *
+cl_unsafe_add_end(CircularList *l, Element *e)
+{
   // l->begin->prev <-> l->begin <-> l->begin->next
   element_connect(l->begin->prev, e);
   element_connect(e, l->begin);
@@ -229,7 +284,9 @@ static CircularList *cl_unsafe_add_end(CircularList *l, Element *e) {
   return l;
 }
 
-static void *cl_unsafe_rm_first(CircularList *l) {
+static void *
+cl_unsafe_rm_first(CircularList *l)
+{
   void *item = l->begin->item;
   mem_free(l->begin);
   l->begin = NULL;
@@ -237,7 +294,9 @@ static void *cl_unsafe_rm_first(CircularList *l) {
   return item;
 }
 
-static void *cl_unsafe_rm_start(CircularList *l) {
+static void *
+cl_unsafe_rm_start(CircularList *l)
+{
   Element *first = l->begin;
   void *item = first->item;
 
@@ -251,7 +310,9 @@ static void *cl_unsafe_rm_start(CircularList *l) {
   return item;
 }
 
-static void *cl_unsafe_rm_end(CircularList *l) {
+static void *
+cl_unsafe_rm_end(CircularList *l)
+{
   Element *last = l->begin->prev;
   void *item = last->item;
 

@@ -1,322 +1,162 @@
----
-# generated through "clang-format --dump-config > .clang-format"
-Language:        Cpp
-AlignAfterOpenBracket: true
-AccessModifierOffset: -2
-AlignArrayOfStructures: None
-AlignConsecutiveAssignments:
-  Enabled:         false
-  AcrossEmptyLines: false
-  AcrossComments:  false
-  AlignCompound:   false
-  AlignFunctionDeclarations: false
-  AlignFunctionPointers: false
-  PadOperators:    true
-AlignConsecutiveBitFields:
-  Enabled:         false
-  AcrossEmptyLines: false
-  AcrossComments:  false
-  AlignCompound:   false
-  AlignFunctionDeclarations: false
-  AlignFunctionPointers: false
-  PadOperators:    false
-AlignConsecutiveDeclarations:
-  Enabled:         false
-  AcrossEmptyLines: false
-  AcrossComments:  false
-  AlignCompound:   false
-  AlignFunctionDeclarations: true
-  AlignFunctionPointers: false
-  PadOperators:    false
-AlignConsecutiveMacros:
-  Enabled:         false
-  AcrossEmptyLines: false
-  AcrossComments:  false
-  AlignCompound:   false
-  AlignFunctionDeclarations: false
-  AlignFunctionPointers: false
-  PadOperators:    false
-AlignConsecutiveShortCaseStatements:
-  Enabled:         false
-  AcrossEmptyLines: false
-  AcrossComments:  false
-  AlignCaseArrows: false
-  AlignCaseColons: false
-AlignConsecutiveTableGenBreakingDAGArgColons:
-  Enabled:         false
-  AcrossEmptyLines: false
-  AcrossComments:  false
-  AlignCompound:   false
-  AlignFunctionDeclarations: false
-  AlignFunctionPointers: false
-  PadOperators:    false
-AlignConsecutiveTableGenCondOperatorColons:
-  Enabled:         false
-  AcrossEmptyLines: false
-  AcrossComments:  false
-  AlignCompound:   false
-  AlignFunctionDeclarations: false
-  AlignFunctionPointers: false
-  PadOperators:    false
-AlignConsecutiveTableGenDefinitionColons:
-  Enabled:         false
-  AcrossEmptyLines: false
-  AcrossComments:  false
-  AlignCompound:   false
-  AlignFunctionDeclarations: false
-  AlignFunctionPointers: false
-  PadOperators:    false
-AlignEscapedNewlines: Right
-AlignOperands:   Align
-AlignTrailingComments:
-  AlignPPAndNotPP: true
-  Kind:            Always
-  OverEmptyLines:  0
-AllowAllArgumentsOnNextLine: true
-AllowAllParametersOfDeclarationOnNextLine: true
-AllowBreakBeforeNoexceptSpecifier: Never
-AllowBreakBeforeQtProperty: false
-AllowShortBlocksOnASingleLine: Never
-AllowShortCaseExpressionOnASingleLine: true
-AllowShortCaseLabelsOnASingleLine: false
-AllowShortCompoundRequirementOnASingleLine: true
-AllowShortEnumsOnASingleLine: true
-AllowShortFunctionsOnASingleLine: All
-AllowShortIfStatementsOnASingleLine: Never
-AllowShortLambdasOnASingleLine: All
-AllowShortLoopsOnASingleLine: false
-AllowShortNamespacesOnASingleLine: false
-AlwaysBreakAfterDefinitionReturnType: None
-AlwaysBreakBeforeMultilineStrings: false
-AttributeMacros:
-  - __capability
-BinPackArguments: true
-BinPackLongBracedList: true
-BinPackParameters: BinPack
-BitFieldColonSpacing: Both
-BracedInitializerIndentWidth: -1
-BraceWrapping:
-  AfterCaseLabel:  false
-  AfterClass:      false
-  AfterControlStatement: Never
-  AfterEnum:       false
-  AfterExternBlock: false
-  AfterFunction:   false
-  AfterNamespace:  false
-  AfterObjCDeclaration: false
-  AfterStruct:     false
-  AfterUnion:      false
-  BeforeCatch:     false
-  BeforeElse:      false
-  BeforeLambdaBody: false
-  BeforeWhile:     false
-  IndentBraces:    false
-  SplitEmptyFunction: true
-  SplitEmptyRecord: true
-  SplitEmptyNamespace: true
-BreakAdjacentStringLiterals: true
-BreakAfterAttributes: Leave
-BreakAfterJavaFieldAnnotations: false
-BreakAfterOpenBracketBracedList: false
-BreakAfterOpenBracketFunction: false
-BreakAfterOpenBracketIf: false
-BreakAfterOpenBracketLoop: false
-BreakAfterOpenBracketSwitch: false
-BreakAfterReturnType: None
-BreakArrays:     true
-BreakBeforeBinaryOperators: None
-BreakBeforeCloseBracketBracedList: false
-BreakBeforeCloseBracketFunction: false
-BreakBeforeCloseBracketIf: false
-BreakBeforeCloseBracketLoop: false
-BreakBeforeCloseBracketSwitch: false
-BreakBeforeConceptDeclarations: Always
-BreakBeforeBraces: Attach
-BreakBeforeInlineASMColon: OnlyMultiline
-BreakBeforeTemplateCloser: false
-BreakBeforeTernaryOperators: true
-BreakBinaryOperations: Never
-BreakConstructorInitializers: BeforeColon
-BreakFunctionDefinitionParameters: false
-BreakInheritanceList: BeforeColon
-BreakStringLiterals: true
-BreakTemplateDeclarations: MultiLine
-ColumnLimit:     80
-CommentPragmas:  '^ IWYU pragma:'
-CompactNamespaces: false
-ConstructorInitializerIndentWidth: 4
-ContinuationIndentWidth: 4
-Cpp11BracedListStyle: AlignFirstComment
-DerivePointerAlignment: false
-DisableFormat:   false
-EmptyLineAfterAccessModifier: Never
-EmptyLineBeforeAccessModifier: LogicalBlock
-EnumTrailingComma: Leave
-ExperimentalAutoDetectBinPacking: false
-FixNamespaceComments: true
-ForEachMacros:
-  - foreach
-  - Q_FOREACH
-  - BOOST_FOREACH
-IfMacros:
-  - KJ_IF_MAYBE
-IncludeBlocks:   Preserve
-IncludeCategories:
-  - Regex:           '^"(llvm|llvm-c|clang|clang-c)/'
-    Priority:        2
-    SortPriority:    0
-    CaseSensitive:   false
-  - Regex:           '^(<|"(gtest|gmock|isl|json)/)'
-    Priority:        3
-    SortPriority:    0
-    CaseSensitive:   false
-  - Regex:           '.*'
-    Priority:        1
-    SortPriority:    0
-    CaseSensitive:   false
-IncludeIsMainRegex: '(Test)?$'
-IncludeIsMainSourceRegex: ''
-IndentAccessModifiers: false
-IndentCaseBlocks: false
-IndentCaseLabels: false
-IndentExportBlock: true
-IndentExternBlock: AfterExternBlock
-IndentGotoLabels: true
-IndentPPDirectives: None
-IndentRequiresClause: true
-IndentWidth:     2
-IndentWrappedFunctionNames: false
-InsertBraces:    false
-InsertNewlineAtEOF: false
-InsertTrailingCommas: None
-IntegerLiteralSeparator:
-  Binary:          0
-  BinaryMinDigitsInsert: 0
-  BinaryMaxDigitsRemove: 0
-  Decimal:         0
-  DecimalMinDigitsInsert: 0
-  DecimalMaxDigitsRemove: 0
-  Hex:             0
-  HexMinDigitsInsert: 0
-  HexMaxDigitsRemove: 0
-  BinaryMinDigits: 0
-  DecimalMinDigits: 0
-  HexMinDigits:    0
-JavaScriptQuotes: Leave
-JavaScriptWrapImports: true
-KeepEmptyLines:
-  AtEndOfFile:     false
-  AtStartOfBlock:  true
-  AtStartOfFile:   true
-KeepFormFeed:    false
-LambdaBodyIndentation: Signature
-LineEnding:      DeriveLF
-MacroBlockBegin: ''
-MacroBlockEnd:   ''
-MainIncludeChar: Quote
-MaxEmptyLinesToKeep: 1
-NamespaceIndentation: None
-NumericLiteralCase:
-  ExponentLetter:  Leave
-  HexDigit:        Leave
-  Prefix:          Leave
-  Suffix:          Leave
-ObjCBinPackProtocolList: Auto
-ObjCBlockIndentWidth: 2
-ObjCBreakBeforeNestedBlockParam: true
-ObjCSpaceAfterProperty: false
-ObjCSpaceBeforeProtocolList: true
-OneLineFormatOffRegex: ''
-PackConstructorInitializers: BinPack
-PenaltyBreakAssignment: 2
-PenaltyBreakBeforeFirstCallParameter: 19
-PenaltyBreakBeforeMemberAccess: 150
-PenaltyBreakComment: 300
-PenaltyBreakFirstLessLess: 120
-PenaltyBreakOpenParenthesis: 0
-PenaltyBreakScopeResolution: 500
-PenaltyBreakString: 1000
-PenaltyBreakTemplateDeclaration: 10
-PenaltyExcessCharacter: 1000000
-PenaltyIndentedWhitespace: 0
-PenaltyReturnTypeOnItsOwnLine: 60
-PointerAlignment: Right
-PPIndentWidth:   -1
-QualifierAlignment: Leave
-ReferenceAlignment: Pointer
-ReflowComments:  Always
-RemoveBracesLLVM: false
-RemoveEmptyLinesInUnwrappedLines: false
-RemoveParentheses: Leave
-RemoveSemicolon: false
-RequiresClausePosition: OwnLine
-RequiresExpressionIndentation: OuterScope
-SeparateDefinitionBlocks: Leave
-ShortNamespaceLines: 1
-SkipMacroDefinitionBody: false
-SortIncludes:
-  Enabled:         true
-  IgnoreCase:      false
-  IgnoreExtension: false
-SortJavaStaticImport: Before
-SortUsingDeclarations: LexicographicNumeric
-SpaceAfterCStyleCast: false
-SpaceAfterLogicalNot: false
-SpaceAfterOperatorKeyword: false
-SpaceAfterTemplateKeyword: true
-SpaceAroundPointerQualifiers: Default
-SpaceBeforeAssignmentOperators: true
-SpaceBeforeCaseColon: false
-SpaceBeforeCpp11BracedList: false
-SpaceBeforeCtorInitializerColon: true
-SpaceBeforeInheritanceColon: true
-SpaceBeforeJsonColon: false
-SpaceBeforeParens: ControlStatements
-SpaceBeforeParensOptions:
-  AfterControlStatements: true
-  AfterForeachMacros: true
-  AfterFunctionDefinitionName: false
-  AfterFunctionDeclarationName: false
-  AfterIfMacros:   true
-  AfterNot:        false
-  AfterOverloadedOperator: false
-  AfterPlacementOperator: true
-  AfterRequiresInClause: false
-  AfterRequiresInExpression: false
-  BeforeNonEmptyParentheses: false
-SpaceBeforeRangeBasedForLoopColon: true
-SpaceBeforeSquareBrackets: false
-SpaceInEmptyBraces: Never
-SpacesBeforeTrailingComments: 1
-SpacesInAngles:  Never
-SpacesInContainerLiterals: true
-SpacesInLineCommentPrefix:
-  Minimum:         1
-  Maximum:         -1
-SpacesInParens:  Never
-SpacesInParensOptions:
-  ExceptDoubleParentheses: false
-  InCStyleCasts:   false
-  InConditionalStatements: false
-  InEmptyParentheses: false
-  Other:           false
-SpacesInSquareBrackets: false
-Standard:        Latest
-StatementAttributeLikeMacros:
-  - Q_EMIT
-StatementMacros:
-  - Q_UNUSED
-  - QT_REQUIRE_VERSION
-TableGenBreakInsideDAGArg: DontBreak
-TabWidth:        8
-UseTab:          Never
-VerilogBreakBetweenInstancePorts: true
-WhitespaceSensitiveMacros:
-  - BOOST_PP_STRINGIZE
-  - CF_SWIFT_NAME
-  - NS_SWIFT_NAME
-  - PP_STRINGIZE
-  - STRINGIZE
-WrapNamespaceBodyWithEmptyLines: Leave
-...
+# Start from LLVM's defaults and override only the things
+# we want to customize.
+BasedOnStyle: LLVM
 
+
+# ---------------------------------------------------------------------------
+# Indentation
+# ---------------------------------------------------------------------------
+
+# Number of spaces used for each indentation level.
+IndentWidth: 2
+
+# Width clang-format assumes for a tab character.
+# Since UseTab is Never, this mostly matters when reading existing tabs.
+TabWidth: 2
+
+# Never use tabs for indentation; use spaces instead.
+UseTab: Never
+
+
+# ---------------------------------------------------------------------------
+# Line length
+# ---------------------------------------------------------------------------
+
+# Try to keep lines within 80 columns.
+ColumnLimit: 80
+
+
+# ---------------------------------------------------------------------------
+# Pointers
+# ---------------------------------------------------------------------------
+
+# Put the '*' next to the variable name:
+#
+#   char *ptr;
+#
+# rather than:
+#
+#   char* ptr;
+PointerAlignment: Right
+
+
+# ---------------------------------------------------------------------------
+# Braces
+# ---------------------------------------------------------------------------
+
+# Don't use one of clang-format's predefined brace styles.
+# Instead, configure individual brace situations below.
+BreakBeforeBraces: Custom
+
+BraceWrapping:
+
+  # Put the opening brace of control statements on its own line:
+  #
+  #   if (condition)
+  #   {
+  #     ...
+  #   }
+  #
+  # Applies to if, for, while, switch, etc.
+  AfterControlStatement: Always
+
+  # Put the opening brace of function definitions on its own line:
+  #
+  #   void foo()
+  #   {
+  #     ...
+  #   }
+  AfterFunction: true
+
+  # Keep braces for structs on the same line:
+  #
+  #   struct foo {
+  #     ...
+  #   }
+  AfterStruct: false
+
+  # Same idea for unions.
+  AfterUnion: false
+
+  # Same idea for enums.
+  AfterEnum: false
+
+  # Same idea for classes (mostly relevant to C++).
+  AfterClass: false
+
+  # Keep namespace braces on the same line (C++).
+  AfterNamespace: false
+
+  # Keep extern "C" braces on the same line (C++).
+  AfterExternBlock: false
+
+  # Put 'else' on its own line after the closing brace:
+  #
+  #   if (foo)
+  #   {
+  #     ...
+  #   }
+  #   else
+  #   {
+  #     ...
+  #   }
+  BeforeElse: true
+
+  # Same idea for 'catch' (C++).
+  BeforeCatch: true
+
+
+# ---------------------------------------------------------------------------
+# Functions
+# ---------------------------------------------------------------------------
+
+# Break the return type away from the function name for top-level
+# function definitions:
+#
+#   static int
+#   foo(int a)
+#   {
+#     ...
+#   }
+#
+# Declarations/prototypes aren't affected in the same way.
+AlwaysBreakAfterReturnType: TopLevelDefinitions
+
+# Don't pack multiple parameters onto the same line when a function
+# declaration needs to be broken:
+#
+#   int foo(int first,
+#           int second,
+#           int third);
+BinPackParameters: false
+
+# Same idea for function calls:
+#
+#   foo(first,
+#       second,
+#       third);
+BinPackArguments: false
+
+
+# ---------------------------------------------------------------------------
+# Short constructs
+# ---------------------------------------------------------------------------
+
+# Don't put short if statements on a single line:
+#
+#   if (foo) bar();
+#
+# becomes:
+#
+#   if (foo)
+#   {
+#     bar();
+#   }
+AllowShortIfStatementsOnASingleLine: Never
+
+# Allow genuinely empty functions to remain on one line:
+#
+#   void foo() {}
+#
+# Non-empty functions will still be expanded normally.
+AllowShortFunctionsOnASingleLine: Empty

@@ -34,9 +34,9 @@
 * [ ] add const to everything
 * [ ] change unsigned long to uint64_t or size_t where suitable
 * [ ] proper deallocation when the program fails
-* [ ] add linting rule to makefile
 
 ## Recently done
+* [X] add linting rule to makefile
 * [X] add rule to regenerate compile_commands.json
 * [X] run dot automatically
 * [X] improve 'opts' handling in liman.c and cli.c

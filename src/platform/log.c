@@ -6,23 +6,30 @@
 
 static char timestamp[BUFFER_SIZE];
 
-static void update_timestamp(void) {
+static void
+update_timestamp(void)
+{
   time_t t = time(NULL);
-  if (t == -1) {
+  if (t == -1)
+  {
     return;
   }
 
   struct tm *local = localtime(&t);
-  if (local == NULL) {
+  if (local == NULL)
+  {
     return;
   }
 
-  if (strftime(timestamp, BUFFER_SIZE, "[%Y-%m-%d %H:%M:%S]", local) == 0) {
+  if (strftime(timestamp, BUFFER_SIZE, "[%Y-%m-%d %H:%M:%S]", local) == 0)
+  {
     return;
   }
 }
 
-void log_info(const char *fmt, ...) {
+void
+log_info(const char *fmt, ...)
+{
   va_list va;
   va_start(va, fmt);
 
@@ -34,7 +41,9 @@ void log_info(const char *fmt, ...) {
   va_end(va);
 }
 
-void log_debug(const char *fmt, ...) {
+void
+log_debug(const char *fmt, ...)
+{
   va_list va;
   va_start(va, fmt);
 
@@ -46,7 +55,9 @@ void log_debug(const char *fmt, ...) {
   va_end(va);
 }
 
-void log_warning(const char *fmt, ...) {
+void
+log_warning(const char *fmt, ...)
+{
   va_list va;
   va_start(va, fmt);
 
@@ -58,7 +69,9 @@ void log_warning(const char *fmt, ...) {
   va_end(va);
 }
 
-void log_error(const char *fmt, ...) {
+void
+log_error(const char *fmt, ...)
+{
   va_list va;
   va_start(va, fmt);
 

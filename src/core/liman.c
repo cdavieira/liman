@@ -24,7 +24,9 @@ static void liman_print_dot(HuffmanTree *root, const char *outputfile);
 static int liman_run_dot(const char *dotfile);
 
 // Core
-void compress(const char *inputfile, const char *outputfile, int opts) {
+void
+compress(const char *inputfile, const char *outputfile, int opts)
+{
   ByteFrequency *freq = byteFreq_from_filename(inputfile);
   HuffmanTree *hufftree = huffmanAlgorithm(freq);
 
@@ -35,43 +37,53 @@ void compress(const char *inputfile, const char *outputfile, int opts) {
   const CompWriterStatistics statistics = compWriter_get_statistics(writer);
   log_info("compression finished: %s saved as %s!", inputfile, outputfile);
   log_info("from %zu bytes to %zu bytes (%.2f%% compressed)",
-           statistics.uncompressed_size, statistics.compressed_size,
+           statistics.uncompressed_size,
+           statistics.compressed_size,
            100.0f * statistics.compression_rate);
 
   compWriter_destroy(writer);
   byteFreq_destroy(freq);
 }
 
-void decompress(const char *inputfile, const char *outputfile, int opts) {
+void
+decompress(const char *inputfile, const char *outputfile, int opts)
+{
   CompReader *reader = compReader_new(inputfile);
   CompReaderOutput output = compReader_translate(reader, outputfile);
 
   log_info("decompression finished: %s saved as %s!", inputfile, outputfile);
-  log_info("from %zu bytes to %zu bytes", output.input_total_size_bytes,
+  log_info("from %zu bytes to %zu bytes",
+           output.input_total_size_bytes,
            output.output_total_size_bytes);
 
   compReader_destroy(reader);
 }
 
-void inspect(const char *compfile, const char *outputfile, int opts) {
+void
+inspect(const char *compfile, const char *outputfile, int opts)
+{
   CompReader *reader = compReader_new(compfile);
   CompHeader *original_header = compReader_get_header(reader);
   HuffmanTree *root = compHeader_get_huffmanTree(original_header);
   Bitmap *bm = compHeader_get_bitmap(original_header);
 
-  if (limanOpts_has_opt(opts, LIMAN_OPT_HEADER)) {
+  if (limanOpts_has_opt(opts, LIMAN_OPT_HEADER))
+  {
     liman_print_header(original_header);
   }
 
-  if (limanOpts_has_opt(opts, LIMAN_OPT_BODY)) {
+  if (limanOpts_has_opt(opts, LIMAN_OPT_BODY))
+  {
     liman_print_body(reader, outputfile);
   }
 
-  if (limanOpts_has_opt(opts, LIMAN_OPT_CODES)) {
+  if (limanOpts_has_opt(opts, LIMAN_OPT_CODES))
+  {
     liman_print_codes(root, outputfile);
   }
 
-  if (limanOpts_has_opt(opts, LIMAN_OPT_PDF)) {
+  if (limanOpts_has_opt(opts, LIMAN_OPT_PDF))
+  {
     liman_print_dot(root, outputfile);
   }
 
@@ -79,13 +91,17 @@ void inspect(const char *compfile, const char *outputfile, int opts) {
   compReader_destroy(reader);
 }
 
-static HuffmanTree *huffmanAlgorithm(ByteFrequency *f) {
+static HuffmanTree *
+huffmanAlgorithm(ByteFrequency *f)
+{
   TreeList *lc = treelist_new();
   int bytes_set_size = byteFreq_get_set_size();
-  for (int i = bytes_set_size - 1; i >= 0; i--) {
+  for (int i = bytes_set_size - 1; i >= 0; i--)
+  {
     unsigned ch = byteFreq_get_byte(f, i);
     unsigned count = byteFreq_get_count(f, i);
-    if (count > 0) {
+    if (count > 0)
+    {
       lc = treelist_shift(lc, huffmanTree_new(ch, count, 0, 0));
     }
   }
@@ -94,7 +110,8 @@ static HuffmanTree *huffmanAlgorithm(ByteFrequency *f) {
   HuffmanTree *rtree;
   unsigned long w1;
   unsigned long w2;
-  for (size_t sz = treelist_get_size(lc); sz > 1; sz--) {
+  for (size_t sz = treelist_get_size(lc); sz > 1; sz--)
+  {
     ltree = treelist_unshift(lc);
     rtree = treelist_unshift(lc);
     w1 = huffmanTree_get_weight(ltree);
@@ -108,7 +125,9 @@ static HuffmanTree *huffmanAlgorithm(ByteFrequency *f) {
   return hufftree;
 }
 
-static void liman_print_header(CompHeader *original_header) {
+static void
+liman_print_header(CompHeader *original_header)
+{
   HuffmanTree *root = compHeader_get_huffmanTree(original_header);
   Bitmap *bm = compHeader_get_bitmap(original_header);
 
@@ -134,19 +153,27 @@ static void liman_print_header(CompHeader *original_header) {
          "\tHeight: %zu\n"
          "\tNodes : %zu\n"
          "\tLeafs : %zu\n",
-         hdr2_height, hdr2_nodes, hdr2_leafs);
+         hdr2_height,
+         hdr2_nodes,
+         hdr2_leafs);
 
   printf("About the header:\n"
          "\tTree size     (read/expected): %zu bits/%lu bits\n"
          "\tPadding added (read/expected): %zu bits/%lu bits\n"
          "\tTotal         (read/expected): %zu bytes/%lu bytes\n",
-         hdr_minBits, hdr2_minBits, hdr_padBits, hdr2_padBits, hdr_totalBytes,
+         hdr_minBits,
+         hdr2_minBits,
+         hdr_padBits,
+         hdr2_padBits,
+         hdr_totalBytes,
          hdr2_totalBytes);
 
   compHeader_destroy(reconstructed_header);
 }
 
-static void liman_print_body(CompReader *reader, const char *outputfile) {
+static void
+liman_print_body(CompReader *reader, const char *outputfile)
+{
   CompReaderOutput output = compReader_translate(reader, outputfile);
 
   size_t body_minSize = output.output_min_size_bits;
@@ -157,12 +184,17 @@ static void liman_print_body(CompReader *reader, const char *outputfile) {
          "\tSize:          %zu bits\n"
          "\tPadding added: %zu bits\n"
          "\tTotal:         %zu bytes\n",
-         body_minSize, body_padBits, body_totalSize);
+         body_minSize,
+         body_padBits,
+         body_totalSize);
 }
 
-static void liman_print_codes(HuffmanTree *root, const char *outputfile) {
+static void
+liman_print_codes(HuffmanTree *root, const char *outputfile)
+{
   FILE *fpo = fopen(outputfile, "w");
-  if (!fpo) {
+  if (!fpo)
+  {
     return;
   }
 
@@ -171,9 +203,12 @@ static void liman_print_codes(HuffmanTree *root, const char *outputfile) {
   fclose(fpo);
 }
 
-static void liman_print_dot(HuffmanTree *root, const char *outputfile) {
+static void
+liman_print_dot(HuffmanTree *root, const char *outputfile)
+{
   FILE *fpo = fopen(outputfile, "w");
-  if (!fpo) {
+  if (!fpo)
+  {
     return;
   }
 
@@ -182,16 +217,22 @@ static void liman_print_dot(HuffmanTree *root, const char *outputfile) {
 
   printf("Tree dotfile: %s\n", outputfile);
 
-  if (liman_run_dot(outputfile) == 0) {
+  if (liman_run_dot(outputfile) == 0)
+  {
     printf("Tree PDF: %s.pdf\n", outputfile);
-  } else {
+  }
+  else
+  {
     printf("Tip: install 'dot' and run 'dot -Tpdf %s -o %s.pdf' and generate "
            "its pdf!\n",
-           outputfile, outputfile);
+           outputfile,
+           outputfile);
   };
 }
 
-static int liman_run_dot(const char *dotfile) {
+static int
+liman_run_dot(const char *dotfile)
+{
   char *dot_to_pdf_cmd[] = {"dot", "-T", "pdf", NULL, "-o", NULL, NULL};
   String *s = NULL;
 

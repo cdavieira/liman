@@ -12,9 +12,12 @@
 static char *liman_get_uncompressed_filename(const char *inputfile);
 
 static char *liman_get_inspect_filename(const char *inputfile,
-                                        const char *prefix, char *extension);
+                                        const char *prefix,
+                                        char *extension);
 
-char *liman_build_uncompressed_filename(const char *inputfile) {
+char *
+liman_build_uncompressed_filename(const char *inputfile)
+{
   char *filename = NULL;
 
   char *outputfile = liman_get_uncompressed_filename(inputfile);
@@ -31,15 +34,21 @@ char *liman_build_uncompressed_filename(const char *inputfile) {
   return filename;
 }
 
-char *liman_get_codes_filename(const char *inputfile) {
+char *
+liman_get_codes_filename(const char *inputfile)
+{
   return liman_get_inspect_filename(inputfile, "inspect-", "txt");
 }
 
-char *liman_get_tree_filename(const char *inputfile) {
+char *
+liman_get_tree_filename(const char *inputfile)
+{
   return liman_get_inspect_filename(inputfile, "inspect-", "dot");
 }
 
-char *liman_build_compressed_filename(const char *inputfile) {
+char *
+liman_build_compressed_filename(const char *inputfile)
+{
   char *filename = NULL;
 
   FilenameBuilder *b = filenameBuilder_from_filename(inputfile);
@@ -67,7 +76,9 @@ char *liman_build_compressed_filename(const char *inputfile) {
 
 /* Internals */
 
-static char *liman_get_uncompressed_filename(const char *inputfile) {
+static char *
+liman_get_uncompressed_filename(const char *inputfile)
+{
   char *outputfile = NULL;
   const char *prefix = "unhuffman-";
   const char *basename = cstr_find_after_last_char(inputfile, '/');
@@ -79,8 +90,11 @@ static char *liman_get_uncompressed_filename(const char *inputfile) {
   return outputfile;
 }
 
-static char *liman_get_inspect_filename(const char *inputfile,
-                                        const char *prefix, char *extension) {
+static char *
+liman_get_inspect_filename(const char *inputfile,
+                           const char *prefix,
+                           char *extension)
+{
   char *outputfile = NULL;
 
   FilenameBuilder *b = filenameBuilder_from_filename(inputfile);

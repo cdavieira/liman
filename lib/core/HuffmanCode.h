@@ -19,8 +19,8 @@ Code huffmanCode_get_value(const HuffmanCode *const c);
 HuffmanCode *huffmanCode_set_key(HuffmanCode *const c, unsigned const key);
 HuffmanCode *huffmanCode_set_weight(HuffmanCode *const c,
                                     unsigned long const weight);
-HuffmanCode *huffmanCode_set_value(HuffmanCode *c, unsigned len,
-                                   unsigned long val);
+HuffmanCode *
+huffmanCode_set_value(HuffmanCode *c, unsigned len, unsigned long val);
 
 int huffmanCode_has_value(const HuffmanCode *c);
 char *huffmanCode_stringify(HuffmanCode *c);

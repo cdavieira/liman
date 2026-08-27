@@ -45,5 +45,7 @@ unsigned long tree_get_leaf_count(Tree *root);
  */
 unsigned long tree_get_height(Tree *root);
 
-void tree_visit_leafs(Tree *root, void (*callback)(Tree *leaf, unsigned height,
-                                                   unsigned long path));
+void tree_visit_leafs(Tree *root,
+                      void (*callback)(Tree *leaf,
+                                       unsigned height,
+                                       unsigned long path));

@@ -10,8 +10,9 @@ CC := gcc
 MKDIR := mkdir
 RM := rm -rf
 BEAR := bear
+CLANG_FORMAT := clang-format
 
-CFLAGS := -g -I$(libdir)
+CFLAGS := -std=c23 -Wall -Wextra -Wpedantic -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable -g -I$(libdir)
 
 all: $(project)
 
@@ -32,6 +33,9 @@ run:
 
 dev:
 	$(BEAR) -- make
+
+lint:
+	$(CLANG_FORMAT) -i $(src) $(lib)
 
 echo:
 	@echo '.h: ' $(lib)

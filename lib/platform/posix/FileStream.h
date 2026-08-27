@@ -35,23 +35,31 @@ size_t fs_remaining_bytes(FileStream *fs);
 /** iterate the next 'count' bytes of the file. Calling this function always
  * starts at the next available byte in the file.
  */
-void fs_do_next_bytes(FileStream *fs, size_t count, void *data,
+void fs_do_next_bytes(FileStream *fs,
+                      size_t count,
+                      void *data,
                       int (*callback)(int byte, void *data));
 
 /** iterate the next 'count' bits of the file. Calling this function always
  * starts at the next available byte in the file.
  */
-void fs_do_next_bits(FileStream *fs, size_t count, void *data,
+void fs_do_next_bits(FileStream *fs,
+                     size_t count,
+                     void *data,
                      int (*callback)(int bit, void *data));
 
 /** iterate over all bytes of 'filename', except for the EOF byte
  */
-void fs_loop_over_all_bytes(FileStream *fs, const char *filename, void *data,
+void fs_loop_over_all_bytes(FileStream *fs,
+                            const char *filename,
+                            void *data,
                             int (*callback)(int byte, void *data));
 
 /** iterate over all bytes of 'filename', except for the EOF byte
  */
-void fs_loop_over_all_bits(FileStream *fs, const char *filename, void *data,
+void fs_loop_over_all_bits(FileStream *fs,
+                           const char *filename,
+                           void *data,
                            int (*callback)(int bit, void *data));
 
 void fs_debug_internal_state(FileStream *fs);

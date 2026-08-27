@@ -27,8 +27,8 @@ CircularList *cl_append(CircularList *l, void *item);
 /** add an item at the beginning of the list */
 CircularList *cl_shift(CircularList *l, void *item);
 /** add an item somewhere in the list, so that it remains sorted */
-CircularList *cl_add_inorder(CircularList *l, void *item,
-                             int (*fcmp)(void *, void *));
+CircularList *
+cl_add_inorder(CircularList *l, void *item, int (*fcmp)(void *, void *));
 
 /** remove the item stored at index 'idx' */
 void *cl_remove(CircularList *l, size_t idx);

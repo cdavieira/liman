@@ -1,4 +1,4 @@
-#pragma
+#pragma once
 
 #include "core/HuffmanCode.h"
 #include "core/HuffmanTree.h"

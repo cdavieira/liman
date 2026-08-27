@@ -46,7 +46,9 @@ static Bitmap *compReader_read_header_bitmap(CompReader *reader);
 static int compReader_read_header_bitmap_callback(int bit, void *data);
 static int compReader_translate_callback(int bit, void *data);
 
-CompReader *compReader_new(const char *filename) {
+CompReader *
+compReader_new(const char *filename)
+{
   CompReader *reader = mem_alloc(sizeof(struct CompReader));
   reader->filename = filename;
   reader->fs = fs_new(1024 * 1024);
@@ -54,18 +56,23 @@ CompReader *compReader_new(const char *filename) {
   return reader;
 }
 
-CompReader *compReader_destroy(CompReader *reader) {
+CompReader *
+compReader_destroy(CompReader *reader)
+{
   fs_destroy(reader->fs);
   return mem_free(reader);
 }
 
-CompHeader *compReader_get_header(CompReader *reader) {
+CompHeader *
+compReader_get_header(CompReader *reader)
+{
   Bitmap *bm = compReader_read_header_bitmap(reader);
   return compHeader_from_bitmap(bm);
 }
 
-CompReaderOutput compReader_translate(CompReader *reader,
-                                      const char *filename) {
+CompReaderOutput
+compReader_translate(CompReader *reader, const char *filename)
+{
   CompReaderOutput res = {.output_min_size_bits = 0,
                           .output_total_size_bytes = 0,
                           .output_pad_bits = 0,
@@ -74,10 +81,12 @@ CompReaderOutput compReader_translate(CompReader *reader,
   CompHeader *header = compReader_get_header(reader);
   HuffmanTree *root = compHeader_get_huffmanTree(header);
 
-  if (root) {
+  if (root)
+  {
     // Reading pad bits
     int padBits = fs_get_byte(reader->fs);
-    if ((padBits < 0) || padBits > 7) {
+    if ((padBits < 0) || padBits > 7)
+    {
       abort_default("Body pad field out of range");
     }
     res.output_pad_bits = padBits;
@@ -99,8 +108,8 @@ CompReaderOutput compReader_translate(CompReader *reader,
     size_t msgTotalBits = bits_fromBytes(fs_remaining_bytes(reader->fs));
     size_t msgMinBits = msgTotalBits - padBits;
 
-    fs_do_next_bits(reader->fs, msgMinBits, data,
-                    compReader_translate_callback);
+    fs_do_next_bits(
+        reader->fs, msgMinBits, data, compReader_translate_callback);
 
     res = data->output;
     res.output_total_size_bytes =
@@ -115,7 +124,9 @@ CompReaderOutput compReader_translate(CompReader *reader,
   return res;
 }
 
-static size_t compReader_count_header(CompReader *reader) {
+static size_t
+compReader_count_header(CompReader *reader)
+{
   fs_rewind(reader->fs);
 
   CallbackData *data = mem_alloc(sizeof(CallbackData));
@@ -140,16 +151,18 @@ static size_t compReader_count_header(CompReader *reader) {
   data->remainingLeafBits = 0;
   data->maxTotalBits = compHeader_get_max_theoretical_size_in_bits();
 
-  fs_loop_over_all_bits(reader->fs, reader->filename, data,
-                        compReader_count_header_callback);
+  fs_loop_over_all_bits(
+      reader->fs, reader->filename, data, compReader_count_header_callback);
 
   // if leafs > 0, then this probably means that the tree is invalid.
   // this could happen for non-comp files.
   size_t totalBits = data->leafs == 0 ? data->totalBits : 0;
-  if (totalBits == 0) {
+  if (totalBits == 0)
+  {
     log_error("CompReader: totalBits zero'd for a total of %zu bits read, with "
               "%zu leaf nodes remaining",
-              data->totalBits, data->leafs);
+              data->totalBits,
+              data->leafs);
   }
 
   data = mem_free(data);
@@ -159,10 +172,13 @@ static size_t compReader_count_header(CompReader *reader) {
   return totalBits;
 }
 
-static int compReader_count_header_callback(int bit, void *data) {
+static int
+compReader_count_header_callback(int bit, void *data)
+{
   CallbackData *d = data;
 
-  if (d->totalBits > d->maxTotalBits) {
+  if (d->totalBits > d->maxTotalBits)
+  {
     log_error("CompReader: attempted to read more bits than %zu bits "
               "(theoretical maximum size)",
               d->maxTotalBits);
@@ -170,15 +186,22 @@ static int compReader_count_header_callback(int bit, void *data) {
   }
 
   int not_reading_byte = d->remainingLeafBits == 0;
-  if (not_reading_byte) {
-    if (bit) {
+  if (not_reading_byte)
+  {
+    if (bit)
+    {
       d->remainingLeafBits = 8;
-    } else {
+    }
+    else
+    {
       d->leafs++;
     }
-  } else {
+  }
+  else
+  {
     d->remainingLeafBits--;
-    if (d->remainingLeafBits == 0) {
+    if (d->remainingLeafBits == 0)
+    {
       d->leafs--;
     }
   }
@@ -187,33 +210,41 @@ static int compReader_count_header_callback(int bit, void *data) {
   return d->leafs == 0;
 }
 
-static Bitmap *compReader_read_header_bitmap(CompReader *reader) {
+static Bitmap *
+compReader_read_header_bitmap(CompReader *reader)
+{
   size_t minBits = compReader_count_header(reader);
 
-  if (!minBits) {
+  if (!minBits)
+  {
     return NULL;
   }
 
   Bitmap *bm = bitmapInit(minBits);
 
-  fs_do_next_bits(reader->fs, minBits, (void *)bm,
-                  compReader_read_header_bitmap_callback);
+  fs_do_next_bits(
+      reader->fs, minBits, (void *)bm, compReader_read_header_bitmap_callback);
 
   return bm;
 }
 
-static int compReader_read_header_bitmap_callback(int bit, void *data) {
+static int
+compReader_read_header_bitmap_callback(int bit, void *data)
+{
   Bitmap *bm = data;
   bitmapAppendLeastSignificantBit(bm, bit);
   return 0;
 }
 
-static int compReader_translate_callback(int bit, void *data) {
+static int
+compReader_translate_callback(int bit, void *data)
+{
   CallbackData2 *d = data;
 
   d->tree = huffmanTree_get_child(d->tree, bit);
 
-  if (huffmanTree_is_leaf(d->tree)) {
+  if (huffmanTree_is_leaf(d->tree))
+  {
     binWriter_write_byte(d->writer, huffmanTree_get_key(d->tree));
     d->output.output_min_size_bits += 8;
     d->tree = d->root;

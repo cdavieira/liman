@@ -15,25 +15,34 @@ struct FilenameBuilder {
   const char *extension;
 };
 
-static void filenameBuilder_assert(const FilenameBuilder *builder) {
-  if (builder->basename == NULL) {
+static void
+filenameBuilder_assert(const FilenameBuilder *builder)
+{
+  if (builder->basename == NULL)
+  {
     abort_default("At least a basename is required when building a filename.");
   }
 }
 
-static char *filenameBuilder_assemble(const char *path, const char *basename,
-                                      const char *extension, const char *delim,
-                                      const char *dot) {
+static char *
+filenameBuilder_assemble(const char *path,
+                         const char *basename,
+                         const char *extension,
+                         const char *delim,
+                         const char *dot)
+{
   String *s = string_new();
 
-  if (path) {
+  if (path)
+  {
     string_append(s, path);
     string_append(s, delim);
   }
 
   string_append(s, basename);
 
-  if (extension) {
+  if (extension)
+  {
     string_append(s, dot);
     string_append(s, extension);
   }
@@ -41,29 +50,37 @@ static char *filenameBuilder_assemble(const char *path, const char *basename,
   return string_drain(s);
 }
 
-static enum PathType filenameBuilder_infer_type(const char *filename) {
-  if (!filename) {
+static enum PathType
+filenameBuilder_infer_type(const char *filename)
+{
+  if (!filename)
+  {
     return PATH_INVALID;
   }
 
   size_t sz = strlen(filename);
-  if (!sz) {
+  if (!sz)
+  {
     return PATH_INVALID;
   }
 
   // the following doesn't work for windows
-  if (filename[0] == '/') {
+  if (filename[0] == '/')
+  {
     return PATH_ABSOLUTE;
   }
 
-  if (cstr_find_after_last_char(filename, '/')) {
+  if (cstr_find_after_last_char(filename, '/'))
+  {
     return PATH_RELATIVE;
   }
 
   return PATH_FILENAME;
 }
 
-FilenameBuilder *filenameBuilder_new(void) {
+FilenameBuilder *
+filenameBuilder_new(void)
+{
   FilenameBuilder *builder = mem_alloc(sizeof(struct FilenameBuilder));
   builder->copy = NULL;
   builder->path = NULL;
@@ -72,25 +89,31 @@ FilenameBuilder *filenameBuilder_new(void) {
   return builder;
 }
 
-FilenameBuilder *filenameBuilder_from_filename(const char *filename) {
+FilenameBuilder *
+filenameBuilder_from_filename(const char *filename)
+{
   FilenameBuilder *builder = filenameBuilder_new();
 
   char *copy = mem_salloc(filename);
   char *basename = (char *)cstr_find_after_last_char(copy, '/');
   char *extension = (char *)cstr_find_at_last_char(copy, '.');
 
-  if (extension) {
+  if (extension)
+  {
     *extension = '\0';
     extension++;
   }
 
   builder->copy = copy;
-  if (basename) {
+  if (basename)
+  {
     builder->basename = basename;
     basename--;
     *basename = '\0';
     builder->path = copy;
-  } else {
+  }
+  else
+  {
     builder->basename = copy;
   }
   builder->extension = extension;
@@ -98,7 +121,9 @@ FilenameBuilder *filenameBuilder_from_filename(const char *filename) {
   return builder;
 }
 
-FilenameParts filenameBuilder_drain(FilenameBuilder *builder) {
+FilenameParts
+filenameBuilder_drain(FilenameBuilder *builder)
+{
   FilenameParts parts = {
       .pathType = filenameBuilder_infer_type(builder->copy),
       .filename = builder->basename ? mem_salloc(builder->basename) : NULL,
@@ -109,46 +134,60 @@ FilenameParts filenameBuilder_drain(FilenameBuilder *builder) {
   return parts;
 }
 
-FilenameBuilder *filenameBuilder_from_parts(FilenameParts parts) {
-  char *copy = filenameBuilder_assemble(parts.path, parts.filename,
-                                        parts.extension, "/", ".");
+FilenameBuilder *
+filenameBuilder_from_parts(FilenameParts parts)
+{
+  char *copy = filenameBuilder_assemble(
+      parts.path, parts.filename, parts.extension, "/", ".");
   FilenameBuilder *b = filenameBuilder_from_filename(copy);
   copy = mem_free(copy);
   return b;
 }
 
-FilenameBuilder *filenameBuilder_destroy(FilenameBuilder *builder) {
+FilenameBuilder *
+filenameBuilder_destroy(FilenameBuilder *builder)
+{
   builder->copy = mem_free(builder->copy);
   return mem_free(builder);
 }
 
-void filenameBuilder_set_basename(FilenameBuilder *builder,
-                                  const char *basename) {
+void
+filenameBuilder_set_basename(FilenameBuilder *builder, const char *basename)
+{
   builder->basename = cstr_find_after_last_char(basename, '/');
 }
 
-void filenameBuilder_set_extension(FilenameBuilder *builder,
-                                   const char *extension) {
+void
+filenameBuilder_set_extension(FilenameBuilder *builder, const char *extension)
+{
   builder->extension = extension;
 }
 
-void filenameBuilder_set_path(FilenameBuilder *builder, const char *path) {
+void
+filenameBuilder_set_path(FilenameBuilder *builder, const char *path)
+{
   builder->path = path;
 }
 
-void filenameBuilder_set_path_to_current_directory(FilenameBuilder *builder) {
+void
+filenameBuilder_set_path_to_current_directory(FilenameBuilder *builder)
+{
   filenameBuilder_set_path(builder, ".");
 }
 
-void filenameBuilder_remove_extension(FilenameBuilder *builder) {
+void
+filenameBuilder_remove_extension(FilenameBuilder *builder)
+{
   filenameBuilder_set_extension(builder, NULL);
 }
 
-char *filenameBuilder_build(const FilenameBuilder *builder) {
+char *
+filenameBuilder_build(const FilenameBuilder *builder)
+{
   filenameBuilder_assert(builder);
 
-  char *filename = filenameBuilder_assemble(builder->path, builder->basename,
-                                            builder->extension, "/", ".");
+  char *filename = filenameBuilder_assemble(
+      builder->path, builder->basename, builder->extension, "/", ".");
 
   return filename;
 }

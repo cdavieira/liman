@@ -55,14 +55,14 @@ static void posParam_set_args(PositionalParam *param, int argc, char **argv);
 static void posParam_set_id(PositionalParam *param, int param_id);
 static void posParam_set_name(PositionalParam *param, const char *name);
 static void posParam_set_data(PositionalParam *param, void *data);
-static void posParam_set_handler(PositionalParam *param,
-                                 void (*handler)(int code, char *arg,
-                                                 void *param));
+static void
+posParam_set_handler(PositionalParam *param,
+                     void (*handler)(int code, char *arg, void *param));
 static void posParam_add(PositionalParam *param, Arg arg);
 static int posParam_pre_process_check(PositionalParam *param);
 static void posParam_process(PositionalParam *param);
-static void posParam_print(PositionalParam *param, const char *executable,
-                           int is_default);
+static void
+posParam_print(PositionalParam *param, const char *executable, int is_default);
 
 static enum ArgFormat parsedArg_infer_type(const char *s);
 static char *parsedArg_parse_key(char *token);
@@ -72,25 +72,33 @@ static struct ParsedArg *parsedArg_destroy(struct ParsedArg *a);
 
 /* impl */
 
-ArgParser *argParser_new(void) {
+ArgParser *
+argParser_new(void)
+{
   ArgParser *parser = mem_alloc(sizeof(struct ArgParser));
   parser->positional_params = vector_new(PARAM_MIN_COUNT);
   parser->executable_name = NULL;
   return parser;
 }
 
-ArgParser *argParser_destroy(ArgParser *parser) {
+ArgParser *
+argParser_destroy(ArgParser *parser)
+{
   vector_destroy(parser->positional_params,
                  (void *(*)(void *))posParam_destroy);
   mem_free(parser);
   return NULL;
 }
 
-void argParser_set_executable_name(ArgParser *parser, const char *name) {
+void
+argParser_set_executable_name(ArgParser *parser, const char *name)
+{
   parser->executable_name = name;
 }
 
-size_t argParser_add_param(ArgParser *parser, Param p) {
+size_t
+argParser_add_param(ArgParser *parser, Param p)
+{
   PositionalParam *param = posParam_new();
   posParam_set_name(param, p.name);
   posParam_set_data(param, p.data);
@@ -100,37 +108,51 @@ size_t argParser_add_param(ArgParser *parser, Param p) {
   return idx;
 }
 
-void argParser_add_arg(ArgParser *parser, size_t idx, Arg arg) {
+void
+argParser_add_arg(ArgParser *parser, size_t idx, Arg arg)
+{
   PositionalParam *param = vector_get_item(parser->positional_params, idx);
   posParam_add(param, arg);
 }
 
-void argParser_set_program_name(ArgParser *parser, const char *name) {
+void
+argParser_set_program_name(ArgParser *parser, const char *name)
+{
   parser->executable_name = name;
 }
 
-void argParser_set_default_param(ArgParser *parser, size_t idx) {
+void
+argParser_set_default_param(ArgParser *parser, size_t idx)
+{
   parser->default_param = idx;
 }
 
-static inline int is_positional_param_name(const char *name) {
+static inline int
+is_positional_param_name(const char *name)
+{
   return name && name[0] != '-';
 }
 
-static int cmp_params(void *s1, void *s2) {
+static int
+cmp_params(void *s1, void *s2)
+{
   PositionalParam *p1 = (PositionalParam *)s1;
   PositionalParam *p2 = (PositionalParam *)s2;
   return cstr_equals(p1->name, (p2->name));
 }
 
-int argParser_process(ArgParser *parser, int argc, char **argv) {
-  if (argc <= 0) {
+int
+argParser_process(ArgParser *parser, int argc, char **argv)
+{
+  if (argc <= 0)
+  {
     return -1;
   }
 
   PositionalParam *param = NULL;
   const char *paramName = is_positional_param_name(argv[1]) ? argv[1] : NULL;
-  if (paramName) {
+  if (paramName)
+  {
     PositionalParam key = {
         .name = paramName,
     };
@@ -139,11 +161,13 @@ int argParser_process(ArgParser *parser, int argc, char **argv) {
     argv++;
   }
 
-  if (!param) {
+  if (!param)
+  {
     param = vector_get_item(parser->positional_params, parser->default_param);
   }
 
-  if (!param) {
+  if (!param)
+  {
     return -1;
   }
 
@@ -154,21 +178,27 @@ int argParser_process(ArgParser *parser, int argc, char **argv) {
   return param->param_id;
 }
 
-void argParser_print(ArgParser *parser) {
+void
+argParser_print(ArgParser *parser)
+{
   printf("Help for program '%s'\n\n", parser->executable_name);
 
   size_t sz = vector_get_size(parser->positional_params);
 
-  for (size_t i = 0; i < sz; i++) {
+  for (size_t i = 0; i < sz; i++)
+  {
     argParser_print_param(parser, i);
 
-    if ((i + 1) != sz) {
+    if ((i + 1) != sz)
+    {
       printf("\n===========================================\n\n");
     }
   }
 }
 
-void argParser_print_param(ArgParser *parser, size_t idx) {
+void
+argParser_print_param(ArgParser *parser, size_t idx)
+{
   PositionalParam *param = vector_get_item(parser->positional_params, idx);
   int is_default = param->param_id == parser->default_param;
   posParam_print(param, parser->executable_name, is_default);
@@ -176,15 +206,23 @@ void argParser_print_param(ArgParser *parser, size_t idx) {
 
 /* impl internal */
 
-static Arg *arg_new(Arg arg) {
+static Arg *
+arg_new(Arg arg)
+{
   Arg *a = mem_alloc(sizeof(Arg));
   *a = arg;
   return a;
 }
 
-static Arg *arg_destroy(Arg *arg) { return mem_free(arg); }
+static Arg *
+arg_destroy(Arg *arg)
+{
+  return mem_free(arg);
+}
 
-static PositionalParam *posParam_new(void) {
+static PositionalParam *
+posParam_new(void)
+{
   PositionalParam *param = mem_alloc(sizeof(struct PositionalParam));
 
   param->name = NULL;
@@ -198,110 +236,146 @@ static PositionalParam *posParam_new(void) {
   return param;
 }
 
-static PositionalParam *posParam_destroy(PositionalParam *param) {
+static PositionalParam *
+posParam_destroy(PositionalParam *param)
+{
   param->args = vector_destroy(param->args, (void *(*)(void *))arg_destroy);
   param = mem_free(param);
   return param;
 }
 
-static void posParam_set_args(PositionalParam *param, int argc, char **argv) {
+static void
+posParam_set_args(PositionalParam *param, int argc, char **argv)
+{
   param->argc = argc;
   param->argv = argv;
 }
 
-static void posParam_set_id(PositionalParam *param, int param_id) {
+static void
+posParam_set_id(PositionalParam *param, int param_id)
+{
   param->param_id = param_id;
 }
 
-static void posParam_set_name(PositionalParam *param, const char *name) {
+static void
+posParam_set_name(PositionalParam *param, const char *name)
+{
   param->name = name;
 }
 
-static void posParam_set_data(PositionalParam *param, void *data) {
+static void
+posParam_set_data(PositionalParam *param, void *data)
+{
   param->data = data;
 }
 
-static void posParam_set_handler(PositionalParam *param,
-                                 void (*handler)(int code, char *arg,
-                                                 void *param)) {
+static void
+posParam_set_handler(PositionalParam *param,
+                     void (*handler)(int code, char *arg, void *param))
+{
   param->handler = handler;
 }
 
-static void posParam_add(PositionalParam *param, Arg arg) {
+static void
+posParam_add(PositionalParam *param, Arg arg)
+{
   vector_append(param->args, arg_new(arg));
 }
 
-static int posParam_pre_process_check(PositionalParam *param) {
-  if (!param) {
+static int
+posParam_pre_process_check(PositionalParam *param)
+{
+  if (!param)
+  {
     return -1;
   }
 
-  if (!param->argv) {
+  if (!param->argv)
+  {
     return -2;
   }
 
-  if (param->argc < 1) {
+  if (param->argc < 1)
+  {
     return -3;
   }
 
-  if (param->handler == NULL) {
+  if (param->handler == NULL)
+  {
     return -4;
   }
 
-  if (param->name == NULL) {
+  if (param->name == NULL)
+  {
     return -5;
   }
 
   return 0;
 }
 
-int posParam_search_handler(void *a1, void *a2) {
+int
+posParam_search_handler(void *a1, void *a2)
+{
   Arg *candidate = a1;
   struct ParsedArg *target = a2;
-  if (target->fmt == ARG_FORMAT_SHORT) {
+  if (target->fmt == ARG_FORMAT_SHORT)
+  {
     return candidate->shortopt == target->key[0];
   }
   return cstr_equals(candidate->longopt, target->key);
 }
 
-int posParam_is_value(const char *s) {
+int
+posParam_is_value(const char *s)
+{
   return s && (strlen(s) > 0) && s[0] != '-';
 }
 
-static void posParam_process(PositionalParam *param) {
-  if (posParam_pre_process_check(param) < 0) {
+static void
+posParam_process(PositionalParam *param)
+{
+  if (posParam_pre_process_check(param) < 0)
+  {
     return;
   }
 
   char *raw_token;
   Arg *token_arg;
-  for (int i = 0; i < param->argc; i++) {
+  for (int i = 0; i < param->argc; i++)
+  {
     raw_token = param->argv[i];
-    if (!raw_token) {
+    if (!raw_token)
+    {
       continue;
     }
 
     struct ParsedArg *parsedArg = parsedArg_from_str(raw_token);
-    if (!parsedArg->key) {
+    if (!parsedArg->key)
+    {
       parsedArg = parsedArg_destroy(parsedArg);
       continue;
     }
 
     token_arg = vector_search(param->args, parsedArg, posParam_search_handler);
-    if (!token_arg) {
+    if (!token_arg)
+    {
       log_warning("Unregistered token %s", raw_token);
       parsedArg = parsedArg_destroy(parsedArg);
       continue;
     }
 
-    switch (token_arg->argtype) {
+    switch (token_arg->argtype)
+    {
     case ARG_TYPE_OPTARG:
-      if (parsedArg->value == NULL) {
+      if (parsedArg->value == NULL)
+      {
         char *optional_value = NULL;
-        if ((i + 1) < param->argc) {
+        if ((i + 1) < param->argc)
+        {
           optional_value = param->argv[i + 1];
         }
-        if (posParam_is_value(optional_value)) {
+        if (posParam_is_value(optional_value))
+        {
           parsedArg->value = mem_salloc(optional_value);
           i++;
         }
@@ -310,18 +384,22 @@ static void posParam_process(PositionalParam *param) {
       parsedArg = parsedArg_destroy(parsedArg);
       break;
     case ARG_TYPE_ARG:
-      if (parsedArg->value == NULL) {
-        if ((i + 1) < param->argc) {
+      if (parsedArg->value == NULL)
+      {
+        if ((i + 1) < param->argc)
+        {
           parsedArg->value = mem_salloc(param->argv[i + 1]);
           i++;
         }
       }
-      if (parsedArg->value == NULL) {
+      if (parsedArg->value == NULL)
+      {
         log_error("Missing argument for param '%c'", token_arg->shortopt);
         parsedArg = parsedArg_destroy(parsedArg);
         abort_fast();
       }
-      if (!posParam_is_value(parsedArg->value)) {
+      if (!posParam_is_value(parsedArg->value))
+      {
         log_error("Invalid argument for param '%c'", token_arg->shortopt);
         parsedArg = parsedArg_destroy(parsedArg);
         abort_fast();
@@ -341,7 +419,9 @@ static void posParam_process(PositionalParam *param) {
   }
 }
 
-static void arg_print(Arg *arg) {
+static void
+arg_print(Arg *arg)
+{
   int shortopt = arg->shortopt;
   const char *longopt = arg->longopt;
   enum ArgType opttype = arg->argtype;
@@ -350,20 +430,24 @@ static void arg_print(Arg *arg) {
   int haslong = longopt ? 1 : 0;
   int hasboth = hasshort && haslong;
 
-  if (hasshort) {
+  if (hasshort)
+  {
     putchar('-');
     putchar(shortopt);
   }
 
-  if (hasboth) {
+  if (hasboth)
+  {
     putchar('|');
   }
 
-  if (haslong) {
+  if (haslong)
+  {
     printf("--%s", longopt);
   }
 
-  switch (opttype) {
+  switch (opttype)
+  {
   case ARG_TYPE_NOARG:
     break;
   case ARG_TYPE_ARG:
@@ -376,22 +460,28 @@ static void arg_print(Arg *arg) {
   }
 }
 
-static void posParam_print(PositionalParam *param, const char *executable,
-                           int is_default) {
+static void
+posParam_print(PositionalParam *param, const char *executable, int is_default)
+{
   printf("SUMMARY\n");
-  if (is_default) {
+  if (is_default)
+  {
     printf("\t%s [%s]", executable, param->name);
-  } else {
+  }
+  else
+  {
     printf("\t%s %s", executable, param->name);
   }
 
   // print calling summary
   const size_t sz = vector_get_size(param->args);
 
-  if (sz > 0) {
+  if (sz > 0)
+  {
     putchar(' ');
 
-    for (int i = 0; i < sz; i++) {
+    for (size_t i = 0; i < sz; i++)
+    {
       Arg *arg = vector_get_item(param->args, i);
 
       putchar('[');
@@ -400,7 +490,8 @@ static void posParam_print(PositionalParam *param, const char *executable,
 
       putchar(']');
 
-      if ((i + 1) < sz) {
+      if ((i + 1) < sz)
+      {
         putchar(' ');
       }
     }
@@ -409,44 +500,55 @@ static void posParam_print(PositionalParam *param, const char *executable,
   putchar('\n');
 
   // print description
-  if (sz > 0) {
+  if (sz > 0)
+  {
     printf("\nARGUMENTS\n");
 
-    for (int i = 0; i < sz; i++) {
+    for (size_t i = 0; i < sz; i++)
+    {
       Arg *arg = vector_get_item(param->args, i);
 
       putchar('\t');
 
       arg_print(arg);
 
-      if (arg->description) {
+      if (arg->description)
+      {
         printf("\t: %s\n", arg->description);
       }
     }
   }
 }
 
-static enum ArgFormat parsedArg_infer_type(const char *s) {
+static enum ArgFormat
+parsedArg_infer_type(const char *s)
+{
   size_t len = strlen(s);
-  if (len <= 1) {
+  if (len <= 1)
+  {
     return ARG_FORMAT_INVALID;
   }
-  if (s[0] == '-' && s[1] != '-') {
+  if (s[0] == '-' && s[1] != '-')
+  {
     return ARG_FORMAT_SHORT;
   }
-  if (s[0] == '-' && s[1] == '-') {
+  if (s[0] == '-' && s[1] == '-')
+  {
     return ARG_FORMAT_LONG;
   }
   return ARG_FORMAT_INVALID;
 }
 
-static char *parsedArg_parse_key(char *token) {
+static char *
+parsedArg_parse_key(char *token)
+{
   enum ArgFormat token_type = parsedArg_infer_type(token);
   String *s;
   char *res = NULL;
   const char *anchor = NULL;
 
-  switch (token_type) {
+  switch (token_type)
+  {
   case ARG_FORMAT_SHORT:
     s = string_new();
     string_push_char(s, token[1]);
@@ -455,11 +557,15 @@ static char *parsedArg_parse_key(char *token) {
   case ARG_FORMAT_LONG:
     s = string_new();
     anchor = cstr_find_at_first_char(token, '=');
-    if (anchor) {
-      for (const char *a = token + 2; a != anchor; a++) {
+    if (anchor)
+    {
+      for (const char *a = token + 2; a != anchor; a++)
+      {
         string_push_char(s, a[0]);
       }
-    } else {
+    }
+    else
+    {
       string_append(s, token + 2);
     }
     res = string_drain(s);
@@ -472,22 +578,27 @@ static char *parsedArg_parse_key(char *token) {
   return res;
 }
 
-static char *parsedArg_parse_value(char *token) {
+static char *
+parsedArg_parse_value(char *token)
+{
   enum ArgFormat token_type = parsedArg_infer_type(token);
   String *s;
   char *res = NULL;
   const char *anchor = NULL;
 
-  switch (token_type) {
+  switch (token_type)
+  {
   case ARG_FORMAT_SHORT:
-    if (strlen(token) > 2) {
+    if (strlen(token) > 2)
+    {
       s = string_from_ptr(token + 2);
       res = string_drain(s);
-      break;
     }
+    break;
   case ARG_FORMAT_LONG:
     anchor = cstr_find_after_first_char(token, '=');
-    if (anchor) {
+    if (anchor)
+    {
       s = string_from_ptr(anchor);
       res = string_drain(s);
     }
@@ -500,7 +611,9 @@ static char *parsedArg_parse_value(char *token) {
   return res;
 }
 
-static struct ParsedArg *parsedArg_from_str(char *s) {
+static struct ParsedArg *
+parsedArg_from_str(char *s)
+{
   int t = parsedArg_infer_type(s);
   struct ParsedArg *a = mem_alloc(sizeof(struct ParsedArg));
   a->fmt = t;
@@ -509,11 +622,15 @@ static struct ParsedArg *parsedArg_from_str(char *s) {
   return a;
 }
 
-static struct ParsedArg *parsedArg_destroy(struct ParsedArg *a) {
-  if (a->key) {
+static struct ParsedArg *
+parsedArg_destroy(struct ParsedArg *a)
+{
+  if (a->key)
+  {
     a->key = mem_free(a->key);
   }
-  if (a->value) {
+  if (a->value)
+  {
     a->value = mem_free(a->value);
   }
   return mem_free(a);

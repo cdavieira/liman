@@ -6,8 +6,10 @@
 typedef struct HuffmanTree HuffmanTree;
 
 // Instantiation/destruction
-HuffmanTree *huffmanTree_new(unsigned int key, unsigned long weight,
-                             HuffmanTree *left, HuffmanTree *right);
+HuffmanTree *huffmanTree_new(unsigned int key,
+                             unsigned long weight,
+                             HuffmanTree *left,
+                             HuffmanTree *right);
 HuffmanTree *huffmanTree_destroy(HuffmanTree *hufftree);
 
 // Getters

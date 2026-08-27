@@ -52,10 +52,8 @@ static int cli_should_print_usage(CallbackData *cli);
 
 /* data */
 
-#define PARAM(n, h)                                                            \
-  (Param) { .name = n, .handler = h, .data = NULL }
-#define ARG(s, l, t, d)                                                        \
-  (Arg) { s, l, t, d }
+#define PARAM(n, h) {.name = n, .handler = h, .data = NULL}
+#define ARG(s, l, t, d) {s, l, t, d}
 
 static Param compressParam = PARAM("compress", callback);
 static Param decompressParam = PARAM("decompress", callback);
@@ -69,13 +67,19 @@ static const Arg args[] = {
 static const Arg inspect_args[] = {
     ARG('r', "header", ARG_TYPE_NOARG, "Analyze the header of a .comp file"),
     ARG('b', "body", ARG_TYPE_NOARG, "Analyze the body of a .comp file"),
-    ARG('c', "codes", ARG_TYPE_NOARG,
+    ARG('c',
+        "codes",
+        ARG_TYPE_NOARG,
         "Analyze the code generated for each ASCII letter of a file"),
     ARG('t', "tree", ARG_TYPE_NOARG, "Analyze the tree of a .comp file"),
 };
 
-static const Command EMPTY_CMD = (Command){
-    NULL, NULL, 0, 0, NULL,
+static const Command EMPTY_CMD = {
+    NULL,
+    NULL,
+    0,
+    0,
+    NULL,
 };
 
 #undef PARAM
@@ -83,14 +87,18 @@ static const Command EMPTY_CMD = (Command){
 
 /* impl */
 
-void cli_init(int argc, char **argv) {
+void
+cli_init(int argc, char **argv)
+{
   CLI cli = cli_new(argc, argv);
   cli_parse(&cli);
   cli_execute(&cli);
   cli_destroy(&cli);
 }
 
-static CLI cli_new(int argc, char **argv) {
+static CLI
+cli_new(int argc, char **argv)
+{
   CLI cli = {.argc = argc,
              .argv = argv,
              .parser = NULL,
@@ -114,13 +122,15 @@ static CLI cli_new(int argc, char **argv) {
 
   // Adding slash params to each positional param
 #define ARR_SZ(arr) (sizeof(arr) / sizeof(arr[0]))
-  for (int i = 0; i < ARR_SZ(args); i++) {
+  for (size_t i = 0; i < ARR_SZ(args); i++)
+  {
     argParser_add_arg(cli.parser, compress_idx, args[i]);
     argParser_add_arg(cli.parser, decompress_idx, args[i]);
     argParser_add_arg(cli.parser, inspect_idx, args[i]);
   }
 
-  for (int i = 0; i < ARR_SZ(inspect_args); i++) {
+  for (size_t i = 0; i < ARR_SZ(inspect_args); i++)
+  {
     argParser_add_arg(cli.parser, inspect_idx, inspect_args[i]);
   }
 #undef ARR_SZ
@@ -131,7 +141,9 @@ static CLI cli_new(int argc, char **argv) {
   return cli;
 }
 
-static void cli_parse(CLI *cli) {
+static void
+cli_parse(CLI *cli)
+{
   Command cmd = EMPTY_CMD;
 
   ArgParser *parser = cli->parser;
@@ -143,16 +155,19 @@ static void cli_parse(CLI *cli) {
 
   CallbackData opts = *cli->data;
 
-  if (cli_should_print_usage(&opts)) {
+  if (cli_should_print_usage(&opts))
+  {
     argParser_print(parser);
     return;
   }
 
-  switch (cmd.mode) {
+  switch (cmd.mode)
+  {
   case 0:
     cmd.inputfilename = opts.inputfilename;
     cmd.outputfilename = opts.outputfilename;
-    if (!cmd.outputfilename) {
+    if (!cmd.outputfilename)
+    {
       cmd.outputfilename = liman_build_compressed_filename(cmd.inputfilename);
     }
     cmd.opts = opts.flags;
@@ -161,7 +176,8 @@ static void cli_parse(CLI *cli) {
   case 1:
     cmd.inputfilename = opts.inputfilename;
     cmd.outputfilename = opts.outputfilename;
-    if (!cmd.outputfilename) {
+    if (!cmd.outputfilename)
+    {
       cmd.outputfilename = liman_build_uncompressed_filename(cmd.inputfilename);
     }
     cmd.opts = opts.flags;
@@ -169,17 +185,28 @@ static void cli_parse(CLI *cli) {
     break;
   case 2:
     cmd.inputfilename = opts.inputfilename;
-    if (opts.outputfilename) {
+    if (opts.outputfilename)
+    {
       cmd.outputfilename = opts.outputfilename;
-    } else if (limanOpts_has_opt(opts.flags, LIMAN_OPT_CODES)) {
+    }
+    else if (limanOpts_has_opt(opts.flags, LIMAN_OPT_CODES))
+    {
       cmd.outputfilename = liman_get_codes_filename(cmd.inputfilename);
-    } else if (limanOpts_has_opt(opts.flags, LIMAN_OPT_PDF)) {
+    }
+    else if (limanOpts_has_opt(opts.flags, LIMAN_OPT_PDF))
+    {
       cmd.outputfilename = liman_get_tree_filename(cmd.inputfilename);
-    } else if (limanOpts_has_opt(opts.flags, LIMAN_OPT_HEADER)) {
+    }
+    else if (limanOpts_has_opt(opts.flags, LIMAN_OPT_HEADER))
+    {
       cmd.outputfilename = NULL;
-    } else if (limanOpts_has_opt(opts.flags, LIMAN_OPT_BODY)) {
+    }
+    else if (limanOpts_has_opt(opts.flags, LIMAN_OPT_BODY))
+    {
       cmd.outputfilename = liman_build_uncompressed_filename(cmd.inputfilename);
-    } else {
+    }
+    else
+    {
       opts.flags = limanOpts_add_opt(opts.flags, LIMAN_OPT_HEADER);
       opts.flags = limanOpts_add_opt(opts.flags, LIMAN_OPT_BODY);
       cmd.outputfilename = liman_build_uncompressed_filename(cmd.inputfilename);
@@ -192,29 +219,38 @@ static void cli_parse(CLI *cli) {
   cli->cmd = cmd;
 }
 
-static void cli_execute(CLI *cli) {
+static void
+cli_execute(CLI *cli)
+{
   Command *cmd = &cli->cmd;
-  if (cmd->handler && cmd->inputfilename) {
+  if (cmd->handler && cmd->inputfilename)
+  {
     cmd->handler(cmd->inputfilename, cmd->outputfilename, cmd->opts);
   }
 }
 
-static void cli_destroy(CLI *cli) {
+static void
+cli_destroy(CLI *cli)
+{
   Command *cmd = &cli->cmd;
 
   mem_free(cmd->outputfilename);
   mem_free(cmd->inputfilename);
 
-  if (cli->data) {
+  if (cli->data)
+  {
     cli->data = callback_destroy(cli->data);
   }
 
-  if (cli->parser) {
+  if (cli->parser)
+  {
     cli->parser = argParser_destroy(cli->parser);
   }
 }
 
-static CallbackData *callback_new(ArgParser *parser) {
+static CallbackData *
+callback_new(ArgParser *parser)
+{
   CallbackData *data = mem_alloc(sizeof(CallbackData));
   data->parser = parser;
   data->inputfilename = NULL;
@@ -224,16 +260,21 @@ static CallbackData *callback_new(ArgParser *parser) {
   return data;
 }
 
-static CallbackData *callback_destroy(CallbackData *data) {
+static CallbackData *
+callback_destroy(CallbackData *data)
+{
   mem_free(data);
   return NULL;
 }
 
-static void callback(int code, char *arg, void *data) {
+static void
+callback(int code, char *arg, void *data)
+{
   CallbackData *opts = data;
   int opt = 0;
 
-  switch (code) {
+  switch (code)
+  {
   case 'i':
     opts->inputfilename = mem_salloc(arg);
     break;
@@ -260,11 +301,15 @@ static void callback(int code, char *arg, void *data) {
   opts->flags = limanOpts_add_opt(opts->flags, opt);
 }
 
-static int cli_should_print_usage(CallbackData *data) {
-  if (data->printmode) {
+static int
+cli_should_print_usage(CallbackData *data)
+{
+  if (data->printmode)
+  {
     return 1;
   }
-  if (!data->inputfilename) {
+  if (!data->inputfilename)
+  {
     return 1;
   }
   return 0;

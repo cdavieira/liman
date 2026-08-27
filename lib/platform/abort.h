@@ -1,4 +1,4 @@
-#pragma
+#pragma once
 
 // exit_*, quit_*, abort_*, interrupt_*, ...
 
