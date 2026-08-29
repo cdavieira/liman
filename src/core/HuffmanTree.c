@@ -268,9 +268,10 @@ huffmanTree_printfp_codes(HuffmanTree *hufftree, FILE *fp)
   char *const notfound = "not encoded";
   char *strcode;
   size_t setsize = byteFreq_get_set_size();
-  ssize_t nodeid;
+  size_t nodeid;
   HuffmanCode *code;
   int hasCode;
+
   for (unsigned ch = 0; ch < setsize; ch++)
   {
     t = huffmanTree_search_key(hufftree, ch);
@@ -281,7 +282,7 @@ huffmanTree_printfp_codes(HuffmanTree *hufftree, FILE *fp)
     code = huffmanTree_get_value(t);
     hasCode = huffmanCode_has_value(code);
     strcode = hasCode ? huffmanCode_stringify(code) : notfound;
-    nodeid = t ? huffmanTree_get_id(t) : -1;
+    nodeid = huffmanTree_get_id(t);
     if (isprint(ch))
     {
       fprintf(fp, "(Tree %03ld) %c: %s\n", nodeid, ch, strcode);

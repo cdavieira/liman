@@ -119,7 +119,10 @@ binWriter_flush(BinaryWriter *writer)
   unsigned char *buffer = bitmapGetContents(writer->buffer);
   ssize_t bytes_written = write(writer->fd, buffer, required_bytes);
 
-  if (required_bytes != bytes_written)
+  int did_write = bytes_written > 0;
+  int written_bytes_mismatch =
+      did_write && (required_bytes != ((size_t)bytes_written));
+  if (required_bytes > 0 && written_bytes_mismatch)
   {
     log_warning("binWriter: bytes attempted/written mismatch");
   }
@@ -154,17 +157,17 @@ binWriter_write_byte(BinaryWriter *writer, unsigned char byte)
     return;
   }
 
-  size_t exceeding_bits = sz - remaining_bits;
-  ssize_t i = sz - 1;
-  for (; i >= exceeding_bits; i--)
+  for (size_t i = 0, j = sz - 1; i < remaining_bits; i++, j--)
   {
-    bitmapAppendLeastSignificantBit(writer->buffer, bits_get_size_bit(byte, i));
+    bitmapAppendLeastSignificantBit(writer->buffer, bits_get_size_bit(byte, j));
   }
   writer->bits_written += remaining_bits;
   binWriter_flush(writer);
-  for (; i >= 0; i--)
+
+  size_t exceeding_bits = sz - remaining_bits;
+  for (size_t i = 0, j = sz - 1 - remaining_bits; i < exceeding_bits; i++, j--)
   {
-    bitmapAppendLeastSignificantBit(writer->buffer, bits_get_size_bit(byte, i));
+    bitmapAppendLeastSignificantBit(writer->buffer, bits_get_size_bit(byte, j));
   }
   writer->bits_written += exceeding_bits;
 }
@@ -188,6 +191,7 @@ binWriter_write_bitmap(BinaryWriter *writer, const Bitmap *bm)
   }
   writer->bits_written += remaining_bits;
   binWriter_flush(writer);
+
   for (size_t i = remaining_bits; i < sz; i++)
   {
     bitmapAppendLeastSignificantBit(writer->buffer, bitmapGetBit(bm, i));
@@ -217,19 +221,19 @@ binWriter_write_huffmanCode(BinaryWriter *writer, const HuffmanCode *hfcode)
     return;
   }
 
-  size_t exceeding_bits = sz - remaining_bits;
-  ssize_t i = sz - 1;
-  for (; i >= exceeding_bits; i--)
+  for (size_t i = 0, j = sz - 1; i < remaining_bits; i++, j--)
   {
     bitmapAppendLeastSignificantBit(writer->buffer,
-                                    bits_get_size_bit(code.code, i));
+                                    bits_get_size_bit(code.code, j));
   }
   writer->bits_written += remaining_bits;
   binWriter_flush(writer);
-  for (; i >= 0; i--)
+
+  size_t exceeding_bits = sz - remaining_bits;
+  for (size_t i = 0, j = sz - 1 - remaining_bits; i < exceeding_bits; i++, j--)
   {
     bitmapAppendLeastSignificantBit(writer->buffer,
-                                    bits_get_size_bit(code.code, i));
+                                    bits_get_size_bit(code.code, j));
   }
   writer->bits_written += exceeding_bits;
 }

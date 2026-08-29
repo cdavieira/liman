@@ -18,7 +18,7 @@ codeLookup_from_huffmanTree(HuffmanTree *ht)
   lk->map = mem_zalloc(lk->size * sizeof(HuffmanCode *));
 
   HuffmanTree *code;
-  for (int i = 0; i < lk->size; i++)
+  for (size_t i = 0; i < lk->size; i++)
   {
     code = huffmanTree_search_key(ht, i);
     lk->map[i] = code ? huffmanTree_get_value(code) : NULL;
@@ -37,7 +37,7 @@ codeLookup_destroy(CodeLookup *lk)
 const HuffmanCode *
 codeLookup_get(CodeLookup *lk, int code)
 {
-  if (code < 0 || code >= lk->size)
+  if (code < 0 || ((size_t)code) >= lk->size)
   {
     return NULL;
   }

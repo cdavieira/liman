@@ -17,7 +17,7 @@
 
 typedef struct PositionalParam {
   const char *name;
-  int param_id;
+  size_t param_id;
   Vector *args;
   int argc;
   char **argv;
@@ -52,7 +52,7 @@ static void arg_print(Arg *arg);
 static PositionalParam *posParam_new(void);
 static PositionalParam *posParam_destroy(PositionalParam *param);
 static void posParam_set_args(PositionalParam *param, int argc, char **argv);
-static void posParam_set_id(PositionalParam *param, int param_id);
+static void posParam_set_id(PositionalParam *param, size_t param_id);
 static void posParam_set_name(PositionalParam *param, const char *name);
 static void posParam_set_data(PositionalParam *param, void *data);
 static void
@@ -252,7 +252,7 @@ posParam_set_args(PositionalParam *param, int argc, char **argv)
 }
 
 static void
-posParam_set_id(PositionalParam *param, int param_id)
+posParam_set_id(PositionalParam *param, size_t param_id)
 {
   param->param_id = param_id;
 }
