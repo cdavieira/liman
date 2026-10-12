@@ -14,7 +14,7 @@ TR='tr'
 # project specific
 HUFFMAN='./liman'
 UNHUFFMAN='./liman decompress'
-EXAMPLES=$(${FIND} ./tests/* -type f)
+EXAMPLES=$(${FIND} ./tests/data/* -type f)
 
 
 
