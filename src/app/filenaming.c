@@ -1,6 +1,6 @@
 #include "app/filenaming.h"
 #include "platform/mem.h"
-#include "utils/cstr.h"
+#include "platform/posix/file.h"
 #include "utils/types/FilenameBuilder.h"
 #include "utils/types/String.h"
 
@@ -70,6 +70,7 @@ liman_build_compressed_filename(const char *inputfile)
   parts.filename = mem_free(parts.filename);
   parts.extension = mem_free(parts.extension);
   parts.path = mem_free(parts.path);
+  ext = mem_free(ext);
 
   return filename;
 }
@@ -81,7 +82,7 @@ liman_get_uncompressed_filename(const char *inputfile)
 {
   char *outputfile = NULL;
   const char *prefix = "unhuffman-";
-  const char *basename = cstr_find_after_last_char(inputfile, '/');
+  const char *basename = file_find_basename((char *)inputfile);
   String *s = string_from_ptr(basename ? basename : inputfile);
 
   string_shift(s, prefix);

@@ -1,6 +1,5 @@
-#include "platform/unix/process.h"
+#include "platform/posix/process.h"
 #include "platform/abort.h"
-#include "platform/log.h"
 
 #include <stdio.h>
 #include <stdlib.h>

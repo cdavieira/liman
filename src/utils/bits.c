@@ -28,7 +28,7 @@ size_t
 bits_padding(size_t nbits)
 {
   size_t rem = nbits % 8;
-  return rem == 0 ? 0 : 8 - rem;
+  return rem ? 8 - rem : 0;
 }
 
 size_t

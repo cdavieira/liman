@@ -8,7 +8,7 @@
 #include "platform/abort.h"
 #include "platform/log.h"
 #include "platform/mem.h"
-#include "platform/unix/process.h"
+#include "platform/posix/process.h"
 #include "utils/container/Bitmap.h"
 #include "utils/types/String.h"
 #include "utils/types/common.h"

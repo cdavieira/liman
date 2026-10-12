@@ -1,5 +1,4 @@
 #include "utils/cstr.h"
-#include "platform/mem.h"
 
 #include <string.h>
 
@@ -40,21 +39,6 @@ cstr_count_occurrences(const char *s, char ch)
     }
   }
   return count;
-}
-
-char *
-cstr_min2(const char *s1, const char *s2)
-{
-  size_t s1len = strlen(s1);
-  size_t s2len = strlen(s2);
-  return mem_zalloc((s1len + s2len + 1) * sizeof(char));
-}
-
-char *
-cstr_expand(const char *s, size_t sz)
-{
-  size_t s1len = strlen(s);
-  return mem_zalloc((s1len + sz + 1) * sizeof(char));
 }
 
 int

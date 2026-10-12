@@ -1,13 +1,8 @@
 #pragma once
 
-typedef struct FilenameBuilder FilenameBuilder;
+#include "platform/posix/file.h"
 
-enum PathType {
-  PATH_ABSOLUTE,
-  PATH_RELATIVE,
-  PATH_FILENAME,
-  PATH_INVALID,
-};
+typedef struct FilenameBuilder FilenameBuilder;
 
 typedef struct FilenameParts {
   char *path;
