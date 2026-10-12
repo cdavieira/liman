@@ -8,6 +8,12 @@ static int cll_compare_elements(CircularList *cl, int *data);
 
 static void assert_cll(CircularList *cl, int *data, int size);
 
+static void *
+dummy_free(void *e)
+{
+  return NULL;
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -19,8 +25,11 @@ main(int argc, char *argv[])
   for (int i = 0; i < 10; i++)
   {
     arr[i] = i + 1;
-    cl_add(cl, arr, i + 1);
+    cl_add(cl, arr + i, i);
+    assert_cll(cl, arr, i + 1);
   }
+
+  cl_destroy(cl, dummy_free);
 
   return 0;
 }

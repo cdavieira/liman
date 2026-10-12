@@ -72,10 +72,12 @@ cl_destroy(CircularList *l, void *(*free_element)(void *))
 {
   Element *elem = NULL;
   Element *next = l->begin;
-  while ((elem = next))
+  while (l->n > 0)
   {
+    elem = next;
     next = elem->next;
     element_destroy(elem, free_element);
+    l->n--;
   }
   l->begin = NULL; // i'm a good boi
   mem_free(l);
