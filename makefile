@@ -42,7 +42,7 @@ run:
 	./$(project)
 
 dev:
-	$(BEAR) -- make
+	$(BEAR) -- make all
 
 lint:
 	$(CLANG_FORMAT) -i $(src) $(lib)

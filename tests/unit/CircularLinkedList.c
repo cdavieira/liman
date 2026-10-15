@@ -14,8 +14,18 @@ dummy_free(void *e)
   return NULL;
 }
 
+static void test_add_rm(void);
+
 int
 main(int argc, char *argv[])
+{
+  test_add_rm();
+
+  return 0;
+}
+
+static void
+test_add_rm(void)
 {
   CircularList *cl = cl_new();
   int arr[10];
@@ -29,9 +39,13 @@ main(int argc, char *argv[])
     assert_cll(cl, arr, i + 1);
   }
 
-  cl_destroy(cl, dummy_free);
+  for (int i = 9; i > 0; i--)
+  {
+    cl_remove(cl, i);
+    assert_cll(cl, arr, i);
+  }
 
-  return 0;
+  cl = cl_destroy(cl, dummy_free);
 }
 
 static int
