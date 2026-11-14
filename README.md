@@ -18,7 +18,7 @@ git clone https://github.com/cdavieira/liman.git
 cd path/to/this/project
 
 # compile liman
-make
+make all
 
 # compress a file: ./huffman /path/to/file
 ./liman -i ./tests/data/pikachu.gif
