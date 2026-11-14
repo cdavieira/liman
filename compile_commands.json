@@ -462,7 +462,7 @@
     "output": "obj/platform/posix/FileStream.o"
   },
   {
-    "file": "src/platform/unix/process.c",
+    "file": "src/platform/posix/process.c",
     "arguments": [
       "/usr/bin/gcc",
       "-std=c23",
@@ -476,11 +476,11 @@
       "-Ilib",
       "-c",
       "-o",
-      "obj/platform/unix/process.o",
-      "src/platform/unix/process.c"
+      "obj/platform/posix/process.o",
+      "src/platform/posix/process.c"
     ],
     "directory": "/home/carlos/repos/projects/liman",
-    "output": "obj/platform/unix/process.o"
+    "output": "obj/platform/posix/process.o"
   },
   {
     "file": "src/utils/container/Bitmap.c",
@@ -523,6 +523,27 @@
     ],
     "directory": "/home/carlos/repos/projects/liman",
     "output": "obj/utils/container/CircularLinkedList.o"
+  },
+  {
+    "file": "src/utils/container/SizedIterator.c",
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=c23",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Wno-unused-function",
+      "-Wno-unused-parameter",
+      "-Wno-unused-variable",
+      "-g",
+      "-Ilib",
+      "-c",
+      "-o",
+      "obj/utils/container/SizedIterator.o",
+      "src/utils/container/SizedIterator.c"
+    ],
+    "directory": "/home/carlos/repos/projects/liman",
+    "output": "obj/utils/container/SizedIterator.o"
   },
   {
     "file": "src/utils/container/Tree.c",
