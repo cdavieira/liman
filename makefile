@@ -8,7 +8,7 @@ teste2escript := ./tests/test-e2e.sh
 src := $(wildcard $(srcdir)/*.c $(srcdir)/*/*.c $(srcdir)/*/*/*.c)
 lib := $(wildcard $(libdir)/*.h $(libdir)/*/*.h $(libdir)/*/*/*.h)
 obj := $(subst $(srcdir),$(objdir),$(src:.c=.o))
-testsrc := $(wildcard $(testdir)/*.c)
+testsrc := $(wildcard $(testdir)/*/*.c)
 testelf := $(testsrc:.c=)
 
 MKDIR := mkdir
@@ -52,12 +52,12 @@ echo:
 	@echo '.o: ' $(obj)
 	@echo '.c: ' $(src)
 
-unit: $(testelf)
+unit: all $(testelf)
 
 $(testdir)/%: $(filter-out obj/main.o,$(obj)) $(testdir)/%.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-test: teste2e testunit
+test: testunit teste2e 
 
 testunit: unit
 	@echo 'Testing unit'
@@ -66,7 +66,7 @@ testunit: unit
 	done
 	@echo 'Done!'
 
-teste2e:
+teste2e: unit
 	@echo 'Testing e2e'
 	$(teste2escript)
 	@echo 'Done!'

@@ -18,6 +18,7 @@
 * [ ] CompReader/CompWriter API
 * [I] improve implementation of String.c
 * [I] improve implementation of FilenameBuilder.c
+* [ ] add tests to all libraries
 
 ## Documentation
 * [ ] add doxygen for documentation (probably use ai for this)

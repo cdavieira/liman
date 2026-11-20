@@ -45,7 +45,6 @@ make clean
 ## Folder structure
 ```
 .
-├── assets
 ├── lib
 │   ├── app
 │   ├── core
@@ -75,7 +74,6 @@ make clean
 * src/utils:           utility functions
 * src/utils/types:     utility types
 * src/utils/container: generic datatype containers
-* assets:              figures used in this README
 * tests:               files used as test for compression/decompression
 
 ## About the Huffman algorithm
@@ -125,7 +123,7 @@ the generation of unique and unambiguous codes to encode bytes.
 The cool part is that these can be visualized! Here is one of the
 Huffman trees produced by liman for the test 'bible.txt':
 
-![Huffman tree for bible.txt test](./assets/bible-huffmantree.png)
+![Huffman tree for bible.txt test](./docs/bible-huffmantree.png)
 > image generated using './liman inspect' and the program 'dot'
 
 ## Compression performance

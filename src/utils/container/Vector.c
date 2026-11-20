@@ -105,12 +105,15 @@ vector_pop(Vector *arr)
   {
     return NULL;
   }
+
+  void *item = arr->elements[arr->size - 1];
+  arr->elements[--arr->size] = NULL;
+
   if (vector_is_oversized(arr))
   {
     vector_shrink(arr, 1);
   }
-  void *item = arr->elements[arr->size - 1];
-  arr->elements[--arr->size] = NULL;
+
   return item;
 }
 

@@ -1,9 +1,3 @@
-compressed/
-huffmann
-unhuffmann
+liman
 obj/
-output/
-tags
-Session.vim
 .cache/
-TODO
