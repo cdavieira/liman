@@ -90,8 +90,8 @@ clean_project() {
 # $1 - whitespace-separated list of test files
 main() {
   local originalsize=''
-  local compressedsize=''
-  local output=''
+  local compressed_size=''
+  local compression_filename=''
   local fail=0
   local success=0
   local total=$(${ECHO} "$1" | ${WC} -l)
@@ -104,40 +104,40 @@ main() {
   for example in $1; do
     originalsize=$(filesize_in_bytes "${example}")
 
-    output=$(generate_compressed_filename "${example}")
-    compression_cmd="${HUFFMAN} -i ${example} -o ${output}"
+    compression_filename=$(generate_compressed_filename "${example}")
+    compression_cmd="${HUFFMAN} -i ${example} -o ${compression_filename}"
     ${compression_cmd} >/dev/null 2>&1
-    compressedsize=$(filesize_in_bytes "${output}")
-    expectedsize=$(expected_compressed_size_in_bytes "$output")
+    compressed_size=$(filesize_in_bytes "${compression_filename}")
+    expected_compressed_size=$(expected_compressed_size_in_bytes "$compression_filename")
 
-    output2=$(generate_decompressed_filename "${example}")
-    decompression_cmd="${UNHUFFMAN} -i ${output} -o ${output2}"
+    decompression_filename=$(generate_decompressed_filename "${example}")
+    decompression_cmd="${UNHUFFMAN} -i ${compression_filename} -o ${decompression_filename}"
     ${decompression_cmd} >/dev/null 2>&1
-    decompressedsize=$(filesize_in_bytes "${output2}")
-    expectedsize2=$(expected_decompressed_size_in_bytes "$output2")
+    decompressed_size=$(filesize_in_bytes "${decompression_filename}")
+    expected_decompressed_size=$(expected_decompressed_size_in_bytes "$decompression_filename")
 
     inc_success_count=1
-    if test "${compressedsize}" != "${expectedsize}" ; then
+    if test "${compressed_size}" != "${expected_compressed_size}" ; then
 	    echo "Compress failed for example ${example}"
 	    echo "  Compress Cmd: ${compression_cmd}"
-	    echo "  Expected ${expectedsize} bytes, got ${compressedsize}"
+	    echo "  Expected ${expected_compressed_size} bytes, got ${compressed_size}"
 	    inc_success_count=0
     fi
 
-    if test "${decompressedsize}" != "${expectedsize2}" ; then
+    if test "${decompressed_size}" != "${expected_decompressed_size}" ; then
 	    echo "Decompress failed for example ${example}"
 	    echo "  Compress Cmd: ${compression_cmd}"
 	    echo "  Decompress Cmd: ${decompression_cmd}"
-	    echo "  Expected ${expectedsize2} bytes, got ${decompressedsize}"
+	    echo "  Expected ${expected_decompressed_size} bytes, got ${decompressed_size}"
 	    inc_success_count=0
     fi
 
-    if test -e "${output}"; then
-	    ${RM} "${output}"
+    if test -e "${compression_filename}"; then
+	    ${RM} "${compression_filename}"
     fi
 
-    if test -e "${output2}"; then
-	    ${RM} "${output2}"
+    if test -e "${decompression_filename}"; then
+	    ${RM} "${decompression_filename}"
     fi
 
     if test "${inc_success_count}" == "1" ; then
