@@ -18,10 +18,10 @@ git clone https://github.com/cdavieira/liman.git
 cd path/to/this/project
 
 # compile liman
-make
+make all
 
 # compress a file: ./huffman /path/to/file
-./liman -i ./tests/pikachu.gif
+./liman -i ./tests/data/pikachu.gif
 
 # decompress a file: ./huffman /path/to/compfile
 ./liman decompress -i ./pikachu.gif.comp
@@ -63,7 +63,10 @@ make clean
 │   └── utils
 │       ├── container
 │       └── types
-└── tests
+├── tests
+│   ├── data
+│   ├── unit
+└── docs
 ```
 
 * src/app:             graphical/commandline interfaces to liman
@@ -74,7 +77,9 @@ make clean
 * src/utils:           utility functions
 * src/utils/types:     utility types
 * src/utils/container: generic datatype containers
-* tests:               files used as test for compression/decompression
+* docs:                documentation
+* tests/data:          files used as test for compression/decompression
+* tests/unit:          unit test files
 
 ## About the Huffman algorithm
 The **Huffman algorithm** works by recoding commonly used codes to
@@ -127,7 +132,7 @@ Huffman trees produced by liman for the test 'bible.txt':
 > image generated using './liman inspect' and the program 'dot'
 
 ## Compression performance
-The project contains some files in the `tests` folder, which were used to test
+The project contains some files in the `tests/data` folder, which were used to test
 compression performance for different types of files.
 
   input     | extension | original size     |  compressed size     | compression rate    |
