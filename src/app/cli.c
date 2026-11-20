@@ -49,6 +49,7 @@ static CallbackData *callback_new(ArgParser *parser);
 static CallbackData *callback_destroy(CallbackData *data);
 static void callback(int code, char *arg, void *data);
 static int cli_should_print_usage(CallbackData *cli);
+static Command cli_build_command(int command, CallbackData *data);
 
 /* data */
 
@@ -144,79 +145,20 @@ cli_new(int argc, char **argv)
 static void
 cli_parse(CLI *cli)
 {
-  Command cmd = EMPTY_CMD;
-
   ArgParser *parser = cli->parser;
   int argc = cli->argc;
   char **argv = cli->argv;
 
   // Parsing the supplied commandline
-  cmd.mode = argParser_process(parser, argc, argv);
+  int mode = argParser_process(parser, argc, argv);
 
-  CallbackData opts = *cli->data;
-
-  if (cli_should_print_usage(&opts))
+  if (cli_should_print_usage(cli->data))
   {
     argParser_print(parser);
     return;
   }
 
-  switch (cmd.mode)
-  {
-  case 0:
-    cmd.inputfilename = opts.inputfilename;
-    cmd.outputfilename = opts.outputfilename;
-    if (!cmd.outputfilename)
-    {
-      cmd.outputfilename = liman_build_compressed_filename(cmd.inputfilename);
-    }
-    cmd.opts = opts.flags;
-    cmd.handler = compress;
-    break;
-  case 1:
-    cmd.inputfilename = opts.inputfilename;
-    cmd.outputfilename = opts.outputfilename;
-    if (!cmd.outputfilename)
-    {
-      cmd.outputfilename = liman_build_uncompressed_filename(cmd.inputfilename);
-    }
-    cmd.opts = opts.flags;
-    cmd.handler = decompress;
-    break;
-  case 2:
-    cmd.inputfilename = opts.inputfilename;
-    if (opts.outputfilename)
-    {
-      cmd.outputfilename = opts.outputfilename;
-    }
-    else if (limanOpts_has_opt(opts.flags, LIMAN_OPT_CODES))
-    {
-      cmd.outputfilename = liman_get_codes_filename(cmd.inputfilename);
-    }
-    else if (limanOpts_has_opt(opts.flags, LIMAN_OPT_PDF))
-    {
-      cmd.outputfilename = liman_get_tree_filename(cmd.inputfilename);
-    }
-    else if (limanOpts_has_opt(opts.flags, LIMAN_OPT_HEADER))
-    {
-      cmd.outputfilename = NULL;
-    }
-    else if (limanOpts_has_opt(opts.flags, LIMAN_OPT_BODY))
-    {
-      cmd.outputfilename = liman_build_uncompressed_filename(cmd.inputfilename);
-    }
-    else
-    {
-      opts.flags = limanOpts_add_opt(opts.flags, LIMAN_OPT_HEADER);
-      opts.flags = limanOpts_add_opt(opts.flags, LIMAN_OPT_BODY);
-      cmd.outputfilename = liman_build_uncompressed_filename(cmd.inputfilename);
-    }
-    cmd.opts = opts.flags;
-    cmd.handler = inspect;
-    break;
-  }
-
-  cli->cmd = cmd;
+  cli->cmd = cli_build_command(mode, cli->data);
 }
 
 static void
@@ -313,4 +255,73 @@ cli_should_print_usage(CallbackData *data)
     return 1;
   }
   return 0;
+}
+
+static Command
+cli_build_command(int command, CallbackData *opts)
+{
+  Command cmd = EMPTY_CMD;
+
+  if (command < 0 || command > 2)
+  {
+    return cmd;
+  }
+
+  cmd.mode = command;
+  switch (cmd.mode)
+  {
+  case 0:
+    cmd.inputfilename = opts->inputfilename;
+    cmd.outputfilename = opts->outputfilename;
+    if (!cmd.outputfilename)
+    {
+      cmd.outputfilename = liman_build_compressed_filename(cmd.inputfilename);
+    }
+    cmd.opts = opts->flags;
+    cmd.handler = compress;
+    break;
+  case 1:
+    cmd.inputfilename = opts->inputfilename;
+    cmd.outputfilename = opts->outputfilename;
+    if (!cmd.outputfilename)
+    {
+      cmd.outputfilename = liman_build_uncompressed_filename(cmd.inputfilename);
+    }
+    cmd.opts = opts->flags;
+    cmd.handler = decompress;
+    break;
+  case 2:
+    cmd.inputfilename = opts->inputfilename;
+    if (opts->outputfilename)
+    {
+      cmd.outputfilename = opts->outputfilename;
+    }
+    else if (limanOpts_has_opt(opts->flags, LIMAN_OPT_CODES))
+    {
+      cmd.outputfilename = liman_get_codes_filename(cmd.inputfilename);
+    }
+    else if (limanOpts_has_opt(opts->flags, LIMAN_OPT_PDF))
+    {
+      cmd.outputfilename = liman_get_tree_filename(cmd.inputfilename);
+    }
+    else if (limanOpts_has_opt(opts->flags, LIMAN_OPT_HEADER))
+    {
+      cmd.outputfilename = NULL;
+    }
+    else if (limanOpts_has_opt(opts->flags, LIMAN_OPT_BODY))
+    {
+      cmd.outputfilename = liman_build_uncompressed_filename(cmd.inputfilename);
+    }
+    else
+    {
+      opts->flags = limanOpts_add_opt(opts->flags, LIMAN_OPT_HEADER);
+      opts->flags = limanOpts_add_opt(opts->flags, LIMAN_OPT_BODY);
+      cmd.outputfilename = liman_build_uncompressed_filename(cmd.inputfilename);
+    }
+    cmd.opts = opts->flags;
+    cmd.handler = inspect;
+    break;
+  }
+
+  return cmd;
 }

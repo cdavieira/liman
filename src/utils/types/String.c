@@ -25,6 +25,10 @@ String *
 string_new(void)
 {
   String *s = mem_alloc(sizeof(struct String));
+  if (!s)
+  {
+    return NULL;
+  }
   string_buffer_init(s);
   return s;
 }
@@ -33,6 +37,10 @@ String *
 string_from_ptr(const char *ptr)
 {
   String *s = mem_alloc(sizeof(struct String));
+  if (!s)
+  {
+    return NULL;
+  }
   char *cpy = mem_salloc(ptr);
   string_buffer_override(s, cpy);
   return s;
@@ -41,6 +49,10 @@ string_from_ptr(const char *ptr)
 String *
 string_destroy(String *s)
 {
+  if (!s)
+  {
+    return NULL;
+  }
   if (s->str)
   {
     mem_free(s->str);
@@ -132,9 +144,12 @@ string_buffer_deinit(String *s)
 static void
 string_buffer_override(String *s, char *buffer)
 {
-  s->str = buffer;
-  s->size = strlen(buffer);
-  s->capacity = s->size;
+  if (s && buffer)
+  {
+    s->str = buffer;
+    s->size = strlen(buffer);
+    s->capacity = s->size;
+  }
 }
 
 static void
@@ -152,6 +167,10 @@ string_concat(const char *s1, const char *s2)
 {
   size_t sz = (strlen(s1) + strlen(s2) + 1) * sizeof(char);
   char *new_str = mem_zalloc(sz);
+  if (!new_str)
+  {
+    return NULL;
+  }
   strcat(new_str, s1);
   strcat(new_str, s2);
   return new_str;
@@ -161,6 +180,10 @@ static char *
 string_grow(const char *s, size_t sz)
 {
   char *new_str = mem_zalloc((strlen(s) + sz + 1) * sizeof(char));
+  if (!new_str)
+  {
+    return NULL;
+  }
   strcat(new_str, s);
   return new_str;
 }
